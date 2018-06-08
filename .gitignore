@@ -328,3 +328,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+Elfo.Wardein.Core/Assets/WardeinConfig.json
+Elfo.Wardein.Core/Assets/MailConfig.json

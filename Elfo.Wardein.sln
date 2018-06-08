@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elfo.Wardein", "Elfo.Wardein\Elfo.Wardein.csproj", "{4830408C-0799-4182-92EC-9F3B5BC194D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein", "Elfo.Wardein\Elfo.Wardein.csproj", "{4830408C-0799-4182-92EC-9F3B5BC194D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elfo.Wardein.Services", "Elfo.Wardein.Services\Elfo.Wardein.Services.csproj", "{0D1C46CE-0291-4D7F-BAAA-582F210A7278}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Services", "Elfo.Wardein.Services\Elfo.Wardein.Services.csproj", "{0D1C46CE-0291-4D7F-BAAA-582F210A7278}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elfo.Wardein.Core", "Elfo.Wardein.Core\Elfo.Wardein.Core.csproj", "{EB0438FD-BA9B-428E-88C7-430A0FB3AA53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{0D1C46CE-0291-4D7F-BAAA-582F210A7278}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D1C46CE-0291-4D7F-BAAA-582F210A7278}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D1C46CE-0291-4D7F-BAAA-582F210A7278}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB0438FD-BA9B-428E-88C7-430A0FB3AA53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB0438FD-BA9B-428E-88C7-430A0FB3AA53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB0438FD-BA9B-428E-88C7-430A0FB3AA53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB0438FD-BA9B-428E-88C7-430A0FB3AA53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

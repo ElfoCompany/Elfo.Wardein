@@ -1,4 +1,5 @@
-﻿using PeterKottas.DotNetCore.WindowsService.Base;
+﻿using Elfo.Wardein.Core;
+using PeterKottas.DotNetCore.WindowsService.Base;
 using PeterKottas.DotNetCore.WindowsService.Interfaces;
 using System;
 
@@ -8,10 +9,13 @@ namespace Elfo.Wardein.Services
     {
         public void Start()
         {
+            var wardeinInstance = new WardeinInstance();
+
             this.StartBase();
-            Timers.Start("Poller", 1000, () =>
+            Timers.Start("Poller", 60000, async () =>
             {
                 Console.WriteLine("Polling at {0}\n", DateTime.Now.ToString("o"));
+                await wardeinInstance.RunCheck();
             },
             (e) =>
             {
