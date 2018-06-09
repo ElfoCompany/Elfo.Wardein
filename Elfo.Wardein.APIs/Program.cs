@@ -1,16 +1,21 @@
-﻿using Elfo.Wardein.Services;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Elfo.Wardein.Services;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using PeterKottas.DotNetCore.WindowsService;
-using System;
-using System.IO;
 
-namespace Elfo.Wardein
+namespace Elfo.Wardein.APIs
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var fileName = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log.txt");
             ServiceRunner<WardeinService>.Run(config =>
@@ -27,6 +32,8 @@ namespace Elfo.Wardein
                     {
                         Console.WriteLine("Service {0} started", name);
                         service.Start();
+
+                        BuildWebHost(args).Run();
                     });
 
                     serviceConfig.OnStop(service =>
@@ -43,5 +50,10 @@ namespace Elfo.Wardein
                 });
             });
         }
+
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>()
+                .Build();
     }
 }

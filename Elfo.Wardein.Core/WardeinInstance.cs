@@ -41,6 +41,33 @@ namespace Elfo.Wardein.Core
             }
         }
 
+        public void StopService(string servicename)
+        {
+            var serviceHelper = new WindowsServiceHelper(servicename);
+
+            if (serviceHelper.IsStillAlive())
+                serviceHelper.ForceKill();
+        }
+
+        public void StartService(string servicename)
+        {
+            var serviceHelper = new WindowsServiceHelper(servicename);
+
+            if (!serviceHelper.IsStillAlive())
+                serviceHelper.Start();
+        }
+
+        public void RestartService(string servicename)
+        {
+            var serviceHelper = new WindowsServiceHelper(servicename);
+
+            if (serviceHelper.IsStillAlive())
+                serviceHelper.ForceKill();
+
+            serviceHelper.Start();
+        }
+
+
         public async Task RunCheck()
         {
             foreach (var service in wardeinConfig.Services)

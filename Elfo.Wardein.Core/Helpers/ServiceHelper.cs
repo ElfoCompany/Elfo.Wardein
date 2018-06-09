@@ -53,7 +53,7 @@ namespace Elfo.Wardein.Core.Helpers
             return result;
         }
 
-        private void ForceKill()
+        public void ForceKill()
         {
             ServiceController sc = ServiceController.GetServices().FirstOrDefault(s => s.ServiceName.Equals(serviceName));
             Console.WriteLine($"Stopping {sc.ServiceName}");
