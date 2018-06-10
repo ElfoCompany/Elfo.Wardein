@@ -7,12 +7,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="PeterKottas.DotNetCore.WindowsService" Version="2.0.8" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Elfo.Wardein.APIs\Elfo.Wardein.APIs.csproj" />
     <ProjectReference Include="..\Elfo.Wardein.Services\Elfo.Wardein.Services.csproj" />
   </ItemGroup>
 
