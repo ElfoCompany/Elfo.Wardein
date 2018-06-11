@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System;
 using Elfo.Wardein.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Elfo.Wardein.Core.Helpers;
 
 namespace Elfo.Wardein.APIs
 {
@@ -17,8 +19,8 @@ namespace Elfo.Wardein.APIs
                         //TODO: how to manage exceptions?
                         string serviceName = context.GetRouteValue("name").ToString();
 
-                        //TODO: what if service not found?
-                        new WardeinInstance().RestartService(serviceName);
+                        //TODO: what if service not found? We need to manage exceptions: Service not found, exceptions while stopping/starting service
+                        new WindowsServiceHelper(serviceName).Restart();
                         return context.Response.WriteAsync($"Service {serviceName} restarted");
                     });
         }

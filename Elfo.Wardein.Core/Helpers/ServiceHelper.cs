@@ -76,7 +76,34 @@ namespace Elfo.Wardein.Core.Helpers
 
         public void Start()
         {
-            this.serviceController.Start();
+            try
+            {
+                if (!IsStillAlive())
+                    this.serviceController.Start();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Error while starting {this.serviceName}: {ex.Message}");
+            }
+        }
+
+        public void Stop()
+        {
+            try
+            {
+                if (IsStillAlive())
+                    ForceKill();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while starting {this.serviceName}: {ex.Message}");
+            }
+        }
+
+        public void Restart()
+        {
+            Stop();
+            Start();
         }
     }
 }

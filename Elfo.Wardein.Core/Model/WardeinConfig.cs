@@ -10,7 +10,7 @@ namespace Elfo.Wardein.Core.Model
         [JsonProperty(PropertyName = "timeSpanFromSeconds")]
         public double TimeSpanFromSeconds { get; set; }
         [JsonProperty(PropertyName = "services")]
-        public IList<Service> Services { get; set; }
+        public IList<WindowsService> Services { get; set; }
         [JsonProperty(PropertyName = "persistenceType")]
         public string PersistenceType { get; set; } = "JSON";
     }

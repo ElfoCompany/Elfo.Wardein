@@ -10,63 +10,52 @@ using System.Threading.Tasks;
 using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.Persistence;
 using Elfo.Wardein.Core.NotificationService;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Elfo.Wardein.Core
 {
     public class WardeinInstance
     {
+        #region Private variables
+
         private string configPath = $@"{Const.BASE_PATH}Assets\WardeinConfig.json";
         private string dbPath = $@"{Const.BASE_PATH}Assets\WardeinDB.json";
         private WardeinConfig wardeinConfig = null;
-        private readonly IAmPersistenceService persistenceService;
+
+        private readonly IAmWardeinConfigurationReaderService wardeinConfigurationReader;        
+
+        #endregion
+
+        #region Constructor
 
         public WardeinInstance()
         {
-            if (!File.Exists(configPath))
+            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationReaderService(configPath);            
+
+            GetWarderinConfigAndThrowErrorIfNotExist();
+
+            #region Local Functions
+
+            void GetWarderinConfigAndThrowErrorIfNotExist()
             {
-                //TODO: throw error or something...
+                if (!File.Exists(configPath))
+                {
+                    //TODO: throw error or something...
+                }
+                else
+                {
+                    this.wardeinConfig = wardeinConfigurationReader.GetConfiguration();
+                    if (this.wardeinConfig == null)
+                        throw new ArgumentNullException("Wardein configuration not found or not well formatted");
+                }
+
+
             }
-            else
-            {
-                this.wardeinConfig = GetWarderinConfigAndThrowErrorIfNotExist();
-                this.persistenceService = new JSONPersistence(dbPath); // TODO: Add DI
-            }
 
-            WardeinConfig GetWarderinConfigAndThrowErrorIfNotExist()
-            {
-                var conf = new WardeinConfigurationReader(configPath).GetConfiguration();
-                if (conf == null)
-                    throw new ArgumentNullException("Wardein configuration not found or not well formatted");
-                return conf;
-            }
+            #endregion
         }
 
-        public void StopService(string servicename)
-        {
-            var serviceHelper = new WindowsServiceHelper(servicename);
-
-            if (serviceHelper.IsStillAlive())
-                serviceHelper.ForceKill();
-        }
-
-        public void StartService(string servicename)
-        {
-            var serviceHelper = new WindowsServiceHelper(servicename);
-
-            if (!serviceHelper.IsStillAlive())
-                serviceHelper.Start();
-        }
-
-        public void RestartService(string servicename)
-        {
-            var serviceHelper = new WindowsServiceHelper(servicename);
-
-            if (serviceHelper.IsStillAlive())
-                serviceHelper.ForceKill();
-
-            serviceHelper.Start();
-        }
-
+        #endregion
 
         public async Task RunCheck()
         {
@@ -74,37 +63,60 @@ namespace Elfo.Wardein.Core
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(250)); // TODO: Do we really need this?
 
-                var serviceHelper = new WindowsServiceHelper(service.ServiceName);
-                var notificationService = new MailNotificationService(); // TODO: Add DI
-                var isStillAlive = serviceHelper.IsStillAlive();
-                //Console.WriteLine($"{service.ServiceName} is active: {isStillAlive}");
-                var item = persistenceService.GetItemById(service.ServiceName);
-                if (item == null)
-                    item = new DBItem { Id = service.ServiceName, RetryCount = 0 };
-
-                if (!isStillAlive)
+                using (var persistenceService = ServicesContainer.PersistenceService(dbPath))
                 {
-                    serviceHelper.Start();
-                    item.RetryCount++;
-                    if (item.RetryCount > service.MaxRetryCount)
+                    var serviceHelper = new WindowsServiceHelper(service.ServiceName);
+                    var notificationService = ServicesContainer.NotificationService(GetNotificationType());
+                    var item = persistenceService.GetEntityById(service.ServiceName);
+
+                    if (!serviceHelper.IsStillAlive())
                     {
-                        // Console.WriteLine($"Invio messaggio");
-                        await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, "Attention: Service is down");
+                        await PerformActionOnServiceDown();
+                    }
+                    else
+                    {
+                        await PerformActionOnServiceRestored();
+                    }
+
+                    persistenceService.CreateOrUpdateCachedEntity(item);
+
+
+                    #region Local Functions
+
+                    NotificationType GetNotificationType()
+                    {
+                        if (!Enum.TryParse<NotificationType>(service.NotificationType, out NotificationType result))
+                            throw new ArgumentException($"Notification type {service.NotificationType} not supported");
+                            return result;
+                    }
+
+                    async Task PerformActionOnServiceDown()
+                    {
+                        Console.WriteLine($"{service.ServiceName} is not active");
+                        serviceHelper.Start();
+                        item.RetryCount++;
+                        if (item.RetryCount > service.MaxRetryCount)
+                        {
+                            Console.WriteLine($"Send Fail Notification");
+                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, "Attention: Service is down");
+                            item.RetryCount = 0;
+                        }
+                        Console.WriteLine($"{service.ServiceName} is not active: {item.RetryCount}");                        
+                    }
+
+                    async Task PerformActionOnServiceRestored()
+                    {
+                        Console.WriteLine($"{service.ServiceName} is now active");
+                        if (item.RetryCount > 0)
+                        {
+                            Console.WriteLine($"Send Restored Notification");
+                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, "Good news: Still alive");
+                        }
                         item.RetryCount = 0;
                     }
-                    // Console.WriteLine($"{service.ServiceName} is not active: {item.RetryCount}");
+
+                    #endregion
                 }
-                else
-                {
-                    if (item.RetryCount > 0)
-                    {
-                        Console.WriteLine($"Invio messaggio");
-                        await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, "Good news: Still alive");
-                    }
-                    item.RetryCount = 0;
-                }
-                persistenceService.UpdateCachedItem(item);
-                persistenceService.PersistOnDisk();
             }
         }
     }

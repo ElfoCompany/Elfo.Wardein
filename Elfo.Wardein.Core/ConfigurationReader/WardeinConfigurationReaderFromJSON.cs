@@ -8,12 +8,12 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.ConfigurationReader
 {
-    public class WardeinConfigurationReader : IAmConfigurationReaderService
+    public class WardeinConfigurationReaderFromJSON : IAmWardeinConfigurationReaderService
     {
         private readonly string wardeinConfigurationPath;
         private WardeinConfig cachedWardeinConfig;
 
-        public WardeinConfigurationReader(string wardeinConfigurationPath = "../Assets/WardeinConfig.json")
+        public WardeinConfigurationReaderFromJSON(string wardeinConfigurationPath = "../Assets/WardeinConfig.json")
         {
             this.wardeinConfigurationPath = wardeinConfigurationPath;
         }

@@ -5,15 +5,15 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.Abstractions
 {
-    public interface IAmPersistenceService
+    public interface IAmPersistenceService<T> : IDisposable where T : new() 
     {
-        DBItem GetItemById(string id);
+        T GetEntityById(string id, bool createEntityIfNotExist = true);
 
-        IList<DBItem> GetAll();
+        IList<T> GetAll();
 
-        void UpdateCachedItems(IList<DBItem> itemList);
+        void CreateOrUpdateCachedEntity(IList<T> entityList);
 
-        void UpdateCachedItem(DBItem item);
+        void CreateOrUpdateCachedEntity(T entity);
 
         void PersistOnDisk();
 

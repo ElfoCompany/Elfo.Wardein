@@ -1,6 +1,7 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.ConfigurationReader;
 using Elfo.Wardein.Core.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -16,8 +17,7 @@ namespace Elfo.Wardein.Core.NotificationService
 
         public async Task SendNotificationAsync(string recipientAddress, string notificationBody, string notificationTitle)
         {
-            // TODO: use dependency injection
-            var mailConfiguration = new MailConfigurationReader(filePath).GetMailConfiguration();
+            var mailConfiguration = ServicesContainer.MailConfigurationReader(filePath)?.GetConfiguration();
 
             if (mailConfiguration == null)
                 throw new ArgumentNullException("Cannot find Mail SMTP Configuration");
@@ -50,7 +50,7 @@ namespace Elfo.Wardein.Core.NotificationService
                 Credentials = new NetworkCredential(mailConfiguration.Username, mailConfiguration.Password) // at the moment we don't support password
             };
 
-            SmtpDeliveryMethod GetSmtpDelivertyMethod() => Enum.Parse<SmtpDeliveryMethod>(mailConfiguration.DeliveryMethod); 
+            SmtpDeliveryMethod GetSmtpDelivertyMethod() => Enum.Parse<SmtpDeliveryMethod>(mailConfiguration.DeliveryMethod);
 
             #endregion
         }

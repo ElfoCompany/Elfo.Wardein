@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.Model
 {
-    public class DBItem
+    public class WindowsServiceStats
     {
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }

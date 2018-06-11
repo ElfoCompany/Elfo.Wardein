@@ -9,10 +9,10 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.Persistence
 {
-    public class JSONPersistence : IAmPersistenceService
+    public class JSONPersistence : IAmPersistenceService<WindowsServiceStats>
     {
         private readonly string filePath;
-        private IList<DBItem> cachedItems;
+        private IList<WindowsServiceStats> cachedEntities;
         private IOHelper ioHelper;
 
         public JSONPersistence(string filePath)
@@ -22,54 +22,63 @@ namespace Elfo.Wardein.Core.Persistence
 
             this.filePath = filePath;
             this.ioHelper = new IOHelper(this.filePath);
-            this.cachedItems = GetAll();
+            this.cachedEntities = GetAll();
         }
 
-        public IList<DBItem> GetAll()
+        public IList<WindowsServiceStats> GetAll()
         {
             if (!this.ioHelper.CheckIfFileExist())
-                cachedItems = new List<DBItem>();
+                cachedEntities = new List<WindowsServiceStats>();
             else
-                cachedItems = JsonConvert.DeserializeObject<IList<DBItem>>(this.ioHelper.GetFileContentFromPath());
-            return cachedItems;
+                cachedEntities = JsonConvert.DeserializeObject<IList<WindowsServiceStats>>(this.ioHelper.GetFileContentFromPath());
+            return cachedEntities;
         }
 
-        public DBItem GetItemById(string id)
+        public WindowsServiceStats GetEntityById(string id, bool createEntityIfNotExist = true)
         {
-            if (cachedItems == null)
-                cachedItems = GetAll();
+            if (cachedEntities == null)
+                cachedEntities = GetAll();
 
-            return cachedItems.FirstOrDefault(x => x.Id == id);
+            var entity = cachedEntities.FirstOrDefault(x => x.Id == id);
+            if(createEntityIfNotExist && entity == null)
+                entity = new WindowsServiceStats { Id = id, RetryCount = 0 };
+
+            return entity;
         }
 
         public void InvalidateCache()
         {
-            this.cachedItems = null;
+            this.cachedEntities = null;
         }
 
         public void PersistOnDisk()
         {
-            if (cachedItems == null)
-                cachedItems = GetAll();
+            if (cachedEntities == null)
+                cachedEntities = GetAll();
 
-            this.ioHelper.PersistFileOnDisk(JsonConvert.SerializeObject(cachedItems));
+            this.ioHelper.PersistFileOnDisk(JsonConvert.SerializeObject(cachedEntities));
         }
 
-        public void UpdateCachedItem(DBItem item)
+        public void CreateOrUpdateCachedEntity(IList<WindowsServiceStats> entityList)
         {
-            if (cachedItems == null)
-                cachedItems = GetAll();
+            this.cachedEntities = entityList;
+        }
 
-            var itemToUpdate = cachedItems.FirstOrDefault(x => x.Id == item.Id);
+        public void CreateOrUpdateCachedEntity(WindowsServiceStats entity)
+        {
+            if (cachedEntities == null)
+                cachedEntities = GetAll();
+
+            var itemToUpdate = cachedEntities.FirstOrDefault(x => x.Id == entity.Id);
             if (itemToUpdate == null)
-                cachedItems.Add(item);
+                cachedEntities.Add(entity);
             else
-                itemToUpdate.RetryCount = item.RetryCount;
+                itemToUpdate.RetryCount = entity.RetryCount;
         }
 
-        public void UpdateCachedItems(IList<DBItem> itemList)
+        public void Dispose()
         {
-            this.cachedItems = itemList;
+            PersistOnDisk();
         }
     }
 }
