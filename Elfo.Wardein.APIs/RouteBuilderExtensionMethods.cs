@@ -8,13 +8,13 @@ namespace Elfo.Wardein.APIs
         {
             //TODO: how to manage logs?
             thisRouteBuilder
-                .MapGet("restartservice/{name}", context => new RouteImplementations().RestartService(context))
-                .MapGet("killservice/{name}", context => new RouteImplementations().KillService(context))
-                .MapGet("startservice/{name}", context => new RouteImplementations().StartService(context))
-                .MapGet("restartpool/{name}", context => new RouteImplementations().RestartPool(context))
-                .MapGet("startpool/{name}", context => new RouteImplementations().StartPool(context))
-                .MapGet("killpool/{name}", context => new RouteImplementations().KillPool(context))
-                .MapGet("restartserviceandpool/{servicename}/{applicationpoolname}", context => new RouteImplementations().RestartServiceAndPool(context));
+                .MapGet("api/1.0/ws/restart/{name}", context => new RouteImplementations().RestartService(context))
+                .MapGet("api/1.0/ws/kill/{name}", context => new RouteImplementations().KillService(context))
+                .MapGet("api/1.0/ws/start/{name}", context => new RouteImplementations().StartService(context))
+                .MapGet("api/1.0/pool/restart/{name}", context => new RouteImplementations().RestartPool(context))
+                .MapGet("api/1.0/pool/start/{name}", context => new RouteImplementations().StartPool(context))
+                .MapGet("api/1.0/pool/kill/{name}", context => new RouteImplementations().KillPool(context))
+                .MapGet("api/1.0/wspool/restart/{servicename}/{applicationpoolname}", context => new RouteImplementations().RestartServiceAndPool(context));
 
 
         }
