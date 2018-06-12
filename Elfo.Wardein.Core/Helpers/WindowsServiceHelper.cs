@@ -95,5 +95,18 @@ namespace Elfo.Wardein.Core.Helpers
                 throw;
             }
         }
+
+        public override string GetStatus()
+        {
+            try
+            {
+                return this.serviceController.Status.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while getting status for service {base.serviceName}: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

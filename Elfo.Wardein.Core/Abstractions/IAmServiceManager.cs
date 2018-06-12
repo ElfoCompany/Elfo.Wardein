@@ -21,5 +21,6 @@ namespace Elfo.Wardein.Core.Abstractions
         public abstract void Restart();
         public abstract void Start();
         public abstract void Stop();
+        public abstract string GetStatus();
     }
 }

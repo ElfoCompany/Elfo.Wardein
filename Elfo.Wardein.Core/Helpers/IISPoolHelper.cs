@@ -84,5 +84,18 @@ namespace Elfo.Wardein.Core.Helpers
                 throw;
             }
         }
+
+        public override string GetStatus()
+        {
+            try
+            {
+                return this.applicationPool.State.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while getting status for pool {base.serviceName} IIS pool: {ex.Message}");
+                throw;
+            }
+        }
     }
 }
