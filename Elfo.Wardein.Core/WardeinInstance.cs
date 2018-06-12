@@ -98,7 +98,7 @@ namespace Elfo.Wardein.Core
                         if (item.RetryCount > service.MaxRetryCount)
                         {
                             Console.WriteLine($"Send Fail Notification");
-                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, "Attention: Service is down");
+                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, $"Attention: {service.ServiceName} service is down");
                             item.RetryCount = 0;
                         }
                         Console.WriteLine($"{service.ServiceName} is not active: {item.RetryCount}");                        
@@ -106,11 +106,11 @@ namespace Elfo.Wardein.Core
 
                     async Task PerformActionOnServiceRestored()
                     {
-                        Console.WriteLine($"{service.ServiceName} is now active");
+                        Console.WriteLine($"{service.ServiceName} is active");
                         if (item.RetryCount > 0)
                         {
                             Console.WriteLine($"Send Restored Notification");
-                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, "Good news: Still alive");
+                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, $"Good news: {service.ServiceName} service has been restored succesfully");
                         }
                         item.RetryCount = 0;
                     }
