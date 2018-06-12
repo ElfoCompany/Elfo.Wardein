@@ -8,14 +8,17 @@ namespace Elfo.Wardein.APIs
         {
             //TODO: how to manage logs?
             thisRouteBuilder
+                /************************************* WINDOWS SERVICE **********************************************************/
                 .MapGet("api/1.0/ws/restart/{name}", context => new RouteImplementations().RestartService(context))
                 .MapGet("api/1.0/ws/kill/{name}", context => new RouteImplementations().KillService(context))
                 .MapGet("api/1.0/ws/start/{name}", context => new RouteImplementations().StartService(context))
                 .MapGet("api/1.0/ws/status/{name}", context => new RouteImplementations().GetServiceStatus(context))
+                /**************************************** IIS POOL **************************************************************/
                 .MapGet("api/1.0/pool/restart/{name}", context => new RouteImplementations().RestartPool(context))
                 .MapGet("api/1.0/pool/start/{name}", context => new RouteImplementations().StartPool(context))
                 .MapGet("api/1.0/pool/kill/{name}", context => new RouteImplementations().KillPool(context))
                 .MapGet("api/1.0/pool/status/{name}", context => new RouteImplementations().GetPoolStatus(context))
+                /*********************************** WINDOWS SERVICE + IIS POOL *************************************************/
                 .MapGet("api/1.0/wspool/restart/{servicename}/{iispoolname}", context => new RouteImplementations().RestartServiceAndPool(context));
 
 
