@@ -14,7 +14,7 @@ namespace Elfo.Wardein.APIs
                 .MapGet("api/1.0/pool/restart/{name}", context => new RouteImplementations().RestartPool(context))
                 .MapGet("api/1.0/pool/start/{name}", context => new RouteImplementations().StartPool(context))
                 .MapGet("api/1.0/pool/kill/{name}", context => new RouteImplementations().KillPool(context))
-                .MapGet("api/1.0/wspool/restart/{servicename}/{applicationpoolname}", context => new RouteImplementations().RestartServiceAndPool(context));
+                .MapGet("api/1.0/wspool/restart/{servicename}/{iispoolname}", context => new RouteImplementations().RestartServiceAndPool(context));
 
 
         }

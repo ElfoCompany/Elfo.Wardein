@@ -105,7 +105,7 @@ namespace Elfo.Wardein.APIs
         public Task RestartServiceAndPool(HttpContext context)
         {
             string serviceName = context.GetRouteValue("servicename").ToString();
-            string applicationPoolName = context.GetRouteValue("applicationpoolname").ToString();
+            string applicationPoolName = context.GetRouteValue("iispoolname").ToString();
 
             try
             {
