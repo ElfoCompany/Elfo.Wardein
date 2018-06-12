@@ -18,8 +18,6 @@ namespace Elfo.Wardein.Core
     {
         #region Private variables
 
-        private string configPath = $@"{Const.BASE_PATH}Assets\WardeinConfig.json";
-        private string dbPath = $@"{Const.BASE_PATH}Assets\WardeinDB.json";
         private WardeinConfig wardeinConfig = null;
 
         private readonly IAmWardeinConfigurationReaderService wardeinConfigurationReader;        
@@ -30,7 +28,7 @@ namespace Elfo.Wardein.Core
 
         public WardeinInstance()
         {
-            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationReaderService(configPath);            
+            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationReaderService(Const.WARDEIN_CONFIG_PATH);            
 
             GetWarderinConfigAndThrowErrorIfNotExist();
 
@@ -38,7 +36,7 @@ namespace Elfo.Wardein.Core
 
             void GetWarderinConfigAndThrowErrorIfNotExist()
             {
-                if (!File.Exists(configPath))
+                if (!File.Exists(Const.WARDEIN_CONFIG_PATH))
                 {
                     //TODO: throw error or something...
                 }
@@ -63,7 +61,7 @@ namespace Elfo.Wardein.Core
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(250)); // TODO: Do we really need this?
 
-                using (var persistenceService = ServicesContainer.PersistenceService(dbPath))
+                using (var persistenceService = ServicesContainer.PersistenceService(Const.DB_PATH))
                 {
                     var serviceHelper = new WindowsServiceHelper(service.ServiceName);
                     var notificationService = ServicesContainer.NotificationService(GetNotificationType());

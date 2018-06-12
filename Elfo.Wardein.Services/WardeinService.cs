@@ -4,6 +4,7 @@ using PeterKottas.DotNetCore.WindowsService.Interfaces;
 using System;
 using Microsoft.AspNetCore.Hosting;
 using Elfo.Wardein.APIs;
+using Elfo.Wardein.Core.Helpers;
 
 namespace Elfo.Wardein.Services
 {
@@ -27,7 +28,7 @@ namespace Elfo.Wardein.Services
             {
                 this.StartBase();
                 // TODO: Read polling timeout from config
-                Timers.Start("Poller", 20000, async () =>
+                Timers.Start("Poller", GetPollingTimeoutInMillisecond(), async () =>
                 {
                     Console.WriteLine("Polling at {0}\n", DateTime.Now.ToString("o"));
                     await ServicesContainer.WardeinInstance.RunCheck();
@@ -36,6 +37,14 @@ namespace Elfo.Wardein.Services
                 {
                     Console.WriteLine("Exception while polling: {0}\n", e.ToString());
                 });
+
+                #region Local Functions
+
+                int GetPollingTimeoutInMillisecond() => (int)TimeSpan.FromSeconds(
+                    ServicesContainer.WardeinConfigurationReaderService(Const.WARDEIN_CONFIG_PATH)?.GetConfiguration()?.TimeSpanFromSeconds ?? 20
+                ).TotalMilliseconds;
+
+                #endregion
             }
         }
 
