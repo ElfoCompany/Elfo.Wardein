@@ -69,7 +69,7 @@ namespace Elfo.Wardein.Core
                     var notificationService = ServicesContainer.NotificationService(GetNotificationType());
                     var item = persistenceService.GetEntityById(service.ServiceName);
 
-                    if (!serviceHelper.IsStillAlive())
+                    if (!serviceHelper.IsStillAlive)
                     {
                         await PerformActionOnServiceDown();
                     }

@@ -13,7 +13,7 @@ namespace Elfo.Wardein.Core.Helpers
             this.filePath = filePath;
         }
 
-        public string GetFileContentFromPath() => System.IO.File.ReadAllText(this.filePath);
+        public string GetFileContent() => System.IO.File.ReadAllText(this.filePath);
 
         public bool CheckIfFileExist() => System.IO.File.Exists(this.filePath);
 

@@ -30,7 +30,7 @@ namespace Elfo.Wardein.Core.Persistence
             if (!this.ioHelper.CheckIfFileExist())
                 cachedEntities = new List<WindowsServiceStats>();
             else
-                cachedEntities = JsonConvert.DeserializeObject<IList<WindowsServiceStats>>(this.ioHelper.GetFileContentFromPath());
+                cachedEntities = JsonConvert.DeserializeObject<IList<WindowsServiceStats>>(this.ioHelper.GetFileContent());
             return cachedEntities;
         }
 

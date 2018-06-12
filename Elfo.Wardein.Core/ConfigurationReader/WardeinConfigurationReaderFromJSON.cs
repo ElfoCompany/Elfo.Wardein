@@ -21,7 +21,7 @@ namespace Elfo.Wardein.Core.ConfigurationReader
         public WardeinConfig GetConfiguration()
         {
             if (this.cachedWardeinConfig == null)
-                this.cachedWardeinConfig = JsonConvert.DeserializeObject<WardeinConfig>(new IOHelper(this.wardeinConfigurationPath).GetFileContentFromPath());
+                this.cachedWardeinConfig = JsonConvert.DeserializeObject<WardeinConfig>(new IOHelper(this.wardeinConfigurationPath).GetFileContent());
 
             return cachedWardeinConfig;
         }

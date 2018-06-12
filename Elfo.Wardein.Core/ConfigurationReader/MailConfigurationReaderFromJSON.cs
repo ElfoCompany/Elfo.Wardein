@@ -22,7 +22,7 @@ namespace Elfo.Wardein.Core.ConfigurationReader
         public MailConfiguration GetConfiguration()
         {
             if(cachedMailConfiguration == null)
-                cachedMailConfiguration = JsonConvert.DeserializeObject<MailConfiguration>(new IOHelper(filePath).GetFileContentFromPath());
+                cachedMailConfiguration = JsonConvert.DeserializeObject<MailConfiguration>(new IOHelper(filePath).GetFileContent());
 
             return cachedMailConfiguration;
         }
