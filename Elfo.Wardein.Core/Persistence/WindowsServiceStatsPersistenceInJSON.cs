@@ -9,13 +9,13 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.Persistence
 {
-    public class JSONPersistence : IAmPersistenceService<WindowsServiceStats>
+    public class WindowsServiceStatsPersistenceInJSON : IAmPersistenceService<WindowsServiceStats>
     {
         private readonly string filePath;
         private IList<WindowsServiceStats> cachedEntities;
         private IOHelper ioHelper;
 
-        public JSONPersistence(string filePath)
+        public WindowsServiceStatsPersistenceInJSON(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
                 throw new ArgumentNullException("File path is empty");

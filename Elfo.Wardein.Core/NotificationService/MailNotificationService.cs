@@ -17,7 +17,7 @@ namespace Elfo.Wardein.Core.NotificationService
 
         public async Task SendNotificationAsync(string recipientAddress, string notificationBody, string notificationTitle)
         {
-            var mailConfiguration = ServicesContainer.MailConfigurationReader(filePath)?.GetConfiguration();
+            var mailConfiguration = ServicesContainer.MailConfigurationManager(filePath)?.GetConfiguration();
 
             if (mailConfiguration == null)
                 throw new ArgumentNullException("Cannot find Mail SMTP Configuration");

@@ -13,5 +13,12 @@ namespace Elfo.Wardein.Core.Model
         public IList<WindowsService> Services { get; set; }
         [JsonProperty(PropertyName = "persistenceType")]
         public string PersistenceType { get; set; } = "JSON";
+        [JsonProperty(PropertyName = "maintenanceModeStatus")]
+        public MaintenanceModeStatus MaintenanceModeStatus { get; set; } = new MaintenanceModeStatus()
+        {
+            DurationInSeconds = 300,
+            IsInMaintenanceMode = false,
+            MaintenanceModeStartDateInUTC = DateTime.UtcNow
+        }; // Default values
     }
 }

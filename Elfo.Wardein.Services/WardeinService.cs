@@ -41,7 +41,7 @@ namespace Elfo.Wardein.Services
                 #region Local Functions
 
                 int GetPollingTimeoutInMillisecond() => (int)TimeSpan.FromSeconds(
-                    ServicesContainer.WardeinConfigurationReaderService(Const.WARDEIN_CONFIG_PATH)?.GetConfiguration()?.TimeSpanFromSeconds ?? 20
+                    ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH)?.GetConfiguration()?.TimeSpanFromSeconds ?? 20
                 ).TotalMilliseconds;
 
                 #endregion

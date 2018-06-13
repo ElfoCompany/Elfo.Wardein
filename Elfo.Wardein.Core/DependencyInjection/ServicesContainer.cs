@@ -34,9 +34,9 @@ namespace Elfo.Wardein.Core
         protected void Configure()
         {
             serviceProvider = new ServiceCollection()
-                .AddSingleton<Func<string, IAmMailConfigurationReader>>(sp => filePath => new MailConfigurationReaderFromJSON(filePath))
-                .AddSingleton<Func<string, IAmWardeinConfigurationReaderService>>(sp => filePath => new WardeinConfigurationReaderFromJSON(filePath))
-                .AddTransient<Func<string, IAmPersistenceService<WindowsServiceStats>>>(sp => filePath => new JSONPersistence(filePath))
+                .AddSingleton<Func<string, IAmMailConfigurationManager>>(sp => filePath => new MailConfigurationManagerFromJSON(filePath))
+                .AddSingleton<Func<string, IAmWardeinConfigurationManager>>(sp => filePath => new WardeinConfigurationManagerFromJSON(filePath))
+                .AddTransient<Func<string, IAmPersistenceService<WindowsServiceStats>>>(sp => filePath => new WindowsServiceStatsPersistenceInJSON(filePath))
                 .AddTransient<Func<NotificationType, IAmNotificationService>>(sp => notificationType =>
                 {
                     switch (notificationType)
@@ -86,15 +86,15 @@ namespace Elfo.Wardein.Core
             return instanceResolver(filePath);
         }
 
-        public static IAmMailConfigurationReader MailConfigurationReader(string filePath)
+        public static IAmMailConfigurationManager MailConfigurationManager(string filePath)
         {
-            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmMailConfigurationReader>>();
+            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmMailConfigurationManager>>();
             return instanceResolver(filePath);
         }
 
-        public static IAmWardeinConfigurationReaderService WardeinConfigurationReaderService(string filePath)
+        public static IAmWardeinConfigurationManager WardeinConfigurationManager(string filePath)
         {
-            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmWardeinConfigurationReaderService>>();
+            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmWardeinConfigurationManager>>();
             return instanceResolver(filePath);
         }
 

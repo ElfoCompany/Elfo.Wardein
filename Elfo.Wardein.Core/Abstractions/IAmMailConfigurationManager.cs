@@ -5,5 +5,5 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.Abstractions
 {
-    public interface IAmWardeinConfigurationReaderService : IAmBaseConfigurationReader<WardeinConfig> { }
+    public interface IAmMailConfigurationManager : IAmBaseConfigurationManager<MailConfiguration> { }
 }

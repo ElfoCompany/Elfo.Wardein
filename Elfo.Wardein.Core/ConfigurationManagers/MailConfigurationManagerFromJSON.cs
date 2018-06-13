@@ -8,12 +8,12 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.ConfigurationReader
 {
-    public class MailConfigurationReaderFromJSON : IAmMailConfigurationReader
+    public class MailConfigurationManagerFromJSON : IAmMailConfigurationManager
     {
         private readonly string filePath;
         private MailConfiguration cachedMailConfiguration;
 
-        public MailConfigurationReaderFromJSON(string filePath)
+        public MailConfigurationManagerFromJSON(string filePath)
         {
             this.filePath = filePath;
             this.cachedMailConfiguration = null;

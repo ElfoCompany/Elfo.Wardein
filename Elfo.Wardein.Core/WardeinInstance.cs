@@ -20,7 +20,7 @@ namespace Elfo.Wardein.Core
 
         private WardeinConfig wardeinConfig = null;
 
-        private readonly IAmWardeinConfigurationReaderService wardeinConfigurationReader;        
+        private readonly IAmWardeinConfigurationManager wardeinConfigurationReader;        
 
         #endregion
 
@@ -28,7 +28,7 @@ namespace Elfo.Wardein.Core
 
         public WardeinInstance()
         {
-            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationReaderService(Const.WARDEIN_CONFIG_PATH);            
+            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH);            
 
             GetWarderinConfigAndThrowErrorIfNotExist();
 
@@ -57,6 +57,12 @@ namespace Elfo.Wardein.Core
 
         public async Task RunCheck()
         {
+            if (this.wardeinConfigurationReader.IsInMaintenanceMode)
+            {
+                Console.WriteLine("Wardein is in manteinance mode.");
+                return;
+            }
+
             foreach (var service in wardeinConfig.Services)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(250)); // TODO: Do we really need this?
