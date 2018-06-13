@@ -12,6 +12,5 @@ namespace Elfo.Wardein.Core.Abstractions
         void StartMaintenanceMode(double durationInSeconds);
 
         void StopMaintenaceMode();
-
     }
 }
