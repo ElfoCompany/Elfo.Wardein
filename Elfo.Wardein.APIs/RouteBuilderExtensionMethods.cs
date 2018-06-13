@@ -20,8 +20,6 @@ namespace Elfo.Wardein.APIs
                 .MapGet("api/1.0/pool/status/{name}", context => new RouteImplementations().GetPoolStatus(context))
                 /*********************************** WINDOWS SERVICE + IIS POOL *************************************************/
                 .MapGet("api/1.0/wspool/restart/{servicename}/{iispoolname}", context => new RouteImplementations().RestartServiceAndPool(context));
-
-
         }
     }
 }
