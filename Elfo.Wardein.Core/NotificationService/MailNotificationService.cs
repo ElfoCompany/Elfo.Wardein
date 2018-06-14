@@ -26,6 +26,8 @@ namespace Elfo.Wardein.Core.NotificationService
             var toAddress = new MailAddress(recipientAddress, recipientAddress);
 
             var smtp = GetSmtpClient();
+            SetSmtpCredentialsIfNeccesary();
+
 
             var mailMessage = new MailMessage(fromAddress, toAddress)
             {
@@ -46,9 +48,14 @@ namespace Elfo.Wardein.Core.NotificationService
                 Port = mailConfiguration.Port,
                 EnableSsl = mailConfiguration.EnableSSL,
                 DeliveryMethod = GetSmtpDelivertyMethod(),
-                UseDefaultCredentials = mailConfiguration.UseDefaultCredentials,
-                Credentials = new NetworkCredential(mailConfiguration.Username, mailConfiguration.Password) // at the moment we don't support password
+                UseDefaultCredentials = mailConfiguration.UseDefaultCredentials
             };
+
+            void SetSmtpCredentialsIfNeccesary()
+            {
+                if (!string.IsNullOrWhiteSpace(mailConfiguration.Password))
+                    smtp.Credentials = new NetworkCredential(mailConfiguration.Username, mailConfiguration.Password);
+            }
 
             SmtpDeliveryMethod GetSmtpDelivertyMethod() => Enum.Parse<SmtpDeliveryMethod>(mailConfiguration.DeliveryMethod);
 
