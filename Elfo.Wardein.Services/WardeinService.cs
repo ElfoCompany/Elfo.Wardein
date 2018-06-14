@@ -5,11 +5,13 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using Elfo.Wardein.APIs;
 using Elfo.Wardein.Core.Helpers;
+using NLog;
 
 namespace Elfo.Wardein.Services
 {
     public class WardeinService : MicroService, IMicroService
     {
+        static Logger log = LogManager.GetCurrentClassLogger();
         public void Start()
         {
             ConfigureScheduledServiceCheck();
@@ -30,12 +32,20 @@ namespace Elfo.Wardein.Services
                 // TODO: Read polling timeout from config
                 Timers.Start("Poller", GetPollingTimeoutInMillisecond(), async () =>
                 {
-                    Console.WriteLine("Polling at {0}\n", DateTime.Now.ToString("o"));
-                    await ServicesContainer.WardeinInstance.RunCheck();
+                    try
+                    {
+                        log.Info("Polling at {0} started", DateTime.Now.ToString("o"));
+                        await ServicesContainer.WardeinInstance.RunCheck();
+                        log.Info("Polling at {0} finished", DateTime.Now.ToString("o"));
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error(ex,$"Exception inside polling action: {ex.ToString()}\n");
+                    }
                 },
                 (e) =>
                 {
-                    Console.WriteLine("Exception while polling: {0}\n", e.ToString());
+                    log.Error(e,"Exception while polling");
                 });
 
                 #region Local Functions
@@ -51,7 +61,7 @@ namespace Elfo.Wardein.Services
         public void Stop()
         {
             this.StopBase();
-            Console.WriteLine("I stopped");
+            log.Info("I stopped");
         }
     }
 }

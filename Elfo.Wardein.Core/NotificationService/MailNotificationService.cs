@@ -2,6 +2,7 @@
 using Elfo.Wardein.Core.ConfigurationReader;
 using Elfo.Wardein.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -13,7 +14,10 @@ namespace Elfo.Wardein.Core.NotificationService
 {
     public class MailNotificationService : IAmNotificationService
     {
+        #region Private variables
         private readonly string filePath = $@"{Const.BASE_PATH}Assets\MailConfig.json";
+        private readonly static Logger log = LogManager.GetCurrentClassLogger();
+        #endregion
 
         public async Task SendNotificationAsync(string recipientAddress, string notificationBody, string notificationTitle)
         {
@@ -35,10 +39,7 @@ namespace Elfo.Wardein.Core.NotificationService
                 Body = notificationBody
             };
 
-            using (mailMessage)
-            {
-                await Task.Run(() => smtp.Send(mailMessage));
-            }
+            smtp.Send(mailMessage);
 
             #region Local functions
 

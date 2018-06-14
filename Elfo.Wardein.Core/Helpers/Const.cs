@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Elfo.Wardein.Core.Helpers
@@ -13,5 +14,7 @@ namespace Elfo.Wardein.Core.Helpers
         public static readonly string WARDEIN_CONFIG_PATH = $@"{Const.BASE_PATH}Assets\WardeinConfig.json";
 
         public static readonly string DB_PATH = $@"{Const.BASE_PATH}Assets\WardeinDB.json";
+
+        public static readonly string LOG_PATH = Path.Combine(BASE_PATH, "nlog.config");
     }
 }

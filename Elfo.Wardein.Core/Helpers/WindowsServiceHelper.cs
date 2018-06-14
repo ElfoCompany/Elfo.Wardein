@@ -1,4 +1,5 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
+using NLog;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace Elfo.Wardein.Core.Helpers
     {
         #region Private Variables
         private readonly ServiceController serviceController;
+        private readonly static Logger log = LogManager.GetCurrentClassLogger();
         #endregion
 
         #region Constructor
@@ -26,17 +28,17 @@ namespace Elfo.Wardein.Core.Helpers
             try
             {
                 ServiceController sc = ServiceController.GetServices().FirstOrDefault(s => s.ServiceName.Equals(base.serviceName));
-                Console.WriteLine($"Stopping {sc.ServiceName}");
+                log.Info($"Stopping {sc.ServiceName}");
                 if (sc != null)
                 {
                     sc.Stop();
                     Process[] procs = Process.GetProcesses().Where(x => x.ProcessName.StartsWith(base.serviceName)).ToArray();
-                    Console.WriteLine(string.Join(",", procs.Select(x => x.ProcessName)));
+                    log.Info(string.Join(",", procs.Select(x => x.ProcessName)));
                     if (procs.Length > 0)
                     {
                         foreach (Process proc in procs)
                         {
-                            Console.WriteLine($"Killing {proc.ProcessName} with PID: {proc.Id}");
+                            log.Info($"Killing {proc.ProcessName} with PID: {proc.Id}");
                             //do other stuff if you need to find out if this is the correct proc instance if you have more than one
                             proc.Kill();
                         }
@@ -45,7 +47,7 @@ namespace Elfo.Wardein.Core.Helpers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while killing {base.serviceName}: {ex.Message}");
+                log.Error(ex, $"Error while killing {base.serviceName}");
                 throw;
             }
         }
@@ -59,7 +61,7 @@ namespace Elfo.Wardein.Core.Helpers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while starting {base.serviceName}: {ex.Message}");
+                log.Error(ex, $"Error while starting {base.serviceName}");
                 throw;
             }
         }
@@ -73,7 +75,7 @@ namespace Elfo.Wardein.Core.Helpers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while stopping {base.serviceName}: {ex.Message}");
+                log.Error(ex, $"Error while stopping {base.serviceName}");
                 throw;
             }
         }
@@ -83,15 +85,15 @@ namespace Elfo.Wardein.Core.Helpers
             try
             {
                 Stop();
-                this.serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
-                Console.WriteLine($"Service {base.serviceName} stopped @ {DateTime.Now}.");
+                this.serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30)); // TODO: get this value from config
+                log.Info($"Service {base.serviceName} stopped @ {DateTime.Now}.");
                 Start();
-                this.serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
-                Console.WriteLine($"Service {base.serviceName} started @ {DateTime.Now}.");
+                this.serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30)); // TODO: get this value from config
+                log.Info($"Service {base.serviceName} started @ {DateTime.Now}.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while restarting {base.serviceName}: {ex.Message}");
+                log.Error(ex, $"Error while restarting {base.serviceName}");
                 throw;
             }
         }
@@ -104,7 +106,7 @@ namespace Elfo.Wardein.Core.Helpers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while getting status for service {base.serviceName}: {ex.Message}");
+                log.Error(ex, $"Error while getting status for service {base.serviceName}");
                 throw;
             }
         }

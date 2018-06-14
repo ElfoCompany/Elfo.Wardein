@@ -11,6 +11,7 @@ using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.Persistence;
 using Elfo.Wardein.Core.NotificationService;
 using Microsoft.Extensions.DependencyInjection;
+using NLog;
 
 namespace Elfo.Wardein.Core
 {
@@ -19,7 +20,7 @@ namespace Elfo.Wardein.Core
         #region Private variables
 
         private WardeinConfig wardeinConfig = null;
-
+        private readonly static Logger log = LogManager.GetCurrentClassLogger();
         private readonly IAmWardeinConfigurationManager wardeinConfigurationReader;        
 
         #endregion
@@ -59,7 +60,7 @@ namespace Elfo.Wardein.Core
         {
             if (this.wardeinConfigurationReader.IsInMaintenanceMode)
             {
-                Console.WriteLine("Wardein is in manteinance mode.");
+                log.Info("Wardein is in manteinance mode.");
                 return;
             }
 
@@ -96,24 +97,23 @@ namespace Elfo.Wardein.Core
 
                     async Task PerformActionOnServiceDown()
                     {
-                        Console.WriteLine($"{service.ServiceName} is not active");
                         serviceHelper.Start();
                         item.RetryCount++;
                         if (item.RetryCount > service.MaxRetryCount)
                         {
-                            Console.WriteLine($"Send Fail Notification");
+                            log.Info($"Sending Fail Notification");
                             await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, $"Attention: {service.ServiceName} service is down");
                             item.RetryCount = 0;
                         }
-                        Console.WriteLine($"{service.ServiceName} is not active: {item.RetryCount}");                        
+                        log.Info($"{service.ServiceName} is not active, retry: {item.RetryCount}");                        
                     }
 
                     async Task PerformActionOnServiceRestored()
                     {
-                        Console.WriteLine($"{service.ServiceName} is active");
+                       log.Info($"{service.ServiceName} is active");
                         if (item.RetryCount > 0)
                         {
-                            Console.WriteLine($"Send Restored Notification");
+                            log.Info($"Send Restored Notification");
                             await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, $"Good news: {service.ServiceName} service has been restored succesfully");
                         }
                         item.RetryCount = 0;

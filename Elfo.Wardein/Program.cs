@@ -1,5 +1,7 @@
-﻿using Elfo.Wardein.Services;
-using Microsoft.Extensions.PlatformAbstractions;
+﻿using Elfo.Wardein.Core;
+using Elfo.Wardein.Services;
+using Microsoft.Extensions.DependencyInjection;
+using NLog;
 using PeterKottas.DotNetCore.WindowsService;
 using System;
 using System.IO;
@@ -8,9 +10,9 @@ namespace Elfo.Wardein
 {
     class Program
     {
+        static Logger log = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
-            var fileName = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log.txt");
             ServiceRunner<WardeinService>.Run(config =>
             {
                 var name = config.GetDefaultName();
@@ -23,20 +25,19 @@ namespace Elfo.Wardein
 
                     serviceConfig.OnStart((service, extraParams) =>
                     {
-                        Console.WriteLine("Service {0} started", name);
+                        log.Info("Service {0} started", name);
                         service.Start();
                     });
 
                     serviceConfig.OnStop(service =>
                     {
-                        Console.WriteLine("Service {0} stopped", name);
+                        log.Info("Service {0} stopped", name);
                         service.Stop();
                     });
 
                     serviceConfig.OnError(e =>
                     {
-                        File.AppendAllText(fileName, $"Exception: {e.ToString()}\n");
-                        Console.WriteLine("Service {0} errored with exception : {1}", name, e.Message);
+                        log.Error("Service {0} errored with exception : {1}", name, e.Message);
                     });
                 });
             });

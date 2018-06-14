@@ -1,6 +1,7 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.ExtensionMethods;
 using Microsoft.Web.Administration;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Elfo.Wardein.Core.Helpers
     {
         #region Private variables
         private readonly ApplicationPool applicationPool;
+        private readonly static Logger log = LogManager.GetCurrentClassLogger();
         #endregion
 
         public IISPoolHelper(string appPoolName) : base(appPoolName)
@@ -28,14 +30,14 @@ namespace Elfo.Wardein.Core.Helpers
         {
             try
             {
-                Console.WriteLine($"Stopping pool {base.serviceName} @ {DateTime.UtcNow}");
+                log.Info($"Stopping pool {base.serviceName} @ {DateTime.UtcNow}");
                 this.applicationPool.Stop();
                 this.applicationPool.WaitForStatus(ObjectState.Stopped, TimeSpan.FromSeconds(30));
-                Console.WriteLine($"{base.serviceName} pool stopped @ {DateTime.UtcNow}");
+                log.Info($"{base.serviceName} pool stopped @ {DateTime.UtcNow}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while killing {base.serviceName} IIS pool: {ex.Message}");
+                log.Error(ex, $"Error while killing {base.serviceName} IIS pool");
                 throw;
             }
         }
@@ -49,7 +51,7 @@ namespace Elfo.Wardein.Core.Helpers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while restarting {base.serviceName} IIS pool: {ex.Message}");
+                log.Error(ex, $"Error while restarting {base.serviceName} IIS pool");
                 throw;
             }
         }
@@ -58,15 +60,15 @@ namespace Elfo.Wardein.Core.Helpers
         {
             try
             {
-                Console.WriteLine($"Starting pool {base.serviceName} @ {DateTime.UtcNow}");
+                log.Info($"Starting pool {base.serviceName} @ {DateTime.UtcNow}");
                 if (!IsStillAlive)
                     this.applicationPool.Start();
                 this.applicationPool.WaitForStatus(ObjectState.Started, TimeSpan.FromSeconds(30));
-                Console.WriteLine($"{base.serviceName} pool started @ {DateTime.UtcNow}");
+                log.Info($"{base.serviceName} pool started @ {DateTime.UtcNow}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while starting {base.serviceName} IIS pool: {ex.Message}");
+                log.Error(ex, $"Error while starting {base.serviceName} IIS pool");
                 throw;
             }
         }
@@ -80,7 +82,7 @@ namespace Elfo.Wardein.Core.Helpers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while stopping {base.serviceName} IIS pool: {ex.Message}");
+                log.Error(ex, $"Error while stopping {base.serviceName} IIS pool");
                 throw;
             }
         }
@@ -93,7 +95,7 @@ namespace Elfo.Wardein.Core.Helpers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while getting status for pool {base.serviceName} IIS pool: {ex.Message}");
+                log.Error(ex, $"Error while getting status for pool {base.serviceName} IIS pool");
                 throw;
             }
         }
