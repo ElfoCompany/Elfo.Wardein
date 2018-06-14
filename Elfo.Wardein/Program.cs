@@ -13,34 +13,42 @@ namespace Elfo.Wardein
         static Logger log = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
-            ServiceRunner<WardeinService>.Run(config =>
+            try
             {
-                var name = config.GetDefaultName();
-                config.Service(serviceConfig =>
-                {
-                    serviceConfig.ServiceFactory((extraArguments, controller) =>
+                ServiceRunner<WardeinService>.Run(config =>
                     {
-                        return new WardeinService();
-                    });
+                        var name = config.GetDefaultName();
+                        config.Service(serviceConfig =>
+                        {
+                            serviceConfig.ServiceFactory((extraArguments, controller) =>
+                            {
+                                return new WardeinService();
+                            });
 
-                    serviceConfig.OnStart((service, extraParams) =>
-                    {
-                        log.Info("Service {0} started", name);
-                        service.Start();
-                    });
+                            serviceConfig.OnStart((service, extraParams) =>
+                            {
+                                log.Info("Service {0} started", name);
+                                service.Start();
+                            });
 
-                    serviceConfig.OnStop(service =>
-                    {
-                        log.Info("Service {0} stopped", name);
-                        service.Stop();
-                    });
+                            serviceConfig.OnStop(service =>
+                            {
+                                log.Info("Service {0} stopped", name);
+                                service.Stop();
+                            });
 
-                    serviceConfig.OnError(e =>
-                    {
-                        log.Error("Service {0} errored with exception : {1}", name, e.Message);
+                            serviceConfig.OnError(e =>
+                            {
+                                log.Error("Service {0} errored with exception : {1}", name, e.Message);
+                            });
+                        });
                     });
-                });
-            });
+            }
+            catch (Exception ex)
+            {
+                log.Error("Fatal error in Program: {0}", ex.ToString());
+                throw;
+            }
         }
     }
 }
