@@ -1,7 +1,9 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.ConfigurationReader;
 using Elfo.Wardein.Core.Helpers;
+using Elfo.Wardein.Core.Model;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -21,44 +23,73 @@ namespace Elfo.Wardein.Core.NotificationService
 
         public async Task SendNotificationAsync(string recipientAddress, string notificationBody, string notificationTitle)
         {
-            var mailConfiguration = ServicesContainer.MailConfigurationManager(filePath)?.GetConfiguration();
+            var mailConfiguration = GetMailConfiguration();
+            log.Debug(JsonConvert.SerializeObject(mailConfiguration));
 
-            if (mailConfiguration == null)
-                throw new ArgumentNullException("Cannot find Mail SMTP Configuration");
-
-            var fromAddress = new MailAddress(mailConfiguration.FromAddress, mailConfiguration.FromDisplayName);
-            var toAddress = new MailAddress(recipientAddress, recipientAddress);
-
-            var smtp = GetSmtpClient();
-            SetSmtpCredentialsIfNeccesary();
-
-
-            var mailMessage = new MailMessage(fromAddress, toAddress)
-            {
-                Subject = notificationTitle,
-                Body = notificationBody
-            };
-
-            smtp.Send(mailMessage);
+            log.Info("Sending email to {0}", recipientAddress);
+            GetSmtpClient().Send(GetMailMessage());
+            log.Info("Email sent to {0}", recipientAddress);
 
             #region Local functions
 
-            SmtpClient GetSmtpClient() => new SmtpClient
+            MailConfiguration GetMailConfiguration()
             {
-                Host = mailConfiguration.Host,
-                Port = mailConfiguration.Port,
-                EnableSsl = mailConfiguration.EnableSSL,
-                DeliveryMethod = GetSmtpDelivertyMethod(),
-                UseDefaultCredentials = mailConfiguration.UseDefaultCredentials
-            };
+                var config = ServicesContainer.MailConfigurationManager(filePath)?.GetConfiguration();
 
-            void SetSmtpCredentialsIfNeccesary()
-            {
-                if (!string.IsNullOrWhiteSpace(mailConfiguration.Password))
-                    smtp.Credentials = new NetworkCredential(mailConfiguration.Username, mailConfiguration.Password);
+                if (config == null)
+                    throw new ArgumentNullException("Cannot find Mail SMTP Configuration");
+
+                return config;
             }
 
-            SmtpDeliveryMethod GetSmtpDelivertyMethod() => Enum.Parse<SmtpDeliveryMethod>(mailConfiguration.DeliveryMethod);
+            SmtpClient GetSmtpClient()
+            {
+                var client = new SmtpClient(mailConfiguration.Host)
+                {
+                    Port = mailConfiguration.Port,
+                    EnableSsl = mailConfiguration.EnableSSL,
+                    DeliveryMethod = GetSmtpDelivertyMethod(),
+                    UseDefaultCredentials = mailConfiguration.UseDefaultCredentials
+                };
+                SetSmtpCredentialsIfNeccesary();
+                return client;
+
+                #region Local functions
+
+                SmtpDeliveryMethod GetSmtpDelivertyMethod() => Enum.Parse<SmtpDeliveryMethod>(mailConfiguration.DeliveryMethod);
+
+                void SetSmtpCredentialsIfNeccesary()
+                {
+                    if (!string.IsNullOrWhiteSpace(mailConfiguration.Password))
+                        client.Credentials = new NetworkCredential(mailConfiguration.Username, mailConfiguration.Password);
+                }
+
+                #endregion
+            }
+
+            MailMessage GetMailMessage()
+            {
+                var msg = new MailMessage()
+                {
+                    From = new MailAddress(mailConfiguration.FromAddress, mailConfiguration.FromDisplayName),
+                    Subject = notificationTitle,
+                    IsBodyHtml = true,
+                    Body = notificationBody,
+                };
+                AddRecipients();
+                return msg;
+
+                #region Local Functions
+                void AddRecipients()
+                {
+                    var recipients = recipientAddress.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var recipient in recipients)
+                    {
+                        msg.To.Add(recipient);
+                    }
+                }
+                #endregion
+            }
 
             #endregion
         }
