@@ -15,12 +15,12 @@ namespace Elfo.Wardein.Services
         static Logger log = LogManager.GetCurrentClassLogger();
         public void Start()
         {
-            log.Info("\nInitializing WardeinService\n");
+            log.Info("---\tInitializing WardeinService\t---");
             ConfigureScheduledServiceCheck();
             
             void ConfigureScheduledServiceCheck()
             {
-                log.Info("Starting WardeinService");
+                log.Info("---\tStarting WardeinService\t---");
                 this.StartBase();
                 // TODO: Read polling timeout from config
                 Timers.Start("Poller", GetPollingTimeoutInMillisecond(), async () =>
@@ -54,7 +54,7 @@ namespace Elfo.Wardein.Services
         public void Stop()
         {
             this.StopBase();
-            log.Info("Wardein Service stopped");
+            log.Info("---\tWardein Service stopped\t---");
         }
     }
 }
