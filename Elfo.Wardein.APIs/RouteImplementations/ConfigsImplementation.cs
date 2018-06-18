@@ -15,14 +15,9 @@ namespace Elfo.Wardein.APIs
 
         public Task Invalidate(HttpContext context)
         {
-            var microService = Startup.ServiceProvider.GetService<IMicroService>();
             ServicesContainer.MailConfigurationManager(Const.MAIL_CONFIG_PATH).InvalidateCache();
             ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH).InvalidateCache();
-            if (microService != null)
-            {
-                microService.Stop();
-                microService.Start();
-            }
+            new PollingImplementation().Restart(context);
             return context.Response.WriteAsync($"Cached configs invalidated");
         }
     }

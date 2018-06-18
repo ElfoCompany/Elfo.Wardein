@@ -28,7 +28,10 @@ namespace Elfo.Wardein.APIs
                 .MapGet("api/1.0/maintenance/stop", ctx => ctx.ApiTryCatch(() => new MaintenanceImplementation().StopMaintenanceMode(ctx)))
                 .MapGet("api/1.0/maintenance/status", ctx => ctx.ApiTryCatch(() => new MaintenanceImplementation().GetMaintenanceModeStatus(ctx)))
                 /**************************************** CONFIGS ******************************************************/
-                .MapGet("api/1.0/configs/invalidate", ctx => ctx.ApiTryCatch(() => new ConfigsImplementation().Invalidate(ctx)));
+                .MapGet("api/1.0/configs/invalidate", ctx => ctx.ApiTryCatch(() => new ConfigsImplementation().Invalidate(ctx)))
+                /**************************************** POLLING ******************************************************/
+                .MapGet("api/1.0/polling/stop", ctx => ctx.ApiTryCatch(() => new PollingImplementation().Stop(ctx)))
+                .MapGet("api/1.0/polling/restart", ctx => ctx.ApiTryCatch(() => new PollingImplementation().Restart(ctx)));
         }
     }
 }
