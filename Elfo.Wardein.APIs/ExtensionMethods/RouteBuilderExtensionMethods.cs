@@ -12,6 +12,8 @@ namespace Elfo.Wardein.APIs
             //TODO: how to manage logs?
             thisRouteBuilder
                 /************************************* WINDOWS SERVICE **********************************************************/
+                .MapGet("api/1.0/status", ctx => ctx.Response.WriteAsync($"Wardein APIs are available"))
+                /************************************* WINDOWS SERVICE **********************************************************/
                 .MapGet("api/1.0/ws/restart/{name}", ctx => ctx.ApiTryCatch(() => new ServiceManagerImplementation().RestartService(ctx)))
                 .MapGet("api/1.0/ws/stop/{name}", ctx => ctx.ApiTryCatch(() => new ServiceManagerImplementation().StopService(ctx)))
                 .MapGet("api/1.0/ws/start/{name}", ctx => ctx.ApiTryCatch(() => new ServiceManagerImplementation().StartService(ctx)))
