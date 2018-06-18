@@ -9,6 +9,7 @@ namespace Elfo.Wardein.APIs
 {
     public class Startup
     {
+        public static ServiceProvider ServiceProvider { get; private set; }
         public void Configure(IApplicationBuilder app)
         {
             var routeBuilder = new RouteBuilder(app);
@@ -19,6 +20,7 @@ namespace Elfo.Wardein.APIs
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
+            ServiceProvider = services.BuildServiceProvider();
         }
     }
 }

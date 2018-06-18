@@ -17,7 +17,6 @@ namespace Elfo.Wardein.Core.NotificationService
     public class MailNotificationService : IAmNotificationService
     {
         #region Private variables
-        private readonly string filePath = $@"{Const.BASE_PATH}Assets\MailConfig.json";
         private readonly static Logger log = LogManager.GetCurrentClassLogger();
         #endregion
 
@@ -34,7 +33,7 @@ namespace Elfo.Wardein.Core.NotificationService
 
             MailConfiguration GetMailConfiguration()
             {
-                var config = ServicesContainer.MailConfigurationManager(filePath)?.GetConfiguration();
+                var config = ServicesContainer.MailConfigurationManager(Const.MAIL_CONFIG_PATH)?.GetConfiguration();
 
                 if (config == null)
                     throw new ArgumentNullException("Cannot find Mail SMTP Configuration");

@@ -21,7 +21,7 @@ namespace Elfo.Wardein.Core
 
         private WardeinConfig wardeinConfig = null;
         private readonly static Logger log = LogManager.GetCurrentClassLogger();
-        private readonly IAmWardeinConfigurationManager wardeinConfigurationReader;        
+        private readonly IAmWardeinConfigurationManager wardeinConfigurationReader;
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace Elfo.Wardein.Core
 
         public WardeinInstance()
         {
-            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH);            
+            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH);
 
             GetWarderinConfigAndThrowErrorIfNotExist();
 
@@ -92,7 +92,7 @@ namespace Elfo.Wardein.Core
                     {
                         if (!Enum.TryParse<NotificationType>(service.NotificationType, out NotificationType result))
                             throw new ArgumentException($"Notification type {service.NotificationType} not supported");
-                            return result;
+                        return result;
                     }
 
                     async Task PerformActionOnServiceDown()
@@ -105,12 +105,12 @@ namespace Elfo.Wardein.Core
                             await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, $"Attention: {service.ServiceName} service is down");
                             item.RetryCount = 0;
                         }
-                        log.Info($"{service.ServiceName} is not active, retry: {item.RetryCount}");                        
+                        log.Info($"{service.ServiceName} is not active, retry: {item.RetryCount}");
                     }
 
                     async Task PerformActionOnServiceRestored()
                     {
-                       log.Info($"{service.ServiceName} is active");
+                        log.Info($"{service.ServiceName} is active");
                         if (item.RetryCount > 0)
                         {
                             log.Info($"Send Restored Notification");

@@ -46,7 +46,7 @@ namespace Elfo.Wardein.Core.Helpers
         {
             try
             {
-                ForceKill();
+                Stop();
                 Start();
             }
             catch (Exception ex)

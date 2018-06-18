@@ -23,11 +23,11 @@ namespace Elfo.Wardein.APIs
             return context.Response.WriteAsync($"Service {serviceName} restarted");
         }
 
-        public Task KillService(HttpContext context)
+        public Task StopService(HttpContext context)
         {
             string serviceName = context.GetRouteValue("name").ToString();
 
-            KillService(serviceName);
+            StopService(serviceName);
             return context.Response.WriteAsync($"Service {serviceName} stopped");
         }
 
@@ -49,11 +49,11 @@ namespace Elfo.Wardein.APIs
         #endregion
 
         #region IIS Pool management
-        public Task RestartPool(HttpContext context)
+        public Task RefreshPool(HttpContext context)
         {
             string applicationPoolName = context.GetRouteValue("name").ToString();
 
-            RestartIISPool(applicationPoolName);
+            RefreshIISPool(applicationPoolName);
             return context.Response.WriteAsync($"ApplicationPool {applicationPoolName} restarted");
         }
         public Task StartPool(HttpContext context)
@@ -64,11 +64,11 @@ namespace Elfo.Wardein.APIs
             return context.Response.WriteAsync($"ApplicationPool {applicationPoolName} started");
         }
 
-        public Task KillPool(HttpContext context)
+        public Task StopPool(HttpContext context)
         {
             string applicationPoolName = context.GetRouteValue("name").ToString();
 
-            KillIISPool(applicationPoolName);
+            StopIISPool(applicationPoolName);
             return context.Response.WriteAsync($"ApplicationPool {applicationPoolName} stopped");
         }
 
@@ -90,7 +90,7 @@ namespace Elfo.Wardein.APIs
             string applicationPoolName = context.GetRouteValue("iispoolname").ToString();
 
             RestartService(serviceName);
-            RestartIISPool(applicationPoolName);
+            RefreshIISPool(applicationPoolName);
             return context.Response.WriteAsync($"Service {serviceName} restarted, applicationPool {applicationPoolName} restarted");
         }
 
@@ -99,11 +99,11 @@ namespace Elfo.Wardein.APIs
         #region Local Functions
 
         void RestartService(string serviceName) => new WindowsServiceHelper(serviceName).Restart();
-        void KillService(string serviceName) => new WindowsServiceHelper(serviceName).ForceKill();
+        void StopService(string serviceName) => new WindowsServiceHelper(serviceName).Stop();
         void StartService(string serviceName) => new WindowsServiceHelper(serviceName).Start();
         string GetServiceStatus(string serviceName) => new WindowsServiceHelper(serviceName).GetStatus();
-        void RestartIISPool(string iisPoolName) => new IISPoolHelper(iisPoolName).Restart();
-        void KillIISPool(string issPoolName) => new IISPoolHelper(issPoolName).ForceKill();
+        void RefreshIISPool(string iisPoolName) => new IISPoolHelper(iisPoolName).Restart();
+        void StopIISPool(string issPoolName) => new IISPoolHelper(issPoolName).Stop();
         string GetIISPoolStatus(string iisPoolName) => new IISPoolHelper(iisPoolName).GetStatus();
         void StartIISPool(string iisPoolName) => new IISPoolHelper(iisPoolName).Start();
 

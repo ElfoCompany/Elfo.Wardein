@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Elfo.Wardein.APIs;
 using Elfo.Wardein.Core.Helpers;
 using NLog;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Elfo.Wardein.Services
 {
@@ -14,29 +15,21 @@ namespace Elfo.Wardein.Services
         static Logger log = LogManager.GetCurrentClassLogger();
         public void Start()
         {
+            log.Info("\nInitializing WardeinService\n");
             ConfigureScheduledServiceCheck();
-            ConfigureAPIHosting();
-
-            void ConfigureAPIHosting()
-            {
-                new WebHostBuilder()
-                    .UseKestrel()
-                    .UseStartup<Startup>()
-                    .Build()
-                    .Run();
-            }
-
+            
             void ConfigureScheduledServiceCheck()
             {
+                log.Info("Starting WardeinService");
                 this.StartBase();
                 // TODO: Read polling timeout from config
                 Timers.Start("Poller", GetPollingTimeoutInMillisecond(), async () =>
                 {
                     try
                     {
-                        log.Info("Polling at {0} started", DateTime.Now.ToString("o"));
+                        log.Debug("Polling at {0} started", DateTime.Now.ToString("o"));
                         await ServicesContainer.WardeinInstance.RunCheck();
-                        log.Info("Polling at {0} finished", DateTime.Now.ToString("o"));
+                        log.Debug("Polling at {0} finished", DateTime.Now.ToString("o"));
                     }
                     catch (Exception ex)
                     {
@@ -61,7 +54,7 @@ namespace Elfo.Wardein.Services
         public void Stop()
         {
             this.StopBase();
-            log.Info("I stopped");
+            log.Info("Wardein Service stopped");
         }
     }
 }

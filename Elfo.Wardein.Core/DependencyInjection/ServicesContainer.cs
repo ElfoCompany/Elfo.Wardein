@@ -18,7 +18,8 @@ namespace Elfo.Wardein.Core
         #region Local Variables
 
         private static object sync = new object();
-        private static volatile ServicesContainer currentInstance;
+        private IServiceCollection serviceCollection;
+        private static volatile ServicesContainer serviceContainer;
         private ServiceProvider serviceProvider;
 
         #endregion
@@ -36,7 +37,8 @@ namespace Elfo.Wardein.Core
 
         protected void Configure()
         {
-            serviceProvider = new ServiceCollection()
+
+            serviceCollection = serviceCollection = new ServiceCollection()                
                 .AddSingleton<Func<string, IAmMailConfigurationManager>>(sp => filePath => new MailConfigurationManagerFromJSON(filePath))
                 .AddSingleton<Func<string, IAmWardeinConfigurationManager>>(sp => filePath => new WardeinConfigurationManagerFromJSON(filePath))
                 .AddTransient<Func<string, IAmPersistenceService<WindowsServiceStats>>>(sp => filePath => new WindowsServiceStatsPersistenceInJSON(filePath))
@@ -52,8 +54,9 @@ namespace Elfo.Wardein.Core
                             throw new KeyNotFoundException($"Notification service {notificationType.ToString()} not supported yet");
                     }
                 })
-                .AddTransient<WardeinInstance>()
-                .BuildServiceProvider();
+                .AddTransient<WardeinInstance>();
+
+            serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
         #endregion
@@ -67,15 +70,15 @@ namespace Elfo.Wardein.Core
         {
             get
             {
-                if (currentInstance == null)
+                if (serviceContainer == null)
                 {
                     lock (sync)
                     {
-                        if (currentInstance == null)
-                            currentInstance = new ServicesContainer();
+                        if (serviceContainer == null)
+                            serviceContainer = new ServicesContainer();
                     }
                 }
-                return currentInstance;
+                return serviceContainer;
             }
         }
 
