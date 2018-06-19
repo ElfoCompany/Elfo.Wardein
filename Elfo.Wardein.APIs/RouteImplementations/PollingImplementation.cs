@@ -25,14 +25,14 @@ namespace Elfo.Wardein.APIs
         public Task Stop(HttpContext context)
         {
             microService.Stop();
-            return context.Response.WriteAsync($"MicroService stopped");
+            return context.Response.WriteAsync($"Periodic check stopped");
         }
 
         public Task Restart(HttpContext context)
         {
             Stop(context);
             microService.Start();
-            return context.Response.WriteAsync($"MicroService restarted");
+            return context.Response.WriteAsync($"Periodic check restarted");
         } 
 
         #endregion
