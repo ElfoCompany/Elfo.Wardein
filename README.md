@@ -10,9 +10,14 @@ master  | dev
 
 Elfo.Wardein is a product developed by Elfo in order to manage Windows Services installed on a machine.
 
-It is able to restart a Windows Service and notify a group of users if it is not able to do that after a certain number of retries.
+It is able to manage the status of a Windows Service.
+
+It can monitor the status and restart a service if it goes down for any reason. This check will be performed every x seconds where x is a value configurable by the user.
+
+If it is not able to restart a service after a certain number of times, it can notify a group of users.
 
 It also exposes some APIs in order to start/stop/refresh Windows Services or IIS application pools.
+
 
 ## Installation
 
