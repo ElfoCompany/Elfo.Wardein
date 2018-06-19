@@ -1,6 +1,5 @@
 # Elfo.Wardein
 
-
 <p align="center">
   <a href="https://github.com/ElfoCompany/Elfo.Wardein" target="_blank">
     <img width="100"src="https://i.imgur.com/hwz5xQ5.png">
@@ -108,6 +107,25 @@ By executing this command from the Elfo.Wardein folder, it is possible to instal
 ```
 
 Moreover, it is possible to manage Elfo.Wardein as all the windows service available on the system and it is the suggested way in order to run the program for long time period.
+
+## Notifications
+
+Elfo.Wardein is capable of notificate the user if the checked services are down.
+
+Currently Elfo.Wardein can send:
+
+- “Fail Notification”: sent every time a service goes down and it is not possible to restore it after a certain number of retries
+- “Restore Notification”: sent every time Elfo.Wardein is able to restore succesfully a service.
+
+The Supported notification types are:
+
+- Mail: Requires MailConfig.json configuration files and allows Elfo.Wardein to send a notification through a SMTP server
+- Teams: By createing a Microsoft Teams web hooks it is possible to receive these notifications directly in Microsoft Teams.
+
+Notifications can be limited through these parameters:
+- services/maxRetryCount
+- services/sendRepeatedNotificationAfterSeconds
+- services/numberOfNotificationsWithoutRateLimitation
 
 ## Maintenance Mode
 
