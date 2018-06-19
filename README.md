@@ -114,6 +114,8 @@ Elfo.Wardein expose a self hosted server inside its service.
 
 The APIs available at http://localhost:5000/api are the following ones:
 
+---
+
 ### Wardein Status
 
 >	Return a simple message if Elfo.Wardein is available
@@ -127,6 +129,8 @@ None
 #### RESPONSE
 
 Return this text if system are available: `Wardein APIs are available`
+
+---
 
 ### Restart Windows Service
 
@@ -146,6 +150,8 @@ In case of success: `Service {serviceName} restarted`
 
 Otherwise it will return the exception message.
 
+---
+
 ### Stop Windows Service
 
 >	Stops the specified Windows service if present
@@ -163,6 +169,8 @@ name  | String  | Name of the Windows Service to be stopped
 In case of success: `Service {serviceName} stopped`
 
 Otherwise it will return the exception message.
+
+---
 
 ### Start Windows Service
 
@@ -182,6 +190,8 @@ In case of success: `Service {serviceName} started`
 
 Otherwise it will return the exception message.
 
+---
+
 ### Get Windows Service status
 
 >	Returns the specified Windows service status if present
@@ -199,6 +209,8 @@ name  | String  | Name of the Windows Service to query
 In case of success: `{WindowsServiceStatus}`
 
 Otherwise it will return the exception message.
+
+---
 
 ### Restart IIS Pool
 
@@ -218,6 +230,8 @@ In case of success: `ApplicationPool {applicationPoolName} restarted`
 
 Otherwise it will return the exception message.
 
+---
+
 ### Stop IIS Pool
 
 >	Stops the specified IIS pool if present
@@ -235,6 +249,8 @@ name  | String  | Name of the IIS pool to be stopped
 In case of success: `ApplicationPool {applicationPoolName} stopped`
 
 Otherwise it will return the exception message.
+
+---
 
 ### Start IIS Pool
 
@@ -254,6 +270,8 @@ In case of success: `ApplicationPool {applicationPoolName} started`
 
 Otherwise it will return the exception message.
 
+---
+
 ### Get IIS Pool status
 
 >	Returns the specified IIS pool status if present
@@ -271,6 +289,8 @@ name  | String  | Name of the IIS pool to query
 In case of success: `{IISPoolStatus}`
 
 Otherwise it will return the exception message.
+
+---
 
 ### Restart both Windows Service and IIS Application pool
 
@@ -291,6 +311,8 @@ In case of success: `Service {serviceName} restarted, applicationPool {applicati
 
 Otherwise it will return the exception message.
 
+---
+
 ### Start maintenance mode
 
 >	Enables Elfo.Wardein maintenance mode
@@ -309,6 +331,8 @@ In case of success: `Maintenance Mode Started`
 
 Otherwise it will return the exception message.
 
+---
+
 ### Stop maintenance mode
 
 >	Disables Elfo.Wardein maintenance mode
@@ -324,6 +348,8 @@ None
 In case of success: `Maintenance Mode Stopped`
 
 Otherwise it will return the exception message.
+
+---
 
 ### Get maintenance mode status
 
@@ -343,6 +369,8 @@ In case of manteinance mode stopped: `Wardein is not in manteinance mode`
 
 Otherwise it will return the exception message.
 
+---
+
 ### Invalidate cached configurations
 
 >	Allows to invalidate cached configurations inside Elfo.Wardein. Usefull if it is necessary to change a configuration file.
@@ -359,6 +387,8 @@ In case of manteinance mode started: `Cached configs invalidated`
 
 Otherwise it will return the exception message.
 
+---
+
 ### Stop service periodic check
 
 >	Allows to stop the service periodic check without interrupting or stopping the service
@@ -374,6 +404,8 @@ None
 In case of manteinance mode started: `Periodic check stopped`
 
 Otherwise it will return the exception message.
+
+---
 
 ### Restart service periodic check
 
