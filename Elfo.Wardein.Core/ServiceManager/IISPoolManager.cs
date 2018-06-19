@@ -7,16 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Elfo.Wardein.Core.Helpers
+namespace Elfo.Wardein.Core.ServiceManager
 {
-    public class IISPoolHelper : IAmServiceManager
+    public class IISPoolManager : IAmServiceManager
     {
         #region Private variables
         private readonly ApplicationPool applicationPool;
         private readonly static Logger log = LogManager.GetCurrentClassLogger();
         #endregion
 
-        public IISPoolHelper(string appPoolName) : base(appPoolName)
+        public IISPoolManager(string appPoolName) : base(appPoolName)
         {
             this.applicationPool = new ServerManager().ApplicationPools.FirstOrDefault(x => x.Name == appPoolName);
 

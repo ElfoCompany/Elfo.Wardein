@@ -1,6 +1,6 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Model;
+using Elfo.Wardein.Core.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

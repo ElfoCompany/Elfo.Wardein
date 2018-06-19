@@ -1,6 +1,6 @@
 ﻿using Elfo.Wardein.Core.ConfigurationReader;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Model;
+using Elfo.Wardein.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +12,7 @@ using Elfo.Wardein.Core.Persistence;
 using Elfo.Wardein.Core.NotificationService;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
+using Elfo.Wardein.Core.ServiceManager;
 
 namespace Elfo.Wardein.Core
 {
@@ -70,7 +71,7 @@ namespace Elfo.Wardein.Core
 
                 using (var persistenceService = ServicesContainer.PersistenceService(Const.DB_PATH))
                 {
-                    var serviceHelper = new WindowsServiceHelper(service.ServiceName);
+                    var serviceHelper = ServicesContainer.ServiceManager(service.ServiceName, ServiceManagerType.WindowsService);
                     var notificationService = ServicesContainer.NotificationService(GetNotificationType());
                     var item = persistenceService.GetEntityById(service.ServiceName);
 
@@ -99,13 +100,48 @@ namespace Elfo.Wardein.Core
                     {
                         serviceHelper.Start();
                         item.RetryCount++;
-                        if (item.RetryCount > service.MaxRetryCount)
+
+                        if (IsRetryCountExceededOrEqual() && IsMultipleOfMaxRetryCount())
                         {
-                            log.Info($"Sending Fail Notification");
-                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, $"Attention: {service.ServiceName} service is down");
-                            item.RetryCount = 0;
+                            if (IAmAllowedToSendANewNotification())
+                            {
+                                log.Info($"Sending Fail Notification");
+                                await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, $"Attention: {service.ServiceName} service is down");
+                                item.LastNotificationSentAtThisTimeUTC = DateTime.UtcNow;
+                            }
                         }
                         log.Info($"{service.ServiceName} is not active, retry: {item.RetryCount}");
+
+                        #region Local Functions
+
+                        bool IAmAllowedToSendANewNotification()
+                        {
+                            if (item.RetryCount <= NumberOfNotificationAllowedAtMaximumRate() || NeverSentANotificationBefore())
+                                return true;
+
+                            return IsRepeatedMailTimeoutElapsed();
+
+                            #region Local Functions
+
+                            int NumberOfNotificationAllowedAtMaximumRate() => service.MaxRetryCount * GetServiceNumberOfNotificationWithoutRateLimitationOrDefault();
+
+                            bool IsRepeatedMailTimeoutElapsed()
+                            {
+                                var timeout = GetServiceSendRepeatedNotificationAfterSecondsOrDefault();
+
+                                return DateTime.UtcNow.Subtract(item.LastNotificationSentAtThisTimeUTC.GetValueOrDefault(DateTime.MinValue)) >= timeout;
+                            }
+
+                            bool NeverSentANotificationBefore() => item.LastNotificationSentAtThisTimeUTC.HasValue == false; 
+
+                            #endregion
+                        }
+
+                        bool IsRetryCountExceededOrEqual() => item.RetryCount >= service.MaxRetryCount;
+
+                        bool IsMultipleOfMaxRetryCount() => item.RetryCount % service.MaxRetryCount == 0;
+
+                        #endregion
                     }
 
                     async Task PerformActionOnServiceRestored()
@@ -117,6 +153,18 @@ namespace Elfo.Wardein.Core
                             await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, $"Good news: {service.ServiceName} service has been restored succesfully");
                         }
                         item.RetryCount = 0;
+                    }
+
+                    TimeSpan GetServiceSendRepeatedNotificationAfterSecondsOrDefault() =>
+                        TimeSpan.FromSeconds(service.SendRepeatedNotificationAfterSeconds.GetValueOrDefault(wardeinConfig.SendRepeatedNotificationAfterSeconds));
+
+                    int GetServiceNumberOfNotificationWithoutRateLimitationOrDefault()
+                    {
+                        var result = service.NumberOfNotificationsWithoutRateLimitation.GetValueOrDefault(wardeinConfig.NumberOfNotificationsWithoutRateLimitation);
+                        if (result <= 0)
+                            return int.MaxValue;
+
+                        return result;
                     }
 
                     #endregion

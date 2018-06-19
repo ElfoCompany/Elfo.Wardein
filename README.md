@@ -55,6 +55,8 @@ For develope purpouses you can also place some dummy files inside the Visual Stu
 NAME  | TYPE | COMMENT
 --- | --- | ---
 timeSpanFromSeconds | Int | Defines the number of seconds between every check
+sendRepeatedNotificationAfterSeconds | Int | Values > 0 => Notification will be sent after `x` seconds have passed since the last sent notification<br>-Value = 0 or -1 => Notifications will be sent always
+numberOfNotificationsWithoutRateLimitation | Int | - Values > 0 => `sendRepeatedNotificationAfterSeconds` parameter will be ignored until a certain number of notifications are sent.<br>- Values = 0 or -1 => System is not limited, notification will be sent every time the service is down for `services/maxRetryCount` in a row.
 services | Array<Service> | List of services to be checked at every cycle
 services/serviceName | String | Name of the service to be checked at every cycle
 services/maxRetryCount | Int | Number of service restart to be attempted before sending a notification
@@ -62,6 +64,8 @@ services/failMessage | String | Body of the notification to be sent when Elfo.Wa
 services/restoredMessage | String | Body of the message to be sent when the service is restarted succesfully by Elfo.Wardein
 services/recipientAddress | String | WebHook url or mail of the recipients (separated by ‘;’ in case of multiple recipients
 services/notificationType | String | Type of notification to be sent. Currently Elfo.Wardein supports:<br>-	Mail<br>-	Teams
+services/sendRepeatedNotificationAfterSeconds | Int [Optional] | Overrides the corrispettive global setting for this service only
+services/numberOfNotificationsWithoutRateLimitation | Int [Optional] | Overrides the corrispettive global setting for this service only
 persistenceType | String | Where to store Elfo.Wardein data/status. Currently Elfo.Wardein supports:<br>-	JSON
 maintenanceModeStatus | Element | Maintenance mode status. This setting is managed by Elfo.Wardein and must not be modified by the user
 maintenanceModeStatus/durationInSeconds | Int | Maintenance mode timeout. This setting is managed by Elfo.Wardein and must not be modified by the user

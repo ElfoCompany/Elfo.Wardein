@@ -1,7 +1,7 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.ConfigurationReader;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Model;
+using Elfo.Wardein.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NLog;
@@ -23,7 +23,6 @@ namespace Elfo.Wardein.Core.NotificationService
         public async Task SendNotificationAsync(string recipientAddress, string notificationBody, string notificationTitle)
         {
             var mailConfiguration = GetMailConfiguration();
-            log.Debug(JsonConvert.SerializeObject(mailConfiguration));
 
             log.Info("Sending email to {0}", recipientAddress);
             GetSmtpClient().Send(GetMailMessage());

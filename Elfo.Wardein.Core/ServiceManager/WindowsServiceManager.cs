@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.ServiceProcess;
 
-namespace Elfo.Wardein.Core.Helpers
+namespace Elfo.Wardein.Core.ServiceManager
 {
-    public class WindowsServiceHelper : IAmServiceManager
+    public class WindowsServiceManager : IAmServiceManager
     {
         #region Private Variables
         private readonly ServiceController serviceController;
@@ -15,7 +15,7 @@ namespace Elfo.Wardein.Core.Helpers
         #endregion
 
         #region Constructor
-        public WindowsServiceHelper(string serviceName) : base(serviceName)
+        public WindowsServiceManager(string serviceName) : base(serviceName)
         {
             this.serviceController = new ServiceController(serviceName);
         }

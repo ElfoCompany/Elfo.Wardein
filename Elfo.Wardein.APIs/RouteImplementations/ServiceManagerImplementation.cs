@@ -1,6 +1,6 @@
 ﻿using Elfo.Wardein.APIs.Abstractions;
 using Elfo.Wardein.Core;
-using Elfo.Wardein.Core.Helpers;
+using Elfo.Wardein.Core.ServiceManager;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using System;
@@ -98,14 +98,14 @@ namespace Elfo.Wardein.APIs
 
         #region Local Functions
 
-        void RestartService(string serviceName) => new WindowsServiceHelper(serviceName).Restart();
-        void StopService(string serviceName) => new WindowsServiceHelper(serviceName).Stop();
-        void StartService(string serviceName) => new WindowsServiceHelper(serviceName).Start();
-        string GetServiceStatus(string serviceName) => new WindowsServiceHelper(serviceName).GetStatus();
-        void RefreshIISPool(string iisPoolName) => new IISPoolHelper(iisPoolName).Restart();
-        void StopIISPool(string issPoolName) => new IISPoolHelper(issPoolName).Stop();
-        string GetIISPoolStatus(string iisPoolName) => new IISPoolHelper(iisPoolName).GetStatus();
-        void StartIISPool(string iisPoolName) => new IISPoolHelper(iisPoolName).Start();
+        void RestartService(string serviceName) => new WindowsServiceManager(serviceName).Restart();
+        void StopService(string serviceName) => new WindowsServiceManager(serviceName).Stop();
+        void StartService(string serviceName) => new WindowsServiceManager(serviceName).Start();
+        string GetServiceStatus(string serviceName) => new WindowsServiceManager(serviceName).GetStatus();
+        void RefreshIISPool(string iisPoolName) => new IISPoolManager(iisPoolName).Restart();
+        void StopIISPool(string issPoolName) => new IISPoolManager(issPoolName).Stop();
+        string GetIISPoolStatus(string iisPoolName) => new IISPoolManager(iisPoolName).GetStatus();
+        void StartIISPool(string iisPoolName) => new IISPoolManager(iisPoolName).Start();
 
         #endregion
     }

@@ -1,9 +1,10 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.ConfigurationReader;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Model;
+using Elfo.Wardein.Core.Models;
 using Elfo.Wardein.Core.NotificationService;
 using Elfo.Wardein.Core.Persistence;
+using Elfo.Wardein.Core.ServiceManager;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
@@ -52,6 +53,18 @@ namespace Elfo.Wardein.Core
                             return new TeamsNotificationService();
                         default:
                             throw new KeyNotFoundException($"Notification service {notificationType.ToString()} not supported yet");
+                    }
+                })
+                .AddTransient<Func<ServiceManagerType, string, IAmServiceManager>>(sp => (serviceManagerType, serviceName) => 
+                {
+                    switch (serviceManagerType)
+                    {
+                        case ServiceManagerType.WindowsService:
+                            return new WindowsServiceManager(serviceName);
+                        case ServiceManagerType.IISPool:
+                            return new IISPoolManager(serviceName);
+                        default:
+                            throw new KeyNotFoundException($"Notification service {serviceManagerType.ToString()} not supported yet");
                     }
                 })
                 .AddTransient<WardeinInstance>();
@@ -108,6 +121,12 @@ namespace Elfo.Wardein.Core
         {
             var instanceResolver = Current.serviceProvider.GetService<Func<NotificationType, IAmNotificationService>>();
             return instanceResolver(notificationType);
+        }
+
+        public static IAmServiceManager ServiceManager(string serviceName, ServiceManagerType serviceManagerType)
+        {
+            var instanceResolver = Current.serviceProvider.GetService<Func<ServiceManagerType, string, IAmServiceManager>>();
+            return instanceResolver(serviceManagerType, serviceName);
         }
 
         public static WardeinInstance WardeinInstance => Current.serviceProvider.GetService<WardeinInstance>();

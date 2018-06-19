@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elfo.Wardein.Core.Model
+namespace Elfo.Wardein.Core.Models
 {
     public class MicrosoftTeamsMessage
     {
