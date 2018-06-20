@@ -59,6 +59,8 @@ namespace Elfo.Wardein.Core
 
         public async Task RunCheck()
         {
+            log.Info($"{Environment.NewLine}{Environment.NewLine}--------------------------------- CHECKING SERVICES HEALTH ---------------------------------{Environment.NewLine}");
+
             if (this.wardeinConfigurationReader.IsInMaintenanceMode)
             {
                 log.Info("Wardein is in manteinance mode.");
@@ -71,11 +73,14 @@ namespace Elfo.Wardein.Core
 
                 using (var persistenceService = ServicesContainer.PersistenceService(Const.DB_PATH))
                 {
-                    var serviceHelper = ServicesContainer.ServiceManager(service.ServiceName, ServiceManagerType.WindowsService);
+                    IAmServiceManager serviceManager = GetServiceManager();
+                    if (serviceManager == null)
+                        continue; // If the service doesn't exist, skip the check 
+
                     var notificationService = ServicesContainer.NotificationService(GetNotificationType());
                     var item = persistenceService.GetEntityById(service.ServiceName);
 
-                    if (!serviceHelper.IsStillAlive)
+                    if (!serviceManager.IsStillAlive)
                     {
                         await PerformActionOnServiceDown();
                     }
@@ -89,6 +94,20 @@ namespace Elfo.Wardein.Core
 
                     #region Local Functions
 
+                    IAmServiceManager GetServiceManager()
+                    {
+                        IAmServiceManager svc = null;
+                        try
+                        {
+                            svc = ServicesContainer.ServiceManager(service.ServiceName, ServiceManagerType.WindowsService);
+                        }
+                        catch (ArgumentNullException ex)
+                        {
+                            log.Warn(ex.Message);
+                        }
+                        return svc;
+                    }
+
                     NotificationType GetNotificationType()
                     {
                         if (!Enum.TryParse<NotificationType>(service.NotificationType, out NotificationType result))
@@ -98,14 +117,14 @@ namespace Elfo.Wardein.Core
 
                     async Task PerformActionOnServiceDown()
                     {
-                        serviceHelper.Start();
+                        serviceManager.Start();
                         item.RetryCount++;
 
                         if (IsRetryCountExceededOrEqual() && IsMultipleOfMaxRetryCount())
                         {
                             if (IAmAllowedToSendANewNotification())
                             {
-                                log.Info($"Sending Fail Notification");
+                                log.Warn($"Sending Fail Notification");
                                 await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, $"Attention: {service.ServiceName} service is down");
                                 item.LastNotificationSentAtThisTimeUTC = DateTime.UtcNow;
                             }

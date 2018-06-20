@@ -17,7 +17,9 @@ namespace Elfo.Wardein.Core.ServiceManager
         #region Constructor
         public WindowsServiceManager(string serviceName) : base(serviceName)
         {
-            this.serviceController = new ServiceController(serviceName);
+            this.serviceController = ServiceController.GetServices().FirstOrDefault(s => s.ServiceName == serviceName);
+            if (this.serviceController == null)
+                throw new ArgumentNullException($"Service {serviceName} was not found on computer");
         }
         #endregion
 

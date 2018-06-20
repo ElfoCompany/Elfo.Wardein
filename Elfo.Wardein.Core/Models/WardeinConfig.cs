@@ -11,10 +11,10 @@ namespace Elfo.Wardein.Core.Models
         public double TimeSpanFromSeconds { get; set; }
 
         [JsonProperty(PropertyName = "sendRepeatedNotificationAfterSeconds")]
-        public double SendRepeatedNotificationAfterSeconds { get; set; } = 3600;
+        public double SendRepeatedNotificationAfterSeconds { get; set; } = 3600; // Default values
 
         [JsonProperty(PropertyName = "numberOfNotificationsWithoutRateLimitation")]
-        public int NumberOfNotificationsWithoutRateLimitation { get; set; } = 2;
+        public int NumberOfNotificationsWithoutRateLimitation { get; set; } = 2; // Default values
 
         [JsonProperty(PropertyName = "services")]
         public IList<WindowsService> Services { get; set; }
