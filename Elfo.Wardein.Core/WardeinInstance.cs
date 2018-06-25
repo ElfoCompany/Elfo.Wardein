@@ -63,7 +63,7 @@ namespace Elfo.Wardein.Core
 
             if (this.wardeinConfigurationReader.IsInMaintenanceMode)
             {
-                log.Info("Wardein is in manteinance mode.");
+                log.Info("Wardein is in maintenance mode.");
                 return;
             }
 

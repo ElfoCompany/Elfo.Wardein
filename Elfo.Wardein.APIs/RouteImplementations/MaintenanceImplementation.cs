@@ -33,9 +33,9 @@ namespace Elfo.Wardein.APIs
 
         public Task GetMaintenanceModeStatus(HttpContext context)
         {
-            var result = "Wardein is not in manteinance mode";
+            var result = "Wardein is not in maintenance mode";
             if (ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH).IsInMaintenanceMode)
-                result = "Wardein is in manteinance mode";
+                result = "Wardein is in maintenance mode";
             return context.Response.WriteAsync(result);
         }
         #endregion
