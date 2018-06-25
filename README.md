@@ -14,7 +14,7 @@ master  | dev
   
   ![Origin](https://i.imgur.com/nSwTbcd.png)
 
-Elfo.Wardein is a product developed by Elfo in order to manage Windows Services installed on a machine.
+Elfo.Wardein is a solution developed by Elfo in order to manage Windows Services installed on a machine.
 
 It is able to manage the status of a Windows Service.
 
