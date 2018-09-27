@@ -1,9 +1,13 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.ConfigurationReader;
-using Elfo.Wardein.Core.Model;
+using Elfo.Wardein.Core.Helpers;
+using Elfo.Wardein.Core.Models;
 using Elfo.Wardein.Core.NotificationService;
 using Elfo.Wardein.Core.Persistence;
+using Elfo.Wardein.Core.ServiceManager;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +19,8 @@ namespace Elfo.Wardein.Core
         #region Local Variables
 
         private static object sync = new object();
-        private static volatile ServicesContainer currentInstance;
+        private IServiceCollection serviceCollection;
+        private static volatile ServicesContainer serviceContainer;
         private ServiceProvider serviceProvider;
 
         #endregion
@@ -33,10 +38,11 @@ namespace Elfo.Wardein.Core
 
         protected void Configure()
         {
-            serviceProvider = new ServiceCollection()
-                .AddSingleton<Func<string, IAmMailConfigurationReader>>(sp => filePath => new MailConfigurationReaderFromJSON(filePath))
-                .AddSingleton<Func<string, IAmWardeinConfigurationReaderService>>(sp => filePath => new WardeinConfigurationReaderFromJSON(filePath))
-                .AddTransient<Func<string, IAmPersistenceService<WindowsServiceStats>>>(sp => filePath => new JSONPersistence(filePath))
+
+            serviceCollection = serviceCollection = new ServiceCollection()                
+                .AddSingleton<Func<string, IAmMailConfigurationManager>>(sp => filePath => new MailConfigurationManagerFromJSON(filePath))
+                .AddSingleton<Func<string, IAmWardeinConfigurationManager>>(sp => filePath => new WardeinConfigurationManagerFromJSON(filePath))
+                .AddTransient<Func<string, IAmPersistenceService<WindowsServiceStats>>>(sp => filePath => new WindowsServiceStatsPersistenceInJSON(filePath))
                 .AddTransient<Func<NotificationType, IAmNotificationService>>(sp => notificationType =>
                 {
                     switch (notificationType)
@@ -49,8 +55,21 @@ namespace Elfo.Wardein.Core
                             throw new KeyNotFoundException($"Notification service {notificationType.ToString()} not supported yet");
                     }
                 })
-                .AddTransient<WardeinInstance>()
-                .BuildServiceProvider();
+                .AddTransient<Func<ServiceManagerType, string, IAmServiceManager>>(sp => (serviceManagerType, serviceName) => 
+                {
+                    switch (serviceManagerType)
+                    {
+                        case ServiceManagerType.WindowsService:
+                            return new WindowsServiceManager(serviceName);
+                        case ServiceManagerType.IISPool:
+                            return new IISPoolManager(serviceName);
+                        default:
+                            throw new KeyNotFoundException($"Notification service {serviceManagerType.ToString()} not supported yet");
+                    }
+                })
+                .AddTransient<WardeinInstance>();
+
+            serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
         #endregion
@@ -64,15 +83,15 @@ namespace Elfo.Wardein.Core
         {
             get
             {
-                if (currentInstance == null)
+                if (serviceContainer == null)
                 {
                     lock (sync)
                     {
-                        if (currentInstance == null)
-                            currentInstance = new ServicesContainer();
+                        if (serviceContainer == null)
+                            serviceContainer = new ServicesContainer();
                     }
                 }
-                return currentInstance;
+                return serviceContainer;
             }
         }
 
@@ -86,15 +105,15 @@ namespace Elfo.Wardein.Core
             return instanceResolver(filePath);
         }
 
-        public static IAmMailConfigurationReader MailConfigurationReader(string filePath)
+        public static IAmMailConfigurationManager MailConfigurationManager(string filePath)
         {
-            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmMailConfigurationReader>>();
+            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmMailConfigurationManager>>();
             return instanceResolver(filePath);
         }
 
-        public static IAmWardeinConfigurationReaderService WardeinConfigurationReaderService(string filePath)
+        public static IAmWardeinConfigurationManager WardeinConfigurationManager(string filePath)
         {
-            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmWardeinConfigurationReaderService>>();
+            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmWardeinConfigurationManager>>();
             return instanceResolver(filePath);
         }
 
@@ -102,6 +121,12 @@ namespace Elfo.Wardein.Core
         {
             var instanceResolver = Current.serviceProvider.GetService<Func<NotificationType, IAmNotificationService>>();
             return instanceResolver(notificationType);
+        }
+
+        public static IAmServiceManager ServiceManager(string serviceName, ServiceManagerType serviceManagerType)
+        {
+            var instanceResolver = Current.serviceProvider.GetService<Func<ServiceManagerType, string, IAmServiceManager>>();
+            return instanceResolver(serviceManagerType, serviceName);
         }
 
         public static WardeinInstance WardeinInstance => Current.serviceProvider.GetService<WardeinInstance>();

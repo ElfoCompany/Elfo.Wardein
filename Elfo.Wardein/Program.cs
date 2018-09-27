@@ -1,46 +1,85 @@
-﻿using Elfo.Wardein.Services;
-using Microsoft.Extensions.PlatformAbstractions;
+﻿using Elfo.Wardein.APIs;
+using Elfo.Wardein.Core;
+using Elfo.Wardein.Services;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using NLog;
 using PeterKottas.DotNetCore.WindowsService;
+using PeterKottas.DotNetCore.WindowsService.Interfaces;
 using System;
 using System.IO;
+using System.Threading;
 
 namespace Elfo.Wardein
 {
     class Program
     {
+        static Logger log = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
-            var fileName = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log.txt");
-            ServiceRunner<WardeinService>.Run(config =>
+            try
             {
-                var name = config.GetDefaultName();
-                config.Service(serviceConfig =>
+                var wardeinMicroService = new WardeinService();
+
+                new Thread(() =>
                 {
-                    serviceConfig.ServiceFactory((extraArguments, controller) =>
-                    {
-                        return new WardeinService();
-                    });
+                    Thread.CurrentThread.IsBackground = true;
+                    
+                    log.Debug("Starting APIs...");
+                    ConfigureAPIHosting();
+                    log.Debug("APIs started");
 
-                    serviceConfig.OnStart((service, extraParams) =>
+                    #region Local Functions
+                    void ConfigureAPIHosting()
                     {
-                        Console.WriteLine("Service {0} started", name);
-                        service.Start();
-                    });
+                        new WebHostBuilder()
+                            .UseUrls("http://*:5000")
+                            .UseKestrel()
+                            .ConfigureServices(serviceCollection =>
+                            {
+                                serviceCollection.AddSingleton<IMicroService>(wardeinMicroService);
+                            })
+                            .UseStartup<Startup>()
+                            .Build()
+                            .Run();
+                    }
+                    #endregion
+                }).Start();
 
-                    serviceConfig.OnStop(service =>
+                ServiceRunner<WardeinService>.Run(config =>
+                {
+                    var name = config.GetDefaultName();
+                    config.Service(serviceConfig =>
                     {
-                        Console.WriteLine("Service {0} stopped", name);
-                        service.Stop();
-                    });
+                        serviceConfig.ServiceFactory((extraArguments, controller) =>
+                        {
+                            return wardeinMicroService;
+                        });
 
-                    serviceConfig.OnError(e =>
-                    {
-                        File.AppendAllText(fileName, $"Exception: {e.ToString()}\n");
-                        Console.WriteLine("Service {0} errored with exception : {1}", name, e.Message);
+                        serviceConfig.OnStart((service, extraParams) =>
+                        {
+                            log.Info("Service {0} started", name);
+                            service.Start();
+                        });
+
+                        serviceConfig.OnStop(service =>
+                        {
+                            log.Info("Service {0} stopped", name);
+                            service.Stop();
+                        });
+
+                        serviceConfig.OnError(e =>
+                        {
+                            log.Error("Service {0} errored with exception : {1}", name, e.Message);
+                        });
                     });
                 });
-            });
+            }
+            catch (Exception ex)
+            {
+                log.Error("Fatal error in Program: {0}", ex.ToString());
+                throw;
+            }
         }
-
     }
 }

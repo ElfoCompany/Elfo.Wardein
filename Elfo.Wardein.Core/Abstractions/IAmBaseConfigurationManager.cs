@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.Abstractions
 {
-    public interface IAmBaseConfigurationReader<T> where T: new()
+    public interface IAmBaseConfigurationManager<T> where T: new()
     {
         T GetConfiguration();
 

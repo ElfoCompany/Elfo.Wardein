@@ -1,6 +1,6 @@
 ﻿using Elfo.Wardein.Core.ConfigurationReader;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Model;
+using Elfo.Wardein.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +11,8 @@ using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.Persistence;
 using Elfo.Wardein.Core.NotificationService;
 using Microsoft.Extensions.DependencyInjection;
+using NLog;
+using Elfo.Wardein.Core.ServiceManager;
 
 namespace Elfo.Wardein.Core
 {
@@ -18,11 +20,9 @@ namespace Elfo.Wardein.Core
     {
         #region Private variables
 
-        private string configPath = $@"{Const.BASE_PATH}Assets\WardeinConfig.json";
-        private string dbPath = $@"{Const.BASE_PATH}Assets\WardeinDB.json";
         private WardeinConfig wardeinConfig = null;
-
-        private readonly IAmWardeinConfigurationReaderService wardeinConfigurationReader;        
+        private readonly static Logger log = LogManager.GetCurrentClassLogger();
+        private readonly IAmWardeinConfigurationManager wardeinConfigurationReader;
 
         #endregion
 
@@ -30,7 +30,7 @@ namespace Elfo.Wardein.Core
 
         public WardeinInstance()
         {
-            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationReaderService(configPath);            
+            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH);
 
             GetWarderinConfigAndThrowErrorIfNotExist();
 
@@ -38,7 +38,7 @@ namespace Elfo.Wardein.Core
 
             void GetWarderinConfigAndThrowErrorIfNotExist()
             {
-                if (!File.Exists(configPath))
+                if (!File.Exists(Const.WARDEIN_CONFIG_PATH))
                 {
                     //TODO: throw error or something...
                 }
@@ -59,17 +59,28 @@ namespace Elfo.Wardein.Core
 
         public async Task RunCheck()
         {
+            log.Info($"{Environment.NewLine}{Environment.NewLine}--------------------------------- CHECKING SERVICES HEALTH ---------------------------------{Environment.NewLine}");
+
+            if (this.wardeinConfigurationReader.IsInMaintenanceMode)
+            {
+                log.Info("Wardein is in maintenance mode.");
+                return;
+            }
+
             foreach (var service in wardeinConfig.Services)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(250)); // TODO: Do we really need this?
 
-                using (var persistenceService = ServicesContainer.PersistenceService(dbPath))
+                using (var persistenceService = ServicesContainer.PersistenceService(Const.DB_PATH))
                 {
-                    var serviceHelper = new WindowsServiceHelper(service.ServiceName);
+                    IAmServiceManager serviceManager = GetServiceManager();
+                    if (serviceManager == null)
+                        continue; // If the service doesn't exist, skip the check 
+
                     var notificationService = ServicesContainer.NotificationService(GetNotificationType());
                     var item = persistenceService.GetEntityById(service.ServiceName);
 
-                    if (!serviceHelper.IsStillAlive())
+                    if (!serviceManager.IsStillAlive)
                     {
                         await PerformActionOnServiceDown();
                     }
@@ -83,36 +94,96 @@ namespace Elfo.Wardein.Core
 
                     #region Local Functions
 
+                    IAmServiceManager GetServiceManager()
+                    {
+                        IAmServiceManager svc = null;
+                        try
+                        {
+                            svc = ServicesContainer.ServiceManager(service.ServiceName, ServiceManagerType.WindowsService);
+                        }
+                        catch (ArgumentNullException ex)
+                        {
+                            log.Warn(ex.Message);
+                        }
+                        return svc;
+                    }
+
                     NotificationType GetNotificationType()
                     {
                         if (!Enum.TryParse<NotificationType>(service.NotificationType, out NotificationType result))
                             throw new ArgumentException($"Notification type {service.NotificationType} not supported");
-                            return result;
+                        return result;
                     }
 
                     async Task PerformActionOnServiceDown()
                     {
-                        Console.WriteLine($"{service.ServiceName} is not active");
-                        serviceHelper.Start();
+                        serviceManager.Start();
                         item.RetryCount++;
-                        if (item.RetryCount > service.MaxRetryCount)
+
+                        if (IsRetryCountExceededOrEqual() && IsMultipleOfMaxRetryCount())
                         {
-                            Console.WriteLine($"Send Fail Notification");
-                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, "Attention: Service is down");
-                            item.RetryCount = 0;
+                            if (IAmAllowedToSendANewNotification())
+                            {
+                                log.Warn($"Sending Fail Notification");
+                                await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, $"Attention: {service.ServiceName} service is down");
+                                item.LastNotificationSentAtThisTimeUTC = DateTime.UtcNow;
+                            }
                         }
-                        Console.WriteLine($"{service.ServiceName} is not active: {item.RetryCount}");                        
+                        log.Info($"{service.ServiceName} is not active, retry: {item.RetryCount}");
+
+                        #region Local Functions
+
+                        bool IAmAllowedToSendANewNotification()
+                        {
+                            if (item.RetryCount <= NumberOfNotificationAllowedAtMaximumRate() || NeverSentANotificationBefore())
+                                return true;
+
+                            return IsRepeatedMailTimeoutElapsed();
+
+                            #region Local Functions
+
+                            int NumberOfNotificationAllowedAtMaximumRate() => service.MaxRetryCount * GetServiceNumberOfNotificationWithoutRateLimitationOrDefault();
+
+                            bool IsRepeatedMailTimeoutElapsed()
+                            {
+                                var timeout = GetServiceSendRepeatedNotificationAfterSecondsOrDefault();
+
+                                return DateTime.UtcNow.Subtract(item.LastNotificationSentAtThisTimeUTC.GetValueOrDefault(DateTime.MinValue)) >= timeout;
+                            }
+
+                            bool NeverSentANotificationBefore() => item.LastNotificationSentAtThisTimeUTC.HasValue == false; 
+
+                            #endregion
+                        }
+
+                        bool IsRetryCountExceededOrEqual() => item.RetryCount >= service.MaxRetryCount;
+
+                        bool IsMultipleOfMaxRetryCount() => item.RetryCount % service.MaxRetryCount == 0;
+
+                        #endregion
                     }
 
                     async Task PerformActionOnServiceRestored()
                     {
-                        Console.WriteLine($"{service.ServiceName} is now active");
+                        log.Info($"{service.ServiceName} is active");
                         if (item.RetryCount > 0)
                         {
-                            Console.WriteLine($"Send Restored Notification");
-                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, "Good news: Still alive");
+                            log.Info($"Send Restored Notification");
+                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, $"Good news: {service.ServiceName} service has been restored succesfully");
                         }
                         item.RetryCount = 0;
+                    }
+
+                    TimeSpan GetServiceSendRepeatedNotificationAfterSecondsOrDefault() =>
+                        TimeSpan.FromSeconds(service.SendRepeatedNotificationAfterSeconds.GetValueOrDefault(wardeinConfig.SendRepeatedNotificationAfterSeconds));
+
+                    int GetServiceNumberOfNotificationWithoutRateLimitationOrDefault()
+                    {
+                        var result = service.NumberOfNotificationsWithoutRateLimitation.GetValueOrDefault(wardeinConfig.NumberOfNotificationsWithoutRateLimitation);
+                        if (result <= 0)
+                            return int.MaxValue;
+
+                        return result;
                     }
 
                     #endregion

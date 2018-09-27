@@ -1,6 +1,6 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Model;
+using Elfo.Wardein.Core.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,12 +8,12 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.ConfigurationReader
 {
-    public class MailConfigurationReaderFromJSON : IAmMailConfigurationReader
+    public class MailConfigurationManagerFromJSON : IAmMailConfigurationManager
     {
         private readonly string filePath;
         private MailConfiguration cachedMailConfiguration;
 
-        public MailConfigurationReaderFromJSON(string filePath)
+        public MailConfigurationManagerFromJSON(string filePath)
         {
             this.filePath = filePath;
             this.cachedMailConfiguration = null;
@@ -22,7 +22,7 @@ namespace Elfo.Wardein.Core.ConfigurationReader
         public MailConfiguration GetConfiguration()
         {
             if(cachedMailConfiguration == null)
-                cachedMailConfiguration = JsonConvert.DeserializeObject<MailConfiguration>(new IOHelper(filePath).GetFileContentFromPath());
+                cachedMailConfiguration = JsonConvert.DeserializeObject<MailConfiguration>(new IOHelper(filePath).GetFileContent());
 
             return cachedMailConfiguration;
         }

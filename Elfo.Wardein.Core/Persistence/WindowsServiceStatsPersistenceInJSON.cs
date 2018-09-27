@@ -1,6 +1,6 @@
 ﻿using Elfo.Wardein.Core.Abstractions;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Model;
+using Elfo.Wardein.Core.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,13 +9,13 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.Persistence
 {
-    public class JSONPersistence : IAmPersistenceService<WindowsServiceStats>
+    public class WindowsServiceStatsPersistenceInJSON : IAmPersistenceService<WindowsServiceStats>
     {
         private readonly string filePath;
         private IList<WindowsServiceStats> cachedEntities;
         private IOHelper ioHelper;
 
-        public JSONPersistence(string filePath)
+        public WindowsServiceStatsPersistenceInJSON(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
                 throw new ArgumentNullException("File path is empty");
@@ -30,7 +30,7 @@ namespace Elfo.Wardein.Core.Persistence
             if (!this.ioHelper.CheckIfFileExist())
                 cachedEntities = new List<WindowsServiceStats>();
             else
-                cachedEntities = JsonConvert.DeserializeObject<IList<WindowsServiceStats>>(this.ioHelper.GetFileContentFromPath());
+                cachedEntities = JsonConvert.DeserializeObject<IList<WindowsServiceStats>>(this.ioHelper.GetFileContent());
             return cachedEntities;
         }
 
