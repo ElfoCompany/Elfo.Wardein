@@ -24,7 +24,7 @@ namespace Elfo.Wardein
                 new Thread(() =>
                 {
                     Thread.CurrentThread.IsBackground = true;
-                    /* run your code here */
+                    
                     log.Debug("Starting APIs...");
                     ConfigureAPIHosting();
                     log.Debug("APIs started");
@@ -33,6 +33,7 @@ namespace Elfo.Wardein
                     void ConfigureAPIHosting()
                     {
                         new WebHostBuilder()
+                            .UseUrls("http://*:5000")
                             .UseKestrel()
                             .ConfigureServices(serviceCollection =>
                             {
