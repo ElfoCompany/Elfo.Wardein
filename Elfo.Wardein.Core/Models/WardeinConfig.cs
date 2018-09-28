@@ -29,5 +29,7 @@ namespace Elfo.Wardein.Core.Models
             IsInMaintenanceMode = false,
             MaintenanceModeStartDateInUTC = DateTime.UtcNow
         }; // Default values
+        [JsonProperty(PropertyName = "cleanUps")]
+        public CleanUps[] CleanUps { get; set; }
     }
 }

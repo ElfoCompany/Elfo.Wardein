@@ -20,6 +20,7 @@ namespace Elfo.Wardein
             try
             {
                 var wardeinMicroService = new WardeinService();
+                var cacheCleanUpService = new CacheCleanUpService();
 
                 new Thread(() =>
                 {
@@ -45,14 +46,43 @@ namespace Elfo.Wardein
                     #endregion
                 }).Start();
 
-                ServiceRunner<WardeinService>.Run(config =>
+                //ServiceRunner<WardeinService>.Run(config =>
+                //{
+                //    var name = config.GetDefaultName();
+                //    config.Service(serviceConfig =>
+                //    {
+                //        serviceConfig.ServiceFactory((extraArguments, controller) =>
+                //        {
+                //            return wardeinMicroService;
+                //        });
+
+                //        serviceConfig.OnStart((service, extraParams) =>
+                //        {
+                //            log.Info("Service {0} started", name);
+                //            service.Start();
+                //        });
+
+                //        serviceConfig.OnStop(service =>
+                //        {
+                //            log.Info("Service {0} stopped", name);
+                //            service.Stop();
+                //        });
+
+                //        serviceConfig.OnError(e =>
+                //        {
+                //            log.Error("Service {0} errored with exception : {1}", name, e.Message);
+                //        });
+                //    });
+                //});
+
+                ServiceRunner<CacheCleanUpService>.Run(config =>
                 {
                     var name = config.GetDefaultName();
                     config.Service(serviceConfig =>
                     {
                         serviceConfig.ServiceFactory((extraArguments, controller) =>
                         {
-                            return wardeinMicroService;
+                            return cacheCleanUpService;
                         });
 
                         serviceConfig.OnStart((service, extraParams) =>
@@ -73,6 +103,7 @@ namespace Elfo.Wardein
                         });
                     });
                 });
+
             }
             catch (Exception ex)
             {

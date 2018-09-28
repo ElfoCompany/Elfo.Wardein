@@ -23,7 +23,8 @@ namespace Elfo.Wardein.Services
                 log.Info("---\tStarting WardeinService\t---");
                 this.StartBase();
                 // TODO: Read polling timeout from config
-                Timers.Start("Poller", GetPollingTimeoutInMillisecond(), async () =>
+                var x = GetPollingTimeoutInMillisecond();
+                Timers.Start("Poller", x, async () =>
                 {
                     try
                     {
