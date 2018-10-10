@@ -59,7 +59,7 @@ namespace Elfo.Wardein.Core
 
         public async Task RunCheck()
         {
-            log.Info($"{Environment.NewLine}{Environment.NewLine}--------------------------------- CHECKING SERVICES HEALTH ---------------------------------{Environment.NewLine}");
+            log.Info($"{Environment.NewLine}--------------------------------- CHECKING SERVICES HEALTH ---------------------------------");
 
             if (this.wardeinConfigurationReader.IsInMaintenanceMode)
             {
