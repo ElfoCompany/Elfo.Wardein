@@ -25,9 +25,10 @@ namespace Elfo.Wardein.Services
                 {
                     try
                     {
-                        log.Info($"{Environment.NewLine}------------------------------- Polling at {DateTime.Now.ToString("o")} started -------------------------------");
+                        var guid = Guid.NewGuid();
+                        log.Info($"{Environment.NewLine}--------------------------- Services health check @ {guid} started ---------------------------");
                         await ServicesContainer.WardeinInstance.RunCheck();
-                        log.Info($"{Environment.NewLine}------------------------------- Polling at {DateTime.Now.ToString("o")} finished -------------------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
+                        log.Info($"{Environment.NewLine}--------------------------- Services health check @ {guid} finished ---------------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
                     }
                     catch (Exception ex)
                     {

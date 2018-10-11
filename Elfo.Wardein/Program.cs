@@ -1,5 +1,4 @@
 ﻿using Elfo.Wardein.APIs;
-using Elfo.Wardein.Core;
 using Elfo.Wardein.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +6,6 @@ using NLog;
 using PeterKottas.DotNetCore.WindowsService;
 using PeterKottas.DotNetCore.WindowsService.Interfaces;
 using System;
-using System.IO;
 using System.Threading;
 
 namespace Elfo.Wardein
@@ -25,7 +23,7 @@ namespace Elfo.Wardein
                 new Thread(() =>
                 {
                     Thread.CurrentThread.IsBackground = true;
-                    
+
                     log.Debug("Starting APIs...");
                     ConfigureAPIHosting();
                     log.Debug("APIs started");
@@ -47,64 +45,69 @@ namespace Elfo.Wardein
                     #endregion
                 }).Start();
 
-                //ServiceRunner<WardeinService>.Run(config =>
-                //{
-                //    var name = config.GetDefaultName();
-                //    config.Service(serviceConfig =>
-                //    {
-                //        serviceConfig.ServiceFactory((extraArguments, controller) =>
-                //        {
-                //            return wardeinMicroService;
-                //        });
-
-                //        serviceConfig.OnStart((service, extraParams) =>
-                //        {
-                //            log.Info("Service {0} started", name);
-                //            service.Start();
-                //        });
-
-                //        serviceConfig.OnStop(service =>
-                //        {
-                //            log.Info("Service {0} stopped", name);
-                //            service.Stop();
-                //        });
-
-                //        serviceConfig.OnError(e =>
-                //        {
-                //            log.Error("Service {0} errored with exception : {1}", name, e.Message);
-                //        });
-                //    });
-                //});
-
-                ServiceRunner<CacheCleanUpService>.Run(config =>
+                new Thread(() =>
                 {
-                    var name = config.GetDefaultName();
-                    config.Service(serviceConfig =>
+                    ServiceRunner<WardeinService>.Run(config =>
                     {
-                        serviceConfig.ServiceFactory((extraArguments, controller) =>
+                        var name = config.GetDefaultName();
+                        config.Service(serviceConfig =>
                         {
-                            return cacheCleanUpService;
-                        });
+                            serviceConfig.ServiceFactory((extraArguments, controller) =>
+                            {
+                                return wardeinMicroService;
+                            });
 
-                        serviceConfig.OnStart((service, extraParams) =>
-                        {
-                            log.Info("Service {0} started", name);
-                            service.Start();
-                        });
+                            serviceConfig.OnStart((service, extraParams) =>
+                            {
+                                log.Info("Service {0} started", name);
+                                service.Start();
+                            });
 
-                        serviceConfig.OnStop(service =>
-                        {
-                            log.Info("Service {0} stopped", name);
-                            service.Stop();
-                        });
+                            serviceConfig.OnStop(service =>
+                            {
+                                log.Info("Service {0} stopped", name);
+                                service.Stop();
+                            });
 
-                        serviceConfig.OnError(e =>
-                        {
-                            log.Error("Service {0} errored with exception : {1}", name, e.Message);
+                            serviceConfig.OnError(e =>
+                            {
+                                log.Error("Service {0} errored with exception : {1}", name, e.Message);
+                            });
                         });
                     });
-                });
+                }).Start();
 
+                new Thread(() =>
+                {
+                    ServiceRunner<CacheCleanUpService>.Run(config =>
+                    {
+                        var name = config.GetDefaultName();
+                        config.Service(serviceConfig =>
+                        {
+                            serviceConfig.ServiceFactory((extraArguments, controller) =>
+                            {
+                                return cacheCleanUpService;
+                            });
+
+                            serviceConfig.OnStart((service, extraParams) =>
+                            {
+                                log.Info("Service {0} started", name);
+                                service.Start();
+                            });
+
+                            serviceConfig.OnStop(service =>
+                            {
+                                log.Info("Service {0} stopped", name);
+                                service.Stop();
+                            });
+
+                            serviceConfig.OnError(e =>
+                            {
+                                log.Error("Service {0} errored with exception : {1}", name, e.Message);
+                            });
+                        });
+                    });
+                }).Start();
             }
             catch (Exception ex)
             {

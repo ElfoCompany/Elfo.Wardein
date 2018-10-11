@@ -33,7 +33,8 @@ namespace Elfo.Wardein.Services
                     {
                         try
                         {
-                            log.Debug("Polling at {0} started", DateTime.Now.ToString("o"));
+                            var guid = Guid.NewGuid();
+                            log.Info($"{Environment.NewLine}--------------------------- Cache cleanup @ {guid} started ---------------------------");
 
                             CleanUpOptions cleanUpOptions = new CleanUpOptions(cleanUp.FilePath);
                             cleanUpOptions.RemoveEmptyFolders = true;
@@ -48,7 +49,7 @@ namespace Elfo.Wardein.Services
                             filesProcessor.CleanUp();
 
                             //Activity
-                            log.Debug("Polling at {0} finished", DateTime.Now.ToString("o"));
+                            log.Info($"{Environment.NewLine}--------------------------- Cache cleanup @ {guid} finished ---------------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
                         }
                         catch (Exception ex)
                         {
