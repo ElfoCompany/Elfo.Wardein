@@ -35,11 +35,14 @@ namespace Elfo.Wardein.Services
                         {
                             log.Debug("Polling at {0} started", DateTime.Now.ToString("o"));
 
-                            CleanUpOptions cleanUpOptions = new CleanUpOptions(cleanUp.FilePath + "*.*");
-                            cleanUpOptions.Recursive = true;
+                            CleanUpOptions cleanUpOptions = new CleanUpOptions(cleanUp.FilePath);
                             cleanUpOptions.RemoveEmptyFolders = true;
                             cleanUpOptions.Seconds = cleanUp.CleanUpOptions.ThresholdInSeconds;
                             cleanUpOptions.Days = cleanUp.CleanUpOptions.ThresholdInDays;
+                            cleanUpOptions.DisplayOnly = cleanUp.CleanUpOptions.DisplayOnly;
+                            cleanUpOptions.RemoveEmptyFolders = cleanUp.CleanUpOptions.RemoveEmptyFolders;
+                            cleanUpOptions.UseRecycleBin = cleanUp.CleanUpOptions.UseRecycleBin;
+                            cleanUpOptions.Recursive = cleanUp.CleanUpOptions.Recursive;
 
                             Cleaner filesProcessor = new Cleaner(log, cleanUpOptions);
                             filesProcessor.CleanUp();

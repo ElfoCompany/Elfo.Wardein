@@ -13,5 +13,17 @@ namespace Elfo.Wardein.Core.Models
 
         [JsonProperty(PropertyName = "thresholdInDays")]
         public int ThresholdInDays { get; set; } = 5;
+
+        [JsonProperty(PropertyName = "displayOnly")]
+        public bool DisplayOnly { get; set; } = false;
+
+        [JsonProperty(PropertyName = "useRecycleBin")]
+        public bool UseRecycleBin { get; set; } = false;
+
+        [JsonProperty(PropertyName = "removeEmptyFolders")]
+        public bool RemoveEmptyFolders { get; set; } = false;
+
+        [JsonProperty(PropertyName = "recursive")]
+        public bool Recursive { get; set; } = false;
     }
 }
