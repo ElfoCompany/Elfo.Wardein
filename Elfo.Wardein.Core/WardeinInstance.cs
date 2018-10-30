@@ -86,7 +86,7 @@ namespace Elfo.Wardein.Core
                     }
                     else
                     {
-                        await PerformActionOnServiceRestored();
+                        await PerformActionOnServiceAlive();
                     }
 
                     persistenceService.CreateOrUpdateCachedEntity(item);
@@ -163,15 +163,25 @@ namespace Elfo.Wardein.Core
                         #endregion
                     }
 
-                    async Task PerformActionOnServiceRestored()
+                    async Task PerformActionOnServiceAlive()
                     {
-                        log.Info($"{service.ServiceName} is active");
-                        if (item.RetryCount > 0)
+                        try
                         {
-                            log.Info($"Send Restored Notification");
-                            await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, $"Good news: {service.ServiceName} service has been restored succesfully");
+                            log.Info($"{service.ServiceName} is active");
+                            if (item.RetryCount > 0)
+                            {
+                                log.Info($"Send Restored Notification");
+                                await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, $"Good news: {service.ServiceName} service has been restored succesfully");
+                            }
                         }
-                        item.RetryCount = 0;
+                        catch (Exception ex)
+                        {
+                            log.Error(ex, "Unable to send email");
+                        }
+                        finally
+                        {
+                            item.RetryCount = 0;
+                        }
                     }
 
                     TimeSpan GetServiceSendRepeatedNotificationAfterSecondsOrDefault() =>
