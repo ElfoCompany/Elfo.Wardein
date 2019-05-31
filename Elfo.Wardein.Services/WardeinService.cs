@@ -26,9 +26,9 @@ namespace Elfo.Wardein.Services
                     try
                     {
                         var guid = Guid.NewGuid();
-                        log.Info($"{Environment.NewLine}--------------------------- Services health check @ {guid} started ---------------------------");
+                        log.Info($"{Environment.NewLine}----------------------- Services health check @ {guid} started -----------------------");
                         await ServicesContainer.WardeinInstance.RunCheck();
-                        log.Info($"{Environment.NewLine}--------------------------- Services health check @ {guid} finished ---------------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
+                        log.Info($"{Environment.NewLine}----------------------- Services health check @ {guid} finished -----------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
                     }
                     catch (Exception ex)
                     {

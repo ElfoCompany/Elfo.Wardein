@@ -34,7 +34,7 @@ namespace Elfo.Wardein.Services
                         try
                         {
                             var guid = Guid.NewGuid();
-                            log.Info($"{Environment.NewLine}--------------------------- Cache cleanup @ {guid} started ---------------------------");
+                            log.Info($"{Environment.NewLine}----------------------- Cache cleanup @ {guid} started -----------------------");
 
                             CleanUpOptions cleanUpOptions = new CleanUpOptions(cleanUp.FilePath);
                             cleanUpOptions.RemoveEmptyFolders = cleanUp.CleanUpOptions.RemoveEmptyFolders;
@@ -48,7 +48,7 @@ namespace Elfo.Wardein.Services
                             filesProcessor.CleanUp();
 
                             //Activity
-                            log.Info($"{Environment.NewLine}--------------------------- Cache cleanup @ {guid} finished ---------------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
+                            log.Info($"{Environment.NewLine}----------------------- Cache cleanup @ {guid} finished -----------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
 
                             #region Local Functions
                             void ConfigureThreshold()
