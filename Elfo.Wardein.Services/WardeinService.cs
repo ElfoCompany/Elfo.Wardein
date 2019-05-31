@@ -1,12 +1,9 @@
 ﻿using Elfo.Wardein.Core;
+using Elfo.Wardein.Core.Helpers;
+using NLog;
 using PeterKottas.DotNetCore.WindowsService.Base;
 using PeterKottas.DotNetCore.WindowsService.Interfaces;
 using System;
-using Microsoft.AspNetCore.Hosting;
-using Elfo.Wardein.APIs;
-using Elfo.Wardein.Core.Helpers;
-using NLog;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Elfo.Wardein.Services
 {
@@ -17,28 +14,30 @@ namespace Elfo.Wardein.Services
         {
             log.Info("---\tInitializing WardeinService\t---");
             ConfigureScheduledServiceCheck();
-            
+
             void ConfigureScheduledServiceCheck()
             {
                 log.Info("---\tStarting WardeinService\t---");
                 this.StartBase();
                 // TODO: Read polling timeout from config
-                Timers.Start("Poller", GetPollingTimeoutInMillisecond(), async () =>
+                var x = GetPollingTimeoutInMillisecond();
+                Timers.Start("Poller", x, async () =>
                 {
                     try
                     {
-                        log.Debug("Polling at {0} started", DateTime.Now.ToString("o"));
+                        var guid = Guid.NewGuid();
+                        log.Info($"{Environment.NewLine}----------------------- Services health check @ {guid} started -----------------------");
                         await ServicesContainer.WardeinInstance.RunCheck();
-                        log.Debug("Polling at {0} finished", DateTime.Now.ToString("o"));
+                        log.Info($"{Environment.NewLine}----------------------- Services health check @ {guid} finished -----------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
                     }
                     catch (Exception ex)
                     {
-                        log.Error(ex,$"Exception inside polling action: {ex.ToString()}\n");
+                        log.Error(ex, $"Exception inside polling action: {ex.ToString()}\n");
                     }
                 },
                 (e) =>
                 {
-                    log.Error(e,"Exception while polling");
+                    log.Error(e, "Exception while polling");
                 });
 
                 #region Local Functions

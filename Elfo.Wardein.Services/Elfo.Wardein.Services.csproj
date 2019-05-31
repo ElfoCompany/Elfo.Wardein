@@ -2,12 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.3" />
-    <PackageReference Include="PeterKottas.DotNetCore.WindowsService" Version="2.0.8" />
+    <PackageReference Include="Elfo.CleanUpManager" Version="0.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.0" />
+    <PackageReference Include="PeterKottas.DotNetCore.WindowsService" Version="2.0.11" />
   </ItemGroup>
 
   <ItemGroup>

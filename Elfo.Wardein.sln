@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Core", "Elfo.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein", "Elfo.Wardein\Elfo.Wardein.csproj", "{7EED5720-57EC-49E7-B831-C3E5538E7B3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elfo.Wardein.APIs", "Elfo.Wardein.APIs\Elfo.Wardein.APIs.csproj", "{56FD636F-0F4E-4644-8713-6AA1FDFF713B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.APIs", "Elfo.Wardein.APIs\Elfo.Wardein.APIs.csproj", "{56FD636F-0F4E-4644-8713-6AA1FDFF713B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
