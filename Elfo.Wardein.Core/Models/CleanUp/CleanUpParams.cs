@@ -7,7 +7,6 @@ namespace Elfo.Wardein.Core.Models
 {
     public class CleanUpParams
     {
-
         [JsonProperty(PropertyName = "thresholdInSeconds")]
         public int ThresholdInSeconds { get; set; }
 

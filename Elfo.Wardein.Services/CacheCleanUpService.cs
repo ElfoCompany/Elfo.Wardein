@@ -16,7 +16,6 @@ namespace Elfo.Wardein.Services
         static Logger log = LogManager.GetCurrentClassLogger();
 
         public void Start()
-
         {
             log.Info("---\tInitializing CacheCleanUpService\t---");
             ConfigureScheduledServiceCheck();
