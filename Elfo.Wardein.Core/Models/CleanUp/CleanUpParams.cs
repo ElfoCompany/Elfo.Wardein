@@ -9,10 +9,10 @@ namespace Elfo.Wardein.Core.Models
     {
 
         [JsonProperty(PropertyName = "thresholdInSeconds")]
-        public int ThresholdInSeconds { get; set; } = 300;
+        public int ThresholdInSeconds { get; set; }
 
         [JsonProperty(PropertyName = "thresholdInDays")]
-        public int ThresholdInDays { get; set; } = 5;
+        public int ThresholdInDays { get; set; }
 
         [JsonProperty(PropertyName = "displayOnly")]
         public bool DisplayOnly { get; set; } = false;

@@ -37,9 +37,8 @@ namespace Elfo.Wardein.Services
                             log.Info($"{Environment.NewLine}--------------------------- Cache cleanup @ {guid} started ---------------------------");
 
                             CleanUpOptions cleanUpOptions = new CleanUpOptions(cleanUp.FilePath);
-                            cleanUpOptions.RemoveEmptyFolders = true;
-                            cleanUpOptions.Seconds = cleanUp.CleanUpOptions.ThresholdInSeconds;
-                            cleanUpOptions.Days = cleanUp.CleanUpOptions.ThresholdInDays;
+                            cleanUpOptions.RemoveEmptyFolders = cleanUp.CleanUpOptions.RemoveEmptyFolders;
+                            ConfigureThreshold();
                             cleanUpOptions.DisplayOnly = cleanUp.CleanUpOptions.DisplayOnly;
                             cleanUpOptions.RemoveEmptyFolders = cleanUp.CleanUpOptions.RemoveEmptyFolders;
                             cleanUpOptions.UseRecycleBin = cleanUp.CleanUpOptions.UseRecycleBin;
@@ -50,6 +49,20 @@ namespace Elfo.Wardein.Services
 
                             //Activity
                             log.Info($"{Environment.NewLine}--------------------------- Cache cleanup @ {guid} finished ---------------------------{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
+
+                            #region Local Functions
+                            void ConfigureThreshold()
+                            {
+                                if (cleanUp.CleanUpOptions.ThresholdInSeconds != default(int) && cleanUp.CleanUpOptions.ThresholdInDays == default(int))
+                                    cleanUpOptions.Seconds = cleanUp.CleanUpOptions.ThresholdInSeconds;
+                                else if (cleanUp.CleanUpOptions.ThresholdInSeconds == default(int) && cleanUp.CleanUpOptions.ThresholdInDays != default(int))
+                                    cleanUpOptions.Days = cleanUp.CleanUpOptions.ThresholdInDays;
+                                else if (cleanUp.CleanUpOptions.ThresholdInSeconds != default(int) && cleanUp.CleanUpOptions.ThresholdInDays != default(int))
+                                    cleanUpOptions.Days = cleanUp.CleanUpOptions.ThresholdInDays;
+                                else
+                                    cleanUpOptions.Seconds = 300;
+                            }
+                            #endregion
                         }
                         catch (Exception ex)
                         {
