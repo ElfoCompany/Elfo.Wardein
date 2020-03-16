@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Core", "Elfo.Wardein.Core\Elfo.Wardein.Core.csproj", "{EB0438FD-BA9B-428E-88C7-430A0FB3AA53}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.APIs", "Elfo.Wardein.APIs\Elfo.Wardein.APIs.csproj", "{56FD636F-0F4E-4644-8713-6AA1FDFF713B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elfo.Wardein.Watchers", "Elfo.Wardein.Watchers\Elfo.Wardein.Watchers.csproj", "{69EDA8D3-51B4-4986-A6AD-E57514071EEC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Integrations", "Elfo.Wardein.Integrations\Elfo.Wardein.Integrations.csproj", "{A9EBA788-3D89-4E26-ADB3-E3B29F4B0F7B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Integrations.Tests", "Elfo.Wardein.Integrations.Tests\Elfo.Wardein.Integrations.Tests.csproj", "{92AA3962-F5B8-46DC-85FA-0E06987F8F22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{69EDA8D3-51B4-4986-A6AD-E57514071EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69EDA8D3-51B4-4986-A6AD-E57514071EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69EDA8D3-51B4-4986-A6AD-E57514071EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9EBA788-3D89-4E26-ADB3-E3B29F4B0F7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9EBA788-3D89-4E26-ADB3-E3B29F4B0F7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9EBA788-3D89-4E26-ADB3-E3B29F4B0F7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9EBA788-3D89-4E26-ADB3-E3B29F4B0F7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92AA3962-F5B8-46DC-85FA-0E06987F8F22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92AA3962-F5B8-46DC-85FA-0E06987F8F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92AA3962-F5B8-46DC-85FA-0E06987F8F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92AA3962-F5B8-46DC-85FA-0E06987F8F22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
