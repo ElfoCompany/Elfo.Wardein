@@ -1,76 +1,50 @@
-﻿using Elfo.Wardein.Core.ConfigurationReader;
-using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Elfo.Wardein.Core;
 using Elfo.Wardein.Core.Abstractions;
-using Elfo.Wardein.Core.Persistence;
+using Elfo.Wardein.Core.Helpers;
 using Elfo.Wardein.Core.NotificationService;
-using Microsoft.Extensions.DependencyInjection;
-using NLog;
 using Elfo.Wardein.Core.ServiceManager;
+using System;
+using System.Threading.Tasks;
+using Warden.Watchers;
 
-namespace Elfo.Wardein.Core
+namespace Elfo.Wardein.Watchers.WindowsService
 {
-    public class WardeinInstance
+    public class WindowsServiceWatcher : WardeinWatcher<WindowsServiceWatcherConfig>
     {
-        #region Private variables
+        protected WindowsServiceWatcher(WindowsServiceWatcherConfig config, string name, string group = null) : base(name, config, group)
+        { }
 
-        private WardeinConfig wardeinConfig = null;
-        private readonly static Logger log = LogManager.GetCurrentClassLogger();
-        private readonly IAmWardeinConfigurationManager wardeinConfigurationReader;
-
-        #endregion
-
-        #region Constructor
-
-        public WardeinInstance()
+        public static WindowsServiceWatcher Create(WindowsServiceWatcherConfig config, string group = null)
         {
-            this.wardeinConfigurationReader = ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH);
-
-            GetWarderinConfigAndThrowErrorIfNotExist();
-
-            #region Local Functions
-
-            void GetWarderinConfigAndThrowErrorIfNotExist()
-            {
-                if (!File.Exists(Const.WARDEIN_CONFIG_PATH))
-                {
-                    //TODO: throw error or something...
-                }
-                else
-                {
-                    this.wardeinConfig = wardeinConfigurationReader.GetConfiguration();
-                    if (this.wardeinConfig == null)
-                        throw new ArgumentNullException("Wardein configuration not found or not well formatted");
-                }
-
-
-            }
-
-            #endregion
+            return new WindowsServiceWatcher(config, $"{nameof(WindowsServiceWatcher)}", group);
         }
 
-        #endregion
+        public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
+        {
+            log.Info($"---\tStarting {Name}\t---");
+            try
+            {
+                var guid = Guid.NewGuid();
+                log.Info($"{Environment.NewLine}{"-".Repeat(24)} Services health check @ {guid} started {"-".Repeat(24)}");
 
-        public async Task RunCheck()
+                await RunCheck();
+
+                log.Info($"{Environment.NewLine}{"-".Repeat(24)} Services health check @ {guid} finished {"-".Repeat(24)}{Environment.NewLine.Repeat(24)}");
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Exception inside polling action: {ex.ToString()}\n");
+            }
+
+            return await Task.FromResult<IWatcherCheckResult>(null);
+        }
+
+        protected async Task RunCheck()
         {
             log.Info($"{Environment.NewLine}> CHECKING SERVICES HEALTH");
 
-            if (this.wardeinConfigurationReader.IsInMaintenanceMode)
+            foreach (var service in Config.Services)
             {
-                log.Info("Wardein is in maintenance mode.");
-                return;
-            }
-
-            foreach (var service in wardeinConfig.Services)
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(250)); // TODO: Do we really need this?
-
                 using (var persistenceService = ServicesContainer.PersistenceService(Const.DB_PATH))
                 {
                     IAmServiceManager serviceManager = GetServiceManager();
@@ -90,7 +64,6 @@ namespace Elfo.Wardein.Core
                     }
 
                     persistenceService.CreateOrUpdateCachedEntity(item);
-
 
                     #region Local Functions
 
@@ -151,7 +124,7 @@ namespace Elfo.Wardein.Core
                                 return DateTime.UtcNow.Subtract(item.LastNotificationSentAtThisTimeUTC.GetValueOrDefault(DateTime.MinValue)) >= timeout;
                             }
 
-                            bool NeverSentANotificationBefore() => item.LastNotificationSentAtThisTimeUTC.HasValue == false; 
+                            bool NeverSentANotificationBefore() => item.LastNotificationSentAtThisTimeUTC.HasValue == false;
 
                             #endregion
                         }
@@ -175,11 +148,11 @@ namespace Elfo.Wardein.Core
                     }
 
                     TimeSpan GetServiceSendRepeatedNotificationAfterSecondsOrDefault() =>
-                        TimeSpan.FromSeconds(service.SendRepeatedNotificationAfterSeconds.GetValueOrDefault(wardeinConfig.SendRepeatedNotificationAfterSeconds));
+                        TimeSpan.FromSeconds(service.SendRepeatedNotificationAfterSeconds.GetValueOrDefault(Config.SendRepeatedNotificationAfterSeconds));
 
                     int GetServiceNumberOfNotificationWithoutRateLimitationOrDefault()
                     {
-                        var result = service.NumberOfNotificationsWithoutRateLimitation.GetValueOrDefault(wardeinConfig.NumberOfNotificationsWithoutRateLimitation);
+                        var result = service.NumberOfNotificationsWithoutRateLimitation.GetValueOrDefault(Config.NumberOfNotificationsWithoutRateLimitation);
                         if (result <= 0)
                             return int.MaxValue;
 
