@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elfo.Wardein.Core.Models
+namespace Elfo.Wardein.Watchers.WindowsService
 {
-    public class WindowsService
+    public class ObservableWindowsService
     {
         [JsonProperty(PropertyName = "serviceName")]
         public string ServiceName { get; set; }

@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elfo.Wardein.Core.Models
+namespace Elfo.Wardein.Watchers.FileSystem
 {
-    public class CleanUpParams
+    public class FileSystemCleanUpOptions
     {
         [JsonProperty(PropertyName = "thresholdInSeconds")]
         public int ThresholdInSeconds { get; set; }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
     <ApplicationIcon>Group 1.ico</ApplicationIcon>
   </PropertyGroup>
@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Elfo.Wardein.APIs\Elfo.Wardein.APIs.csproj" />
-    <ProjectReference Include="..\Elfo.Wardein.Services\Elfo.Wardein.Services.csproj" />
+    <ProjectReference Include="..\Elfo.Wardein.Watchers\Elfo.Wardein.Watchers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -39,7 +39,7 @@ namespace Elfo.Wardein.Core
         protected void Configure()
         {
 
-            serviceCollection = serviceCollection = new ServiceCollection()                
+            serviceCollection = serviceCollection = new ServiceCollection()
                 .AddSingleton<Func<string, IAmMailConfigurationManager>>(sp => filePath => new MailConfigurationManagerFromJSON(filePath))
                 .AddSingleton<Func<string, IAmWardeinConfigurationManager>>(sp => filePath => new WardeinConfigurationManagerFromJSON(filePath))
                 .AddTransient<Func<string, IAmPersistenceService<WindowsServiceStats>>>(sp => filePath => new WindowsServiceStatsPersistenceInJSON(filePath))
@@ -55,7 +55,7 @@ namespace Elfo.Wardein.Core
                             throw new KeyNotFoundException($"Notification service {notificationType.ToString()} not supported yet");
                     }
                 })
-                .AddTransient<Func<ServiceManagerType, string, IAmServiceManager>>(sp => (serviceManagerType, serviceName) => 
+                .AddTransient<Func<ServiceManagerType, string, IAmServiceManager>>(sp => (serviceManagerType, serviceName) =>
                 {
                     switch (serviceManagerType)
                     {
@@ -66,8 +66,7 @@ namespace Elfo.Wardein.Core
                         default:
                             throw new KeyNotFoundException($"Notification service {serviceManagerType.ToString()} not supported yet");
                     }
-                })
-                .AddTransient<WardeinInstance>();
+                });
 
             serviceProvider = serviceCollection.BuildServiceProvider();
         }
@@ -128,8 +127,6 @@ namespace Elfo.Wardein.Core
             var instanceResolver = Current.serviceProvider.GetService<Func<ServiceManagerType, string, IAmServiceManager>>();
             return instanceResolver(serviceManagerType, serviceName);
         }
-
-        public static WardeinInstance WardeinInstance => Current.serviceProvider.GetService<WardeinInstance>();
 
         #endregion
     }

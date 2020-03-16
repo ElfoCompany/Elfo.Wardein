@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elfo.Wardein.Core.Models
+namespace Elfo.Wardein.Watchers.FileSystem
 {
-    public class CleanUps
+    public class FileSystemCleanUpConfig
     {
         [JsonProperty(PropertyName = "filePath")]
         public string FilePath { get; set; }
@@ -14,6 +14,6 @@ namespace Elfo.Wardein.Core.Models
         public double TimeSpanFromSeconds { get; set; } = 10; // Default values
 
         [JsonProperty(PropertyName = "cleanUpOptions")]
-        public CleanUpParams CleanUpOptions { get; set; } = new CleanUpParams();
+        public FileSystemCleanUpOptions CleanUpOptions { get; set; } = new FileSystemCleanUpOptions();
     }
 }

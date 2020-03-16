@@ -16,9 +16,6 @@ namespace Elfo.Wardein.Core.Models
         [JsonProperty(PropertyName = "numberOfNotificationsWithoutRateLimitation")]
         public int NumberOfNotificationsWithoutRateLimitation { get; set; } = 2; // Default values
 
-        [JsonProperty(PropertyName = "services")]
-        public IList<WindowsService> Services { get; set; }
-
         [JsonProperty(PropertyName = "persistenceType")]
         public string PersistenceType { get; set; } = "JSON";
 
@@ -29,7 +26,5 @@ namespace Elfo.Wardein.Core.Models
             IsInMaintenanceMode = false,
             MaintenanceModeStartDateInUTC = DateTime.UtcNow
         }; // Default values
-        [JsonProperty(PropertyName = "cleanUps")]
-        public CleanUps[] CleanUps { get; set; }
     }
 }
