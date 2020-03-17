@@ -1,8 +1,6 @@
-﻿using Elfo.Wardein.Core.Abstractions;
-using Elfo.Wardein.Core.Models;
+﻿using Elfo.Wardein.Abstractions.Services;
+using Elfo.Wardein.Abstractions.Services.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;

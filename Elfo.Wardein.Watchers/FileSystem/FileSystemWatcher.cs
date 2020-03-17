@@ -1,12 +1,6 @@
 ﻿using Elfo.CleanUpManager;
-using Elfo.Wardein.Core;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Models;
-using NLog;
-using PeterKottas.DotNetCore.WindowsService.Base;
-using PeterKottas.DotNetCore.WindowsService.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Warden.Watchers;

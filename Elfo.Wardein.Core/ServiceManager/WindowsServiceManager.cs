@@ -1,4 +1,4 @@
-﻿using Elfo.Wardein.Core.Abstractions;
+﻿using Elfo.Wardein.Abstractions.Services;
 using NLog;
 using System;
 using System.Diagnostics;

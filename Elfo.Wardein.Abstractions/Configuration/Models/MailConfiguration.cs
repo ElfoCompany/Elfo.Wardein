@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Elfo.Wardein.Abstractions.Configuration;
+using Newtonsoft.Json;
 
-namespace Elfo.Wardein.Core.Models
+namespace Elfo.Wardein.Abstractions.Configuration.Models
 {
     public class MailConfiguration
     {

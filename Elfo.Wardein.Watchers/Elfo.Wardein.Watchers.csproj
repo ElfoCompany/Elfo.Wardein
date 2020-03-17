@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Elfo.Wardein.APIs\Elfo.Wardein.APIs.csproj" />
     <ProjectReference Include="..\Elfo.Wardein.Core\Elfo.Wardein.Core.csproj" />
     <ProjectReference Include="..\Elfo.Wardein.Integrations\Elfo.Wardein.Integrations.csproj" />
   </ItemGroup>

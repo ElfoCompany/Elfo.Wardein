@@ -1,9 +1,6 @@
-﻿using Elfo.Wardein.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Elfo.Wardein.Abstractions.Configuration.Models;
 
-namespace Elfo.Wardein.Core.Abstractions
+namespace Elfo.Wardein.Abstractions.Configuration
 {
     public interface IAmWardeinConfigurationManager : IAmBaseConfigurationManager<WardeinConfig>
     {

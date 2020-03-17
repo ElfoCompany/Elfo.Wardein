@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Elfo.Wardein.Abstractions\Elfo.Wardein.Abstractions.csproj" />
     <ProjectReference Include="..\Elfo.Wardein.Core\Elfo.Wardein.Core.csproj" />
   </ItemGroup>
 

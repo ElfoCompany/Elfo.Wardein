@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Elfo.Wardein.Core.Abstractions
+namespace Elfo.Wardein.Abstractions.Services
 {
     public abstract class IAmServiceManager
     {

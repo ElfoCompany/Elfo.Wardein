@@ -1,16 +1,13 @@
-﻿using Elfo.Wardein.Core.Abstractions;
+﻿using Elfo.Wardein.Abstractions.Configuration;
+using Elfo.Wardein.Abstractions.Services;
+using Elfo.Wardein.Abstractions.Services.Models;
 using Elfo.Wardein.Core.ConfigurationReader;
-using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Models;
 using Elfo.Wardein.Core.NotificationService;
 using Elfo.Wardein.Core.Persistence;
 using Elfo.Wardein.Core.ServiceManager;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Elfo.Wardein.Core
 {
