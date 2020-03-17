@@ -19,6 +19,15 @@ namespace Elfo.Wardein.Integrations.Oracle.Integration
             this.configuration = configuration;
             oracleService = configuration.OracleServiceProvider();
         }
+        private void GetSessionInfoForTransaction(OracleConnection connection)
+        {
+            connection.ClientId = "HULK";
+            connection.ClientInfo = "WEBCLIENT_COREDB";
+            connection.ModuleName = "ExecuteAsync";
+            var sessionInfo = connection.GetSessionInfo();
+            sessionInfo.DateLanguage = "AMERICAN";
+            connection.SetSessionInfo(sessionInfo);
+        }
 
         public async Task<IEnumerable<T>> QueryAsync<T>(string query, IDictionary<string, object> parameters = null)
         {
@@ -30,6 +39,8 @@ namespace Elfo.Wardein.Integrations.Oracle.Integration
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
+                        GetSessionInfoForTransaction(connection);
+
                         var queryToExecute = string.IsNullOrWhiteSpace(query) ? configuration.Query : query;
                         var queryParameters = parameters ?? configuration.QueryParameters;
 
@@ -49,21 +60,28 @@ namespace Elfo.Wardein.Integrations.Oracle.Integration
             }
         }
 
+       
+
         public async Task<int> ExecuteAsync(string command, IDictionary<string, object> parameters = null)
         {
+
             try
             {
                 int result = 0;
-                using (var connection = configuration.ConnectionProvider(configuration.ConnectionString))
+
+                using (var connection = new OracleConnection(configuration.ConnectionString))
                 {
                     connection.Open();
+
                     using (var transaction = connection.BeginTransaction())
                     {
+                        GetSessionInfoForTransaction(connection);
+
                         var commandToExecute = string.IsNullOrWhiteSpace(command) ? configuration.Command : command;
                         var commandParameters = parameters ?? configuration.CommandParameters;
 
                         result = await oracleService.ExecuteAsync(connection, commandToExecute,
-                            commandParameters, configuration.CommandTimeout); 
+                            commandParameters, configuration.CommandTimeout);
                         transaction.Commit();
                     }
                 }

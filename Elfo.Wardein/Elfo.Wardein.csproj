@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.5.0" />
     <PackageReference Include="PeterKottas.DotNetCore.WindowsService" Version="2.0.11" />
+    <PackageReference Include="Warden" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Elfo.Wardein.APIs\Elfo.Wardein.APIs.csproj" />
     <ProjectReference Include="..\Elfo.Wardein.Core\Elfo.Wardein.Core.csproj" />
+    <ProjectReference Include="..\Elfo.Wardein.Integrations\Elfo.Wardein.Integrations.csproj" />
   </ItemGroup>
 
 </Project>
