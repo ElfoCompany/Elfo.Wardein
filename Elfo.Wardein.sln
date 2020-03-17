@@ -9,11 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein", "Elfo.Wardei
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.APIs", "Elfo.Wardein.APIs\Elfo.Wardein.APIs.csproj", "{56FD636F-0F4E-4644-8713-6AA1FDFF713B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elfo.Wardein.Watchers", "Elfo.Wardein.Watchers\Elfo.Wardein.Watchers.csproj", "{69EDA8D3-51B4-4986-A6AD-E57514071EEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Watchers", "Elfo.Wardein.Watchers\Elfo.Wardein.Watchers.csproj", "{69EDA8D3-51B4-4986-A6AD-E57514071EEC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Integrations", "Elfo.Wardein.Integrations\Elfo.Wardein.Integrations.csproj", "{A9EBA788-3D89-4E26-ADB3-E3B29F4B0F7B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Integrations.Tests", "Elfo.Wardein.Integrations.Tests\Elfo.Wardein.Integrations.Tests.csproj", "{92AA3962-F5B8-46DC-85FA-0E06987F8F22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elfo.Wardein.Abstractions", "Elfo.Wardein.Abstractions\Elfo.Wardein.Abstractions.csproj", "{47568C8B-1053-4245-BF6C-5F4EC1F69BE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{92AA3962-F5B8-46DC-85FA-0E06987F8F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92AA3962-F5B8-46DC-85FA-0E06987F8F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92AA3962-F5B8-46DC-85FA-0E06987F8F22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47568C8B-1053-4245-BF6C-5F4EC1F69BE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47568C8B-1053-4245-BF6C-5F4EC1F69BE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47568C8B-1053-4245-BF6C-5F4EC1F69BE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47568C8B-1053-4245-BF6C-5F4EC1F69BE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

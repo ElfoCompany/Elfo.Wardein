@@ -1,15 +1,10 @@
-﻿using Elfo.Wardein.Core.Abstractions;
-using Elfo.Wardein.Core.ConfigurationReader;
+﻿using Elfo.Wardein.Abstractions.Configuration.Models;
+using Elfo.Wardein.Abstractions.Services;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.Models;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using NLog;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Elfo.Wardein.Core.NotificationService

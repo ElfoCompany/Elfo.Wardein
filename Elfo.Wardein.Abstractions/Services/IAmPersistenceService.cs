@@ -1,9 +1,7 @@
-﻿using Elfo.Wardein.Core.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Elfo.Wardein.Core.Abstractions
+namespace Elfo.Wardein.Abstractions.Services
 {
     public interface IAmPersistenceService<T> : IDisposable where T : new() 
     {

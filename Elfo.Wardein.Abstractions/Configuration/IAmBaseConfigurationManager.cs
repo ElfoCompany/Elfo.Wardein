@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elfo.Wardein.Core.Abstractions
+namespace Elfo.Wardein.Abstractions.Configuration
 {
     public interface IAmBaseConfigurationManager<T> where T: new()
     {
