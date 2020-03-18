@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Elfo.Wardein.Core.ServiceManager;
+using Newtonsoft.Json;
 
-namespace Elfo.Wardein.Watchers.IISPool
+
+namespace Elfo.Wardein.Watchers.GenericService
 {
-    public class ObservarableIISPool
+    public class ObservarableGenericServiceWatcher
     {
         [JsonProperty(PropertyName = "serviceName")]
         public string ServiceName { get; set; }
@@ -27,5 +29,8 @@ namespace Elfo.Wardein.Watchers.IISPool
 
         [JsonProperty(PropertyName = "numberOfNotificationsWithoutRateLimitation")]
         public int? NumberOfNotificationsWithoutRateLimitation { get; set; }
+
+        [JsonProperty(PropertyName = "serviceManagerType")]
+        public ServiceManagerType ServiceManagerType { get; set; }
     }
 }

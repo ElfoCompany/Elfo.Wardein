@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Elfo.Wardein.Integrations.Oracle.Integration;
+using Elfo.Wardein.Watchers.GenericService;
 using Elfo.Wardein.Watchers.HeartBeat.Config;
 using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
@@ -22,10 +23,15 @@ namespace Elfo.Wardein.Watchers.HeartBeat
             HeartBeatAppName = name;
         }
 
+        public static HeartBeatWatcher Create(HeartBeatWatcherConfig config, string group = null)
+        {
+            return new HeartBeatWatcher(config, $"{nameof(HeartBeatWatcher)}", group);
+        }
+
         public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
         {
             await UpdateHeartBeatByAppName(Name);
-            return await Task.FromResult(Task.CompletedTask as IWatcherCheckResult); 
+            return await Task.FromResult(Task.CompletedTask as IWatcherCheckResult);
         }
 
         public async Task<int> UpdateHeartBeatByAppName(string appName)
@@ -34,7 +40,7 @@ namespace Elfo.Wardein.Watchers.HeartBeat
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            var connectionString = configuration["ConnectionString:Db"];
+            var connectionString = configuration["ConnectionStrings:Db"];
 
             OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
 

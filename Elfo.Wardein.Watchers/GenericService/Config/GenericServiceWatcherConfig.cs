@@ -1,17 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Elfo.Wardein.Watchers.IISPool
-{
-    public class IISPoolWatcherConfig : IWatcherConfig
-    {
-        /// <summary>
-        /// Property defines if watcher has to be running in maintainance mode
-        /// Default value false
-        /// </summary>
-        [JsonProperty(PropertyName = "isInMaintenanceMode")]
-        public bool IsInMaintenanceMode { get; set; } = false;
 
+namespace Elfo.Wardein.Watchers.GenericService
+{
+    public class GenericServiceWatcherConfig : IWatcherConfig 
+    {
         /// <summary>
         /// Property that defines frequency of watcher polling
         /// Default value 10 seconds
@@ -26,7 +20,9 @@ namespace Elfo.Wardein.Watchers.IISPool
         public int NumberOfNotificationsWithoutRateLimitation { get; set; } = 2; // Default values
 
         [JsonProperty(PropertyName = "services")]
-        public IEnumerable<ObservarableIISPool> Services { get; set; }
+        public IEnumerable<ObservarableGenericServiceWatcher> Services { get; set; }
+
+        [JsonProperty(PropertyName = "isInMaintenanceMode")]
+        public bool IsInMaintenanceMode { get; set; } = false;
     }
 }
-

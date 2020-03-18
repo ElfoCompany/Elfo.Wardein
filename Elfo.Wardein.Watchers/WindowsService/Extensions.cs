@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Elfo.Wardein.Watchers.GenericService;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Warden;
@@ -10,7 +11,7 @@ namespace Elfo.Wardein.Watchers.WindowsService
     public static class Extensions
     {
         public static WardenConfiguration.Builder AddWindowsServiceWatcher(this WardenConfiguration.Builder builder,
-            WindowsServiceWatcherConfig config,
+            GenericServiceWatcherConfig config,
             string group = null,
             Action<WatcherHooksConfiguration.Builder> hooks = null)
         {
