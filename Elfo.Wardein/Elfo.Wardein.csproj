@@ -15,8 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Elfo.Wardein.APIs\Elfo.Wardein.APIs.csproj" />
-    <ProjectReference Include="..\Elfo.Wardein.Watchers\Elfo.Wardein.Watchers.csproj" />
+    <ProjectReference Include="..\Elfo.Wardein.Services\Elfo.Wardein.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,12 +13,12 @@ namespace Elfo.Wardein.APIs
     {
         public ConfigsImplementation() : base(blockActionIfInMaintenanceMode: false) { }
 
-        public Task Invalidate(HttpContext context)
+        public async Task Invalidate(HttpContext context)
         {
             ServicesContainer.MailConfigurationManager(Const.MAIL_CONFIG_PATH).InvalidateCache();
             ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH).InvalidateCache();
-            new PollingImplementation().Restart(context);
-            return context.Response.WriteAsync($"Cached configs invalidated");
+            await new PollingImplementation().Restart(context);
+            await context.Response.WriteAsync($"Cached configs invalidated");
         }
     }
 }

@@ -75,7 +75,7 @@ namespace Elfo.Wardein.Core
         /// <summary>
         /// Gets the istance as singleton
         /// </summary>
-        public static new ServicesContainer Current
+        public static ServicesContainer Current
         {
             get
             {
