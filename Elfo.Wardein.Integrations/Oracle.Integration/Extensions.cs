@@ -1,5 +1,6 @@
 ﻿using System;
 using Elfo.Wardein.Integrations.Oracle.Integration;
+using Elfo.Wardein.Oracle;
 using Warden.Core;
 using Warden.Integrations;
 
@@ -10,7 +11,7 @@ namespace Elfo.Wardein.Integrations
         public static WardenConfiguration.Builder IntegrateWithOracle(
             this WardenConfiguration.Builder builder,
             string connectionString,
-            Action<OracleIntegrationConfiguration.Builder> configurator = null)
+            Action<OracleConnectionConfiguration.Builder> configurator = null)
         {
             builder.AddIntegration(OracleIntegration.Create(connectionString, configurator));
 
@@ -19,9 +20,14 @@ namespace Elfo.Wardein.Integrations
 
         public static WardenConfiguration.Builder IntegrateWithOracle(
             this WardenConfiguration.Builder builder,
-            OracleIntegrationConfiguration configuration)
+            OracleConnectionConfiguration configuration) 
+            => builder.IntegrateWithOracle(OracleIntegration.Create(configuration));
+
+        public static WardenConfiguration.Builder IntegrateWithOracle(
+            this WardenConfiguration.Builder builder,
+            OracleIntegration oracleIntegration)
         {
-            builder.AddIntegration(OracleIntegration.Create(configuration));
+            builder.AddIntegration(oracleIntegration);
 
             return builder;
         }

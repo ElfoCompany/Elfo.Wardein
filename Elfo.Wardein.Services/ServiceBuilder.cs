@@ -12,6 +12,9 @@ using Elfo.Wardein.Integrations;
 using Elfo.Wardein.Watchers.FileSystem;
 using Elfo.Wardein.Watchers.WindowsService;
 using Elfo.Wardein.Watchers.IISPool;
+using Elfo.Wardein.Watchers.HeartBeat;
+using Elfo.Wardein.Integrations.Oracle.Integration;
+using Elfo.Wardein.Oracle;
 
 namespace Elfo.Wardein.Services
 {
@@ -27,12 +30,22 @@ namespace Elfo.Wardein.Services
 
             var connectionString = appConfiguration["ConnectionStrings:Db"];
 
+            var oracleConfiguration = new OracleConnectionConfiguration.Builder(connectionString)
+                .WithClientId(appConfiguration["Oracle:ClientId"])
+                .WithClientInfo(appConfiguration["Oracle:ClientInfo"])
+                .WithModuleName(appConfiguration["Oracle:ModuleName"])
+                .WithDateLanguage(appConfiguration["Oracle:DateLanguage"])
+                .Build();
+
+            var oracleIntegration = OracleIntegration.Create(oracleConfiguration);
+
             var configuration = WardenConfiguration
                 .Create()
-                .IntegrateWithOracle(connectionString)
+                .IntegrateWithOracle(oracleIntegration)
                 .AddFileSystemWatcher(null)
                 .AddWindowsServiceWatcher(null)
                 .AddIISPoolWatcher(null)
+                .AddWardeinHeartBeatWatcher(null)
                 .Build();
 
             warden = WardenInstance.Create(configuration);

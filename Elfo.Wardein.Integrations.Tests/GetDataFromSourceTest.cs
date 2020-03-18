@@ -1,4 +1,5 @@
 ﻿using Elfo.Wardein.Integrations.Oracle.Integration;
+using Elfo.Wardein.Oracle;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Oracle.ManagedDataAccess.Client;
@@ -26,9 +27,9 @@ namespace Elfo.Wardein.Integrations.Tests
 		[TestCategory("ManualTest")]
 		public async Task ConnectionAreOk()
 		{
-			OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
+			OracleConnectionConfiguration config = new OracleConnectionConfiguration(connectionString);
 
-			OracleIntegration connection = new OracleIntegration(config);
+			OracleIntegration connection = OracleIntegration.Create(config);
 
 			var result = await connection.QueryAsync<object>("Select * from DUMMY_WRD");
 
@@ -39,9 +40,9 @@ namespace Elfo.Wardein.Integrations.Tests
 		[TestCategory("ManualTest")]
 		public async Task InsertIsOk()
 		{
-			OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
+			OracleConnectionConfiguration config = new OracleConnectionConfiguration(connectionString);
 
-			OracleIntegration connection = new OracleIntegration(config);
+			OracleIntegration connection = OracleIntegration.Create(config);
 
 			var result = await connection.ExecuteAsync("INSERT INTO DUMMY_WRD VALUES (55, 'Some text22')");
 
@@ -52,9 +53,9 @@ namespace Elfo.Wardein.Integrations.Tests
 		[TestCategory("ManualTest")]
 		public async Task SelectAreOk()
 		{
-			OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
+			OracleConnectionConfiguration config = new OracleConnectionConfiguration(connectionString);
 
-			OracleIntegration connection = new OracleIntegration(config);
+			OracleIntegration connection = OracleIntegration.Create(config);
 
 			var result = await connection.ExecuteAsync("SELECT * FROM DUMMY_WRD");
 
@@ -65,9 +66,9 @@ namespace Elfo.Wardein.Integrations.Tests
 		[TestCategory("ManualTest")]
 		public async Task UpdateIsOk()
 		{
-			OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
+			OracleConnectionConfiguration config = new OracleConnectionConfiguration(connectionString);
 
-			OracleIntegration connection = new OracleIntegration(config);
+			OracleIntegration connection = OracleIntegration.Create(config);
 
 			var updateDateParameter = new Dictionary<string, object>
 			{

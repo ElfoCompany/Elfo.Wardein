@@ -2,6 +2,7 @@
 using Elfo.Wardein.Watchers.HeartBeat.Config;
 using System;
 using Warden.Core;
+using Warden.Integrations;
 using Warden.Watchers;
 
 namespace Elfo.Wardein.Watchers.HeartBeat

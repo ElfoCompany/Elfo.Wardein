@@ -25,6 +25,13 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
             DurationInSeconds = 300,
             IsInMaintenanceMode = false,
             MaintenanceModeStartDateInUTC = DateTime.UtcNow
-        }; // Default values
+        };
+
+
+        [JsonProperty(PropertyName = "services")]
+        public IEnumerable<GenericServiceModel> Services { get; set; }
+
+        [JsonProperty(PropertyName = "iisPools")]
+        public IEnumerable<GenericServiceModel> IISPools { get; set; }
     }
 }

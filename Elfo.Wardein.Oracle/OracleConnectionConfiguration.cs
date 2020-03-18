@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using Oracle.ManagedDataAccess.Client;
 
-namespace Elfo.Wardein.Integrations.Oracle.Integration
+namespace Elfo.Wardein.Oracle
 {
-    public class OracleIntegrationConfiguration
+    public class OracleConnectionConfiguration
     {
-        public OracleIntegrationConfiguration(string connectionString)
+        public OracleConnectionConfiguration(string connectionString)
         {
             ConnectionString = connectionString;
 
@@ -40,16 +40,21 @@ namespace Elfo.Wardein.Integrations.Oracle.Integration
         public IDictionary<string, object> CommandParameters { get; protected set; }
         public TimeSpan? CommandTimeout { get; protected set; }
 
+        public string ClientId { get; set; }
+        public string ClientInfo { get; set; }
+        public string ModuleName { get; set; }
+        public string DateLanguage { get; set; }
+
 
         public static Builder Create(string connectionString) => new Builder(connectionString);
 
         public class Builder
         {
-            protected readonly OracleIntegrationConfiguration Configuration;
+            protected readonly OracleConnectionConfiguration Configuration;
 
             public Builder(string connectionString)
             {
-                Configuration = new OracleIntegrationConfiguration(connectionString);
+                Configuration = new OracleConnectionConfiguration(connectionString);
             }
 
             public Builder WithCommand(string command, IDictionary<string, object> parameters = null)
@@ -126,7 +131,59 @@ namespace Elfo.Wardein.Integrations.Oracle.Integration
                 return this;
             }
 
-            public OracleIntegrationConfiguration Build() => Configuration;
+            public Builder WithClientId(string clientId)
+            {
+                if (string.IsNullOrWhiteSpace(clientId))
+                {
+                    throw new ArgumentNullException(nameof(clientId),
+                        "ClientId can not be empty");
+                }
+
+                Configuration.ClientId = clientId;
+
+                return this;
+            }
+
+            public Builder WithClientInfo(string clientInfo)
+            {
+                if (string.IsNullOrWhiteSpace(clientInfo))
+                {
+                    throw new ArgumentNullException(nameof(clientInfo),
+                        "ClientInfo can not be empty.");
+                }
+
+                Configuration.ClientId = clientInfo;
+
+                return this;
+            }
+
+            public Builder WithModuleName(string moduleName)
+            {
+                if (string.IsNullOrWhiteSpace(moduleName))
+                {
+                    throw new ArgumentNullException(nameof(moduleName),
+                        "ModuleName can not be empty.");
+                }
+
+                Configuration.ClientId = moduleName;
+
+                return this;
+            }
+
+            public Builder WithDateLanguage(string dateLanguage)
+            {
+                if (string.IsNullOrWhiteSpace(dateLanguage))
+                {
+                    throw new ArgumentNullException(nameof(dateLanguage),
+                        "DateLanguage can not be empty.");
+                }
+
+                Configuration.ClientId = dateLanguage;
+
+                return this;
+            }
+
+            public OracleConnectionConfiguration Build() => Configuration;
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Elfo.Wardein.Integrations.Oracle.Integration;
-using Elfo.Wardein.Watchers.GenericService;
+using Elfo.Wardein.Oracle;
 using Elfo.Wardein.Watchers.HeartBeat.Config;
 using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
+using Warden.Integrations;
 using Warden.Watchers;
 
 namespace Elfo.Wardein.Watchers.HeartBeat
@@ -14,8 +14,7 @@ namespace Elfo.Wardein.Watchers.HeartBeat
     {
         private readonly string HeartBeatAppName;
 
-
-        public HeartBeatWatcher(HeartBeatWatcherConfig config, string name, string group = null) : base(name, config, group )
+        public HeartBeatWatcher(HeartBeatWatcherConfig config, string name, string group = null) : base(name, config, group)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Application name can not be empty", nameof(HeartBeatWatcherConfig));
@@ -30,22 +29,16 @@ namespace Elfo.Wardein.Watchers.HeartBeat
 
         public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
         {
-            await UpdateHeartBeatByAppName(Name);
-            return await Task.FromResult(Task.CompletedTask as IWatcherCheckResult);
+            var isValid = await UpdateHeartBeatByAppName(HeartBeatAppName);
+            return await Task.FromResult(new HeartBeatWatcherCheckResult(this, HeartBeatAppName, true, "Wardein is working"));
         }
 
-        public async Task<int> UpdateHeartBeatByAppName(string appName)
+        public async Task<bool> UpdateHeartBeatByAppName(string appName)
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .Build();
+            //OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
 
-            var connectionString = configuration["ConnectionStrings:Db"];
-
-            OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
-
-            OracleIntegration connection = new OracleIntegration(config);
-            // TODO: Check SQL Injection
+            //OracleIntegration connection = new OracleIntegration(config);
+            //// TODO: Check SQL Injection
             var updateDateParameter = new Dictionary<string, object>
             {
                 ["DT_LAST_HB"] = new OracleParameter("DT_LAST_HB", OracleDbType.Date).Value = DateTime.UtcNow,
@@ -54,7 +47,7 @@ namespace Elfo.Wardein.Watchers.HeartBeat
 
             string query = "UPDATE WRD_CNFG SET DT_LAST_HB = :DT_LAST_HB WHERE APPL_HOSTNAME = :APPL_HOSTNAME";
 
-            return await connection.ExecuteAsync(query, updateDateParameter);
+            return await (integration as OracleIntegration).ExecuteAsync(query, updateDateParameter);
         }
     }
 }

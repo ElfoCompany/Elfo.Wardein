@@ -1,12 +1,11 @@
-﻿using Elfo.Wardein.Abstractions.Configuration.Models;
-using Elfo.Wardein.Core.ServiceManager;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-
-namespace Elfo.Wardein.Watchers.GenericService
+namespace Elfo.Wardein.Abstractions.Configuration.Models
 {
-    // TODO: Do we need these classes?
-    public class ObservarableGenericServiceWatcher
+    public class GenericServiceModel
     {
         [JsonProperty(PropertyName = "serviceName")]
         public string ServiceName { get; set; }

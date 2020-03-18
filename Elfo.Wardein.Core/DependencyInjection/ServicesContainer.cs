@@ -1,4 +1,5 @@
 ﻿using Elfo.Wardein.Abstractions.Configuration;
+using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Abstractions.Services;
 using Elfo.Wardein.Abstractions.Services.Models;
 using Elfo.Wardein.Core.ConfigurationReader;

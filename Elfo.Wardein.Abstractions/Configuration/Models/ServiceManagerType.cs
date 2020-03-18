@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elfo.Wardein.Core.ServiceManager
+namespace Elfo.Wardein.Abstractions.Configuration.Models
 {
     public enum ServiceManagerType
     {
