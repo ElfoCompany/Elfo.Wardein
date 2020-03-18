@@ -25,7 +25,7 @@ namespace Elfo.Wardein.Watchers.HeartBeat
         public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
         {
             await UpdateHeartBeatByAppName(Name);
-            return await Task.FromResult(Task.CompletedTask as IWatcherCheckResult); 
+            return await Task.FromResult(Task.CompletedTask as IWatcherCheckResult);
         }
 
         public async Task<int> UpdateHeartBeatByAppName(string appName)
@@ -34,7 +34,7 @@ namespace Elfo.Wardein.Watchers.HeartBeat
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            var connectionString = configuration["ConnectionString:Db"];
+            var connectionString = configuration["ConnectionStrings:Db"];
 
             OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
 

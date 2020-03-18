@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Elfo.Wardein.Watchers
+﻿namespace Elfo.Wardein.Watchers
 {
     public interface IWatcherConfig
     {
