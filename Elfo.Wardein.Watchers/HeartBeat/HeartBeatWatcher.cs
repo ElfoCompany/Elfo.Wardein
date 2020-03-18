@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Elfo.Wardein.Integrations.Oracle.Integration;
+using Elfo.Wardein.Watchers.GenericService;
 using Elfo.Wardein.Watchers.HeartBeat.Config;
 using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
@@ -20,6 +21,11 @@ namespace Elfo.Wardein.Watchers.HeartBeat
                 throw new ArgumentException("Application name can not be empty", nameof(HeartBeatWatcherConfig));
 
             HeartBeatAppName = name;
+        }
+
+        public static HeartBeatWatcher Create(HeartBeatWatcherConfig config, string group = null)
+        {
+            return new HeartBeatWatcher(config, $"{nameof(HeartBeatWatcher)}", group);
         }
 
         public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()

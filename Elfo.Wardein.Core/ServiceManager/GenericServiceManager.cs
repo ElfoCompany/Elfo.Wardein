@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.ServiceManager
 {
-    class GenericServiceManager<T> : IAmServiceManager
+    class GenericServiceManager : IAmServiceManager
     {
         #region Private Variables
         private readonly ServiceController serviceController;
