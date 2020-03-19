@@ -154,7 +154,7 @@ namespace Elfo.Wardein.Core.Helpers
                         "ClientInfo can not be empty.");
                 }
 
-                Configuration.ClientId = clientInfo;
+                Configuration.ClientInfo = clientInfo;
 
                 return this;
             }
@@ -167,7 +167,7 @@ namespace Elfo.Wardein.Core.Helpers
                         "ModuleName can not be empty.");
                 }
 
-                Configuration.ClientId = moduleName;
+                Configuration.ModuleName = moduleName;
 
                 return this;
             }
@@ -180,7 +180,7 @@ namespace Elfo.Wardein.Core.Helpers
                         "DateLanguage can not be empty.");
                 }
 
-                Configuration.ClientId = dateLanguage;
+                Configuration.DateLanguage = dateLanguage;
 
                 return this;
             }
