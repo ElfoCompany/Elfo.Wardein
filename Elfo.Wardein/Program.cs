@@ -1,4 +1,4 @@
-﻿using Elfo.Wardein.APIs;
+﻿using Elfo.Wardein.Services;
 using Elfo.Wardein.Watchers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,32 +17,8 @@ namespace Elfo.Wardein
         {
             try
             {
-                var wardeinService = new WardeinMicroService();
-
-                //new Thread(() =>
-                //{
-                //    Thread.CurrentThread.IsBackground = true;
-
-                //    log.Debug("Starting APIs...");
-                //    ConfigureAPIHosting();
-                //    log.Debug("APIs started");
-
-                //    #region Local Functions
-                //    void ConfigureAPIHosting()
-                //    {
-                //        new WebHostBuilder()
-                //            .UseUrls("http://*:5000")
-                //            .UseKestrel()
-                //            .ConfigureServices(serviceCollection =>
-                //            {
-                //                serviceCollection.AddSingleton<IMicroService>(wardeinService);
-                //            })
-                //            .UseStartup<Startup>()
-                //            .Build()
-                //            .Run();
-                //    }
-                //    #endregion
-                //}).Start();
+                var serviceBuilder = new ServiceBuilder();
+                var wardeinService = new WardeinMicroService(serviceBuilder);
 
                 new Thread(() =>
                 {
@@ -74,6 +50,16 @@ namespace Elfo.Wardein
                             });
                         });
                     });
+                }).Start();
+
+                new Thread(() =>
+                {
+                    Thread.CurrentThread.IsBackground = true;
+
+                    log.Debug("Starting APIs...");
+                    serviceBuilder.ConfigureAndRunAPIHosting().Wait();
+                    log.Debug("APIs started");
+
                 }).Start();
             }
             catch (Exception ex)

@@ -4,35 +4,36 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using PeterKottas.DotNetCore.WindowsService.Base;
+using Warden;
 
 namespace Elfo.Wardein.APIs
 {
     public class PollingImplementation : IAmRouteImplementation
     {
         #region Private variables
-        private readonly IMicroService microService;
+        private readonly IWarden wardenInstance;
         #endregion
 
         #region Constructor
         public PollingImplementation() : base(blockActionIfInMaintenanceMode: false)
         {
-            this.microService = Startup.ServiceProvider.GetService<IMicroService>();
+            this.wardenInstance = Startup.ServiceProvider.GetService<IWarden>();
         }
         #endregion
 
         #region Public Methods
 
-        public Task Stop(HttpContext context)
+        public async Task Stop(HttpContext context)
         {
-            microService.Stop();
-            return context.Response.WriteAsync($"Periodic check stopped");
+            await wardenInstance.StopAsync();
+            await context.Response.WriteAsync($"Periodic check stopped");
         }
 
-        public Task Restart(HttpContext context)
+        public async Task Restart(HttpContext context)
         {
-            Stop(context);
-            microService.Start();
-            return context.Response.WriteAsync($"Periodic check restarted");
+            await Stop(context);
+            await wardenInstance.StartAsync();
+            await context.Response.WriteAsync($"Periodic check restarted");
         } 
 
         #endregion
