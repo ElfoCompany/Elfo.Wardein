@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
 using Warden;
 using Warden.Integrations;
@@ -19,13 +20,17 @@ namespace Elfo.Wardein.Integrations.Oracle.Integration
             this.configuration = configuration;
             oracleService = configuration.OracleServiceProvider();
         }
-        private void GetSessionInfoForTransaction(OracleConnection connection)
+        private void GetAndSetSessionInfoForTransaction(OracleConnection connection)
         {
-            connection.ClientId = "HULK";
-            connection.ClientInfo = "WEBCLIENT_COREDB";
-            connection.ModuleName = "ExecuteAsync";
+            var jsonConfiguration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .Build();
+
             var sessionInfo = connection.GetSessionInfo();
-            sessionInfo.DateLanguage = "AMERICAN";
+            connection.ClientId = jsonConfiguration["Oracle:ClientId"];
+            connection.ClientInfo = jsonConfiguration["Oracle:ClientInfo"];
+            connection.ModuleName = jsonConfiguration["Oracle:ModuleName"];
+            sessionInfo.DateLanguage = jsonConfiguration["Oracle:DateLanguage"];
             connection.SetSessionInfo(sessionInfo);
         }
 
@@ -39,7 +44,7 @@ namespace Elfo.Wardein.Integrations.Oracle.Integration
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
-                        GetSessionInfoForTransaction(connection);
+                        GetAndSetSessionInfoForTransaction(connection);
 
                         var queryToExecute = string.IsNullOrWhiteSpace(query) ? configuration.Query : query;
                         var queryParameters = parameters ?? configuration.QueryParameters;
@@ -75,7 +80,7 @@ namespace Elfo.Wardein.Integrations.Oracle.Integration
 
                     using (var transaction = connection.BeginTransaction())
                     {
-                        GetSessionInfoForTransaction(connection);
+                        GetAndSetSessionInfoForTransaction(connection);
 
                         var commandToExecute = string.IsNullOrWhiteSpace(command) ? configuration.Command : command;
                         var commandParameters = parameters ?? configuration.CommandParameters;
