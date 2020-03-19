@@ -331,3 +331,4 @@ ASALocalRun/
 Elfo.Wardein.Core/Assets/WardeinConfig.json
 Elfo.Wardein.Core/Assets/MailConfig.json
 Elfo.Wardein.Integrations.Tests/appsettings.json
+/Elfo.Wardein.Integrations/appsettings.json

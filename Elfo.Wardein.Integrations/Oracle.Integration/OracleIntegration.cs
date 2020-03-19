@@ -44,7 +44,7 @@ namespace Elfo.Wardein.Integrations.Oracle.Integration
                 return await oracleHelper.ExecuteAsync(command, parameters);
             } catch (OracleException exception)
             {
-               
+
                 throw new IntegrationException("There was a SQL error while trying to execute the command.", exception);
             } catch (Exception exception)
             {
