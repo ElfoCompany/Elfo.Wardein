@@ -12,6 +12,7 @@ using Elfo.Wardein.Integrations;
 using Elfo.Wardein.Watchers.FileSystem;
 using Elfo.Wardein.Watchers.WindowsService;
 using Elfo.Wardein.Watchers.IISPool;
+using Elfo.Wardein.Watchers.HeartBeat;
 
 namespace Elfo.Wardein.Services
 {
@@ -33,6 +34,7 @@ namespace Elfo.Wardein.Services
                 .AddFileSystemWatcher(null)
                 .AddWindowsServiceWatcher(null)
                 .AddIISPoolWatcher(null)
+                .AddWardeinHeartBeatWatcher(null)
                 .Build();
 
             warden = WardenInstance.Create(configuration);
