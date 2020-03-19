@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Elfo.Wardein.Watchers.HeartBeat.Config
 {
@@ -11,6 +12,9 @@ namespace Elfo.Wardein.Watchers.HeartBeat.Config
         /// </summary>
         [JsonProperty(PropertyName = "isInMaintenanceMode")]
         public bool IsInMaintenanceMode { get; set; } = false;
+
+        [JsonProperty(PropertyName = "heartBeatAppName")]
+        public string HeartBeatAppName { get; set; } = Dns.GetHostName()?.ToUpperInvariant();
 
         /// <summary>
         /// Property that defines frequency of watcher polling
@@ -25,7 +29,8 @@ namespace Elfo.Wardein.Watchers.HeartBeat.Config
         [JsonProperty(PropertyName = "numberOfNotificationsWithoutRateLimitation")]
         public int NumberOfNotificationsWithoutRateLimitation { get; set; } = 2; // Default values
 
-        [JsonProperty(PropertyName = "services")]
-        public IEnumerable<ObservarableHeartBeat> Services { get; set; }
+        [JsonProperty(PropertyName = "connectionString")]
+        public string ConnectionString { get; set; }
+
     }
 }

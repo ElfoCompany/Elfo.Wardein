@@ -1,7 +1,10 @@
-﻿using Elfo.Wardein.Abstractions.Configuration;
+﻿using Elfo.Firmenich.Wardein.Abstractions.HeartBeat;
+using Elfo.Firmenich.Wardein.Core.HeartBeat;
+using Elfo.Wardein.Abstractions.Configuration;
 using Elfo.Wardein.Abstractions.Services;
 using Elfo.Wardein.Abstractions.Services.Models;
 using Elfo.Wardein.Core.ConfigurationReader;
+using Elfo.Wardein.Core.Helpers;
 using Elfo.Wardein.Core.NotificationService;
 using Elfo.Wardein.Core.Persistence;
 using Elfo.Wardein.Core.ServiceManager;
@@ -63,9 +66,14 @@ namespace Elfo.Wardein.Core
                         default:
                             throw new KeyNotFoundException($"Notification service {serviceManagerType.ToString()} not supported yet");
                     }
-                });
+                })
+                .AddTransient<Func<string, OracleConnectionConfiguration>>(sp => (connectionString)  => new OracleConnectionConfiguration(connectionString))
+                .AddTransient<Func<string, IAmWardeinHeartBeatPersistanceService>>(sp => (connectionString) 
+                    => new OracleWardeinHeartBeatPersistanceService(new OracleConnectionConfiguration.Builder(connectionString).Build()) // TODO add clientinfo etc
+                );
+    
 
-            serviceProvider = serviceCollection.BuildServiceProvider();
+                serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
         #endregion
@@ -99,6 +107,12 @@ namespace Elfo.Wardein.Core
         {
             var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmPersistenceService<WindowsServiceStats>>>();
             return instanceResolver(filePath);
+        }
+
+        public static IAmWardeinHeartBeatPersistanceService WardeinHeartBeatPersistenceService(string connectionString)
+        {
+            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmWardeinHeartBeatPersistanceService>>();
+            return instanceResolver(connectionString);
         }
 
         public static IAmMailConfigurationManager MailConfigurationManager(string filePath)
