@@ -36,25 +36,26 @@ namespace Elfo.Wardein.Watchers.HeartBeat
 
         public async Task<int> UpdateHeartBeatByAppName(string appName)
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .Build();
+            //var configuration = new ConfigurationBuilder()
+            //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            //    .Build();
 
-            var connectionString = configuration["ConnectionStrings:Db"];
+            //var connectionString = configuration["ConnectionStrings:Db"];
 
-            OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
+            //OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
 
-            OracleIntegration connection = new OracleIntegration(config);
-            // TODO: Check SQL Injection
-            var updateDateParameter = new Dictionary<string, object>
-            {
-                ["DT_LAST_HB"] = new OracleParameter("DT_LAST_HB", OracleDbType.Date).Value = DateTime.UtcNow,
-                ["APPL_HOSTNAME"] = new OracleParameter("APPL_HOSTNAME", OracleDbType.Varchar2).Value = appName
-            };
+            //OracleIntegration connection = new OracleIntegration(config);
+            //// TODO: Check SQL Injection
+            //var updateDateParameter = new Dictionary<string, object>
+            //{
+            //    ["DT_LAST_HB"] = new OracleParameter("DT_LAST_HB", OracleDbType.Date).Value = DateTime.UtcNow,
+            //    ["APPL_HOSTNAME"] = new OracleParameter("APPL_HOSTNAME", OracleDbType.Varchar2).Value = appName
+            //};
 
-            string query = "UPDATE WRD_CNFG SET DT_LAST_HB = :DT_LAST_HB WHERE APPL_HOSTNAME = :APPL_HOSTNAME";
+            //string query = "UPDATE WRD_CNFG SET DT_LAST_HB = :DT_LAST_HB WHERE APPL_HOSTNAME = :APPL_HOSTNAME";
 
-            return await connection.ExecuteAsync(query, updateDateParameter);
+            //return await connection.ExecuteAsync(query, updateDateParameter);
+            return 0;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Elfo.Wardein.Integrations.Oracle.Integration;
+﻿using Elfo.Wardein.Core.Helpers;
+using Elfo.Wardein.Integrations.Oracle.Integration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Oracle.ManagedDataAccess.Client;
@@ -26,7 +27,7 @@ namespace Elfo.Wardein.Integrations.Tests
 		[TestCategory("ManualTest")]
 		public async Task ConnectionAreOk()
 		{
-			OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
+			OracleConnectionConfiguration config = new OracleConnectionConfiguration(connectionString);
 
 			OracleIntegration connection = new OracleIntegration(config);
 
@@ -39,7 +40,7 @@ namespace Elfo.Wardein.Integrations.Tests
 		[TestCategory("ManualTest")]
 		public async Task InsertIsOk()
 		{
-			OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
+			OracleConnectionConfiguration config = new OracleConnectionConfiguration(connectionString);
 
 			OracleIntegration connection = new OracleIntegration(config);
 
@@ -52,7 +53,7 @@ namespace Elfo.Wardein.Integrations.Tests
 		[TestCategory("ManualTest")]
 		public async Task SelectAreOk()
 		{
-			OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
+			OracleConnectionConfiguration config = new OracleConnectionConfiguration(connectionString);
 
 			OracleIntegration connection = new OracleIntegration(config);
 
@@ -65,7 +66,7 @@ namespace Elfo.Wardein.Integrations.Tests
 		[TestCategory("ManualTest")]
 		public async Task UpdateIsOk()
 		{
-			OracleIntegrationConfiguration config = new OracleIntegrationConfiguration(connectionString);
+			OracleConnectionConfiguration config = new OracleConnectionConfiguration(connectionString);
 
 			OracleIntegration connection = new OracleIntegration(config);
 

@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.0-preview-20200309-01" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Elfo.Wardein.Core\Elfo.Wardein.Core.csproj" />
     <ProjectReference Include="..\Elfo.Wardein.Integrations\Elfo.Wardein.Integrations.csproj" />
   </ItemGroup>
   <ItemGroup>
