@@ -1,7 +1,10 @@
-﻿using Oracle.ManagedDataAccess.Client;
+﻿using Elfo.Firmenich.Wardein.Abstractions.Watchers;
+using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Data;
+using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Elfo.Wardein.Core.Helpers
@@ -41,6 +44,63 @@ namespace Elfo.Wardein.Core.Helpers
             {
                 throw exception;
             }
+        }
+
+        public Task<T> CallProcedureAsync<T>(string packageName, string procedureName, Func<OracleParameter[], T> howToGetResult, params OracleParameter[] parameters)
+        {
+            try
+            {
+                using (var connection = new OracleConnection(oracleConfiguration.ConnectionString))
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        connection.SetSessionInfoForTransaction(oracleConfiguration);
+                        using (DbCommand command = new OracleCommand())
+                        {
+                            command.Connection = connection;
+
+                            ReinitializeSession(command);
+
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.CommandText = string.Concat(packageName, ".", procedureName);
+
+                            ((OracleCommand)command).BindByName = true;
+
+                            foreach (var parameter in parameters)
+                            {
+                                command.Parameters.Add(parameter);
+                            }
+
+                            command.ExecuteNonQuery();
+
+                            if (parameters.Count() > 0)
+                            {
+                                return Task.FromResult(
+                                    howToGetResult(
+                                        parameters.Where(x =>
+                                            x.Direction == ParameterDirection.Output || x.Direction == ParameterDirection.InputOutput
+                                        ).ToArray()
+                                    )
+                                );
+                            }
+                            else 
+                                return Task.FromResult(default(T));
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        private void ReinitializeSession(IDbCommand command)
+        {
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = "reinitialize_session";
+            command.ExecuteNonQuery();
         }
 
         public int Execute(string command, IDictionary<string, object> parameters = null)
