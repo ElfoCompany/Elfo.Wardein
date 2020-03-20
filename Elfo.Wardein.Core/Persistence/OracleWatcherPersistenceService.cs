@@ -16,7 +16,7 @@ namespace Elfo.Firmenich.Wardein.Core.Persistence
             this.oracleConnectionConfiguration = oracleConnectionConfiguration;
         }
 
-        public Task<WatcherStatusResult> UpsertCurrentStatus(int watcherConfigurationId, int applicationId, int applicationHostname, bool isHealthy, Exception failureException = null)
+        public Task<WatcherStatusResult> UpsertCurrentStatus(int watcherConfigurationId, int applicationId, string applicationHostname, bool isHealthy, Exception failureException = null)
         {
             throw new NotImplementedException();
         }

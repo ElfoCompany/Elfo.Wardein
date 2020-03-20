@@ -7,6 +7,6 @@ namespace Elfo.Firmenich.Wardein.Abstractions.Watchers
 {
     public interface IAmWatcherPersistenceService
     {
-        Task<WatcherStatusResult> UpsertCurrentStatus(int watcherConfigurationId, int applicationId, int applicationHostname, bool isHealthy, Exception failureException = null);
+        Task<WatcherStatusResult> UpsertCurrentStatus(int watcherConfigurationId, int applicationId, string applicationHostname, bool isHealthy, Exception failureException = null);
     }
 }
