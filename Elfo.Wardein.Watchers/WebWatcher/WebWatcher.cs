@@ -149,7 +149,7 @@ namespace Elfo.Wardein.Watchers.WebWatcher
             {
                 using (var persistenceService = ServicesContainer.PersistenceService(Const.DB_PATH))
                 {
-                    IAmServiceManager serviceManager = GetServiceManager();
+                    IAmResponceManager serviceManager = GetServiceManager();
                     if (serviceManager == null)
                         continue; // If the service doesn't exist, skip the check 
 
@@ -168,9 +168,9 @@ namespace Elfo.Wardein.Watchers.WebWatcher
 
                     #region Local Functions
 
-                    IAmServiceManager GetServiceManager()
+                    IAmResponceManager GetServiceManager()
                     {
-                        IAmServiceManager svc = null;
+                        IAmResponceManager svc = null;
                         try
                         {
                             svc = ServicesContainer.ServiceManager(service.ServiceName, service.ServiceManagerType);
