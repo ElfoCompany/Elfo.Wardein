@@ -1,4 +1,5 @@
-﻿using Elfo.Wardein.Abstractions.Services;
+﻿using Elfo.Firmenich.Wardein.Abstractions.Watchers;
+using Elfo.Wardein.Abstractions.Services;
 using Elfo.Wardein.Core;
 using Elfo.Wardein.Core.Helpers;
 using Elfo.Wardein.Core.NotificationService;
@@ -17,15 +18,14 @@ namespace Elfo.Wardein.Watchers.WebWatcher
 {
     public class WebWatcher : IWatcher
     {
-        private readonly WebWatcherConfiguration configuration;
+        private readonly WebWatcherConfig configuration;
+        private readonly IAmWatcherPersistenceService watcherPersistenceService;
         protected static ILogger log = LogManager.GetCurrentClassLogger();
-        private readonly IHttpService httpService;
-        public WebWatcherConfig Config { get; protected set; }
         public string Name { get; }
         public string Group { get; }
         public const string DefaultName = "Web Watcher";
 
-        protected WebWatcher(string name, WebWatcherConfiguration config,  string group)
+        protected WebWatcher(string name, WebWatcherConfig config,  string group)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Watcher name can not be empty.");
@@ -39,7 +39,7 @@ namespace Elfo.Wardein.Watchers.WebWatcher
             Name = name;
             this.configuration = config;
             Group = group;
-            httpService = configuration.HttpServiceProvider();
+            watcherPersistenceService = ServicesContainer.WatcherPersistenceService(configuration.ConnectionString);
         }
 
         public async Task<IWatcherCheckResult> ExecuteAsync()
