@@ -1,4 +1,4 @@
-﻿using Elfo.Wardein.Core.ServiceManager;
+﻿using Elfo.Firmenich.Wardein.Abstractions.Configuration.Models;
 using Newtonsoft.Json;
 
 namespace Elfo.Wardein.Watchers.WebWatcher.Config

@@ -1,4 +1,5 @@
-﻿using Elfo.Firmenich.Wardein.Abstractions.HeartBeat;
+﻿using Elfo.Firmenich.Wardein.Abstractions.Configuration.Models;
+using Elfo.Firmenich.Wardein.Abstractions.HeartBeat;
 using Elfo.Firmenich.Wardein.Abstractions.Watchers;
 using Elfo.Firmenich.Wardein.Abstractions.WebWatcher;
 using Elfo.Firmenich.Wardein.Core.HeartBeat;

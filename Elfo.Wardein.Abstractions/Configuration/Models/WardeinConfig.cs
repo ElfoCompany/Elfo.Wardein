@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Elfo.Firmenich.Wardein.Abstractions.Configuration.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,5 +27,14 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
             IsInMaintenanceMode = false,
             MaintenanceModeStartDateInUTC = DateTime.UtcNow
         }; // Default values
+
+        [JsonProperty(PropertyName = "services")]
+        public IEnumerable<GenericServiceModel> Services { get; set; }
+
+        [JsonProperty(PropertyName = "iisPools")]
+        public IEnumerable<GenericServiceModel> IISPools { get; set; }
+
+        [JsonProperty(PropertyName = "urls")]
+        public IEnumerable<WebWatcherUrlModel> Urls { get; set; }
     }
 }

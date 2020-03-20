@@ -1,6 +1,7 @@
 ﻿using Elfo.Wardein.Abstractions.Configuration;
 using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Core.Helpers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -36,17 +37,19 @@ namespace Elfo.Firmenich.Wardein.Core.ConfigurationManagers
             var result = this.oracleHelper.Query<WardeinConfigurationModel>(query, parameters);
 
             // TODO: Test to see if it works.. code will probably need refactoring
-            var json = JObject.Parse(result.FirstOrDefault().WardeinConfig);
-            foreach (var watcherConfig in result)
-            {
-                var watcherTypeConfigTest = JObject.Parse(watcherConfig.WatcherTypeJsonConfig);
-                var watcherConfigTest = JObject.Parse(watcherConfig.WatcherJsonConfig);
-                watcherTypeConfigTest.Merge(watcherConfigTest);
-                json.Merge(watcherTypeConfigTest);
-            }
+            //var json = JObject.Parse(result.FirstOrDefault().WardeinConfig);
+            //foreach (var watcherConfig in result)
+            //{
+            //    var watcherTypeConfigTest = JObject.Parse(watcherConfig.WatcherTypeJsonConfig);
+            //    var watcherConfigTest = JObject.Parse(watcherConfig.WatcherJsonConfig);
+            //    watcherTypeConfigTest.Merge(watcherConfigTest);
+            //    json.Merge(watcherTypeConfigTest);
+            //}
 
             // TODO: Cahe the config
-
+            var rawJson = "{\"timeSpanFromSeconds\":60,\"serviceManagerType\":1,\"services\":[{\"serviceName\":\"MSMQ\",\"maxRetryCount\":2,\"serviceManagerType\":0}],\"iisPools\":[{\"serviceName\":\"Elfo.Firmenich.CoreDbDocGen\",\"maxRetryCount\":2,\"serviceManagerType\":1}],\"urls\":[{\"url\":\"www.google.com\",\"urlAlias\":\"Google\",\"assertWithStatusCode\":true,\"assertWithRegex\":\"\\d*\"}]}";
+            var json = JObject.Parse(rawJson);
+            var tests = JsonConvert.DeserializeObject<WardeinConfig>(json.ToString());
             return json.ToObject<WardeinConfig>();
         }
 
