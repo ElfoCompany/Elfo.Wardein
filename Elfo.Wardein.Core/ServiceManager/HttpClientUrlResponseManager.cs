@@ -4,6 +4,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Elfo.Firmenich.Wardein.Core.ServiceManager
@@ -11,68 +12,69 @@ namespace Elfo.Firmenich.Wardein.Core.ServiceManager
     public class HttpClientUrlResponseManager : IAmUrlResponseManager
     {
 
-        public Task<bool> IsHealty(bool assertWithStatusCode, string assertWithRegex)
+        public async Task<bool> IsHealty(bool assertWithStatusCode, string assertWithRegex)
         {
             var endPoint = "";
             using (var handler = new HttpClientHandler())
             using (var client = new HttpClient(handler))
             {
+                // TODO support authentication
                 client.BaseAddress = new Uri("http://localhost:55587/");
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("Keep-Alive"));
 
-                var response = client.GetAsync(endPoint);
-                HttpResponseMessage httpWebResponse = response.Result;
+                var response = await client.GetAsync(endPoint);
 
                 if (!assertWithStatusCode)
                 {
-                    if (!string.IsNullOrEmpty(assertWithRegex))
+                    if (!string.IsNullOrWhiteSpace(assertWithRegex))
                     {
-                        var isMatch = false;
-                        //check if html content matches the regex
-                        if (isMatch)
-                        {
-                            return Task.FromResult(false);
-                        }
-                        else
-                        {
-                            return Task.FromResult(true);
-                        }
+                        return await CheckIsMatch(assertWithRegex, response);
                     }
                     else
                     {
-                        return Task.FromResult(true);
+                        return await Task.FromResult(true);
                     }
                 }
                 else
                 {
-                    if (httpWebResponse.StatusCode != HttpStatusCode.OK)
+                    if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return Task.FromResult(false);
+                        return await Task.FromResult(false);
                     }
                     else
                     {
-                        if (!string.IsNullOrEmpty(assertWithRegex))
-                        {
-                            var isMatch = false;
-                            //check if html content matches the regex
-                            if (isMatch)
-                            {
-                                return Task.FromResult(false);
-                            }
-                            else
-                            {
-                                return Task.FromResult(true);
-                            }
-                        }
+                        return await CheckIsMatch(assertWithRegex, response);
                     }
-
                 }
-                return Task.FromResult(false);
             }
         }
 
-        public void RestartPool(string poolName)
-            => new IISPoolManager(poolName).Restart();
+        private async Task<bool> CheckIsMatch(string assertionRegex, HttpResponseMessage response)
+        {
+            if (!string.IsNullOrWhiteSpace(assertionRegex))
+            {
+                var htmlResponse = await response.Content.ReadAsStringAsync();
+                var isMatch = Regex.IsMatch(htmlResponse, assertionRegex);
+                if (isMatch)
+                {
+                    return await Task.FromResult(false);
+                }
+                else
+                {
+                    return await Task.FromResult(true);
+                }
+            }
+            else
+            {
+                return await Task.FromResult(true);
+            }
+        }
+
+        public Task RestartPool(string poolName)
+        {
+            new IISPoolManager(poolName).Restart();
+            return Task.CompletedTask;
+        }  
     }
 }
