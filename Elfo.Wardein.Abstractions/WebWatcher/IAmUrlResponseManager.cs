@@ -4,7 +4,7 @@ namespace Elfo.Firmenich.Wardein.Abstractions.WebWatcher
 {
     public interface IAmUrlResponseManager
     {
-        Task<bool> IsHealty(bool assertWithStatusCode, string assertWithRegex);
+        Task<bool> IsHealthy(bool assertWithStatusCode, string assertWithRegex);
         Task RestartPool(string poolName);
     }
 }

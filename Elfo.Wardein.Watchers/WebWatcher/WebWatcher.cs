@@ -1,5 +1,6 @@
 ﻿using Elfo.Firmenich.Wardein.Abstractions.Watchers;
-using Elfo.Wardein.Abstractions.Services;
+using Elfo.Firmenich.Wardein.Abstractions.WebWatcher;
+using Elfo.Firmenich.Wardein.Core.ServiceManager;
 using Elfo.Wardein.Core;
 using Elfo.Wardein.Core.Helpers;
 using Elfo.Wardein.Core.NotificationService;
@@ -16,16 +17,13 @@ using Warden.Watchers;
 
 namespace Elfo.Wardein.Watchers.WebWatcher
 {
-    public class WebWatcher : IWatcher
+    public class WebWatcher : WardeinWatcher<WebWatcherConfig>
     {
         private readonly WebWatcherConfig configuration;
         private readonly IAmWatcherPersistenceService watcherPersistenceService;
         protected static ILogger log = LogManager.GetCurrentClassLogger();
-        public string Name { get; }
-        public string Group { get; }
-        public const string DefaultName = "Web Watcher";
 
-        protected WebWatcher(string name, WebWatcherConfig config,  string group)
+        protected WebWatcher(string name, WebWatcherConfig config, string group) : base(name, config, group)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Watcher name can not be empty.");
@@ -36,61 +34,161 @@ namespace Elfo.Wardein.Watchers.WebWatcher
                     "Web Watcher configuration has not been provided.");
             }
 
-            Name = name;
-            this.configuration = config;
-            Group = group;
+            configuration = config;
             watcherPersistenceService = ServicesContainer.WatcherPersistenceService(configuration.ConnectionString);
+        }
+
+        public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
+        {
+            Log.Info($"---\tStarting {Name}\t---");
+            try
+            {
+                var guid = Guid.NewGuid();
+                log.Info($"{Environment.NewLine}{"-".Repeat(24)} Services health check @ {guid} started {"-".Repeat(24)}");
+
+                await RunCheck();
+
+                log.Info($"{Environment.NewLine}{"-".Repeat(24)} Services health check @ {guid} finished {"-".Repeat(24)}{Environment.NewLine.Repeat(24)}");
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Exception inside polling action: {ex.ToString()}\n");
+            }
+
+            return await Task.FromResult<IWatcherCheckResult>(null);
+        }
+
+        internal virtual async Task RunCheck()
+        {
+            Log.Info($"{Environment.NewLine}> CHECKING WEB WATCHER HELTH");
+
+          
+                using (var persistenceService = ServicesContainer.PersistenceService(Const.DB_PATH))
+                {
+
+                    IAmUrlResponseManager urlResponseManager = new HttpClientUrlResponseManager();
+                  
+                    var notificationService = ServicesContainer.NotificationService(NotificationType.Mail);
+                   // var item = persistenceService.GetEntityById(service.ServiceName);
+
+                    var svc = watcherPersistenceService.UpsertCurrentStatus(1, 2, "SRVWEB07", false);
+
+                    if (!await urlResponseManager.IsHealthy(configuration.AssertWithStatusCode, configuration.AssertWithRegex))
+                    {
+
+                        await PerformActionOnServiceDown(configuration.AssociatedIISPool);
+                    }
+                    else
+                    {
+                        await PerformActionOnServiceAlive();
+                    }
+
+
+                #region Local Functions
+
+                //NotificationType GetNotificationType()
+                //{
+                //    if (!Enum.TryParse<NotificationType>(service.NotificationType, out NotificationType result))
+                //        throw new ArgumentException($"Notification type {service.NotificationType} not supported");
+                //    return result;
+                //}
+
+                async Task PerformActionOnServiceDown(string poolName)
+                    {
+                        if (IsRetryCountExceededOrEqual() && IsMultipleOfMaxRetryCount())
+                        {
+                                log.Warn($"Sending Fail Notification");
+                                await notificationService.SendNotificationAsync(configuration.RecipientAddresses, configuration.FailureMessage, 
+                                        $"Attention: {nameof(WebWatcher)} is down");
+                        }
+                        else if (poolName == string.Empty)
+                        {
+                            await urlResponseManager.RestartPool(poolName);
+                            log.Info($"{nameof(WebWatcher)} was restarted");
+                        }
+
+                        #region Local Functions
+
+                        bool IsRetryCountExceededOrEqual() => svc.Result.FailureCount == configuration.MaxRetryCount;
+
+                        bool IsMultipleOfMaxRetryCount() => svc.Result.FailureCount % configuration.SendReminderEmailAfterRetryCount == 0;
+
+                        #endregion
+                    }
+
+                    async Task PerformActionOnServiceAlive()
+                    {
+                        try
+                        {
+                            log.Info($"{nameof(WebWatcher)} is active");
+                            if (svc.Result.PreviousStatus)
+                            {
+                                {
+                                    log.Info($"Send Restored Notification");
+                                    await notificationService.SendNotificationAsync(configuration.RecipientAddresses, configuration.RestoredMessage, 
+                                          $"Good news: {nameof(WebWatcher)} has been restored succesfully");
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Error(ex, "Unable to send email");
+                        }
+                        finally
+                        {
+                            svc.Result.PreviousStatus = false;
+                        }
+                    }
+                    #endregion
+                }
         }
 
         public async Task<IWatcherCheckResult> ExecuteAsync()
         {
-            var baseUrl = configuration.Uri.ToString();
+            //var baseUrl = configuration.Uri.ToString();
 
-            var fullUrl = configuration.Request.GetFullUrl(baseUrl);
-            try
-            {
-                var response = await httpService.ExecuteAsync(baseUrl, configuration.Request, configuration.Timeout);
-                var isValid = HasValidResponse(response);
-                if (!isValid)
-                {
-                    return WebWatcherCheckResult.Create(this, false,
-                        configuration.Uri, configuration.Request, response,
-                        $"Web endpoint: '{fullUrl}' has returned an invalid response with status code: {response.StatusCode}.");
-                }
+            //var fullUrl = configuration.Request.GetFullUrl(baseUrl);
+            //try
+            //{
+            //    var response = await httpService.ExecuteAsync(baseUrl, configuration.Request, configuration.Timeout);
 
-                return await EnsureAsync(fullUrl, response);
-            }
-            catch (TaskCanceledException)
-            {
-                return WebWatcherCheckResult.Create(this,
-                    false, configuration.Uri,
-                    configuration.Request, null,
-                    $"A connection timeout occurred while trying to access the Web endpoint: '{fullUrl}'.");
-            }
-            catch (Exception exception)
-            {
-                throw new WatcherException($"There was an error while trying to access the Web endpoint: '{fullUrl}'.",
-                    exception);
-            }
+            //    if (!isValid)
+            //    {
+            //        return WebWatcherCheckResult.Create(this, false,
+            //            configuration.Uri, configuration.Request, response,
+            //            $"Web endpoint: '{fullUrl}' has returned an invalid response with status code: {response.StatusCode}.");
+            //    }
+
+            //    return await EnsureAsync(fullUrl, response);
+            //}
+            //catch (TaskCanceledException)
+            //{
+            //    return WebWatcherCheckResult.Create(this,
+            //        false, configuration.Uri,
+            //        configuration.Request, null,
+            //        $"A connection timeout occurred while trying to access the Web endpoint: '{fullUrl}'.");
+            //}
+            //catch (Exception exception)
+            //{
+            //    throw new WatcherException($"There was an error while trying to access the Web endpoint: '{fullUrl}'.",
+            //        exception);
+            //}
+            return Task.CompletedTask as IWatcherCheckResult;
         }
 
-        private async Task<IWatcherCheckResult> EnsureAsync(string fullUrl, IHttpResponse response)
+        private async Task<IWatcherCheckResult> EnsureAsync()
         {
-            var isValid = true;
-            if (configuration.EnsureThatAsync != null)
-                isValid = await configuration.EnsureThatAsync?.Invoke(response);
+            //var isValid = true;
+            //if (configuration.EnsureThatAsync != null)
+            //    isValid = await configuration.EnsureThatAsync?.Invoke(response);
 
-            isValid = isValid && (configuration.EnsureThat?.Invoke(response) ?? true);
+            //isValid = isValid && (configuration.EnsureThat?.Invoke(response) ?? true);
 
-            return WebWatcherCheckResult.Create(this,
-                isValid, configuration.Uri,
-                configuration.Request, response,
-                $"Web endpoint: '{fullUrl}' has returned a response with status code: {response.StatusCode}.");
-        }
-
-        private bool UseAuthentication(IHttpRequest request)
-        {
-            return false;
+            //return WebWatcherCheckResult.Create(this,
+            //    isValid, configuration.Uri,
+            //    configuration.Request, response,
+            //    $"Web endpoint: '{fullUrl}' has returned a response with status code: {response.StatusCode}.");
+            return Task.CompletedTask as IWatcherCheckResult;
         }
 
         private List<string> AuthCredentials(string username, string password)
@@ -114,149 +212,6 @@ namespace Elfo.Wardein.Watchers.WebWatcher
                 }
             }
             return result;
-        }
-
-        private bool HasValidResponse(IHttpResponse response)
-        {
-            if (response.IsValid && Config.AssertWithStatusCode)
-            {
-                //we need to ensure that response status code is 200
-
-            }
-            else if (response.IsValid && !String.IsNullOrEmpty(Config.AssertWithRegex))
-            {
-                //we need also to understand if the regex matched the html response
-            }
-            return true;
-        }
-
-        internal virtual async Task RunCheck()
-        {
-            Log.Info($"{Environment.NewLine}> CHECKING SERVICES HEALTH");
-
-            //if (Config.AssertWithStatusCode)
-            //{
-            //    //we need to ensure that response status code is 200
-            //}
-            //else if(String.IsNullOrEmpty(Config.AssertWithRegex))
-            //{
-            //    //we need also to understand if the regex matched the html response
-            //}
-
-
-
-            foreach (var service in Config.Services)
-            {
-                using (var persistenceService = ServicesContainer.PersistenceService(Const.DB_PATH))
-                {
-                    IAmResponceManager serviceManager = GetServiceManager();
-                    if (serviceManager == null)
-                        continue; // If the service doesn't exist, skip the check 
-
-                    var notificationService = ServicesContainer.NotificationService(GetNotificationType());
-                    var item = persistenceService.GetEntityById(service.ServiceName);
-
-                    if (!serviceManager.IsStillAlive)
-                    {
-                        //try to restart 
-                        await PerformActionOnServiceDown();
-                    }
-                    else
-                    {
-                        await PerformActionOnServiceAlive();
-                    }
-
-                    #region Local Functions
-
-                    IAmResponceManager GetServiceManager()
-                    {
-                        IAmResponceManager svc = null;
-                        try
-                        {
-                            svc = ServicesContainer.ServiceManager(service.ServiceName, service.ServiceManagerType);
-                        }
-                        catch (ArgumentNullException ex)
-                        {
-                            log.Warn(ex.Message);
-                        }
-                        return svc;
-                    }
-
-                    NotificationType GetNotificationType()
-                    {
-                        if (!Enum.TryParse<NotificationType>(service.NotificationType, out NotificationType result))
-                            throw new ArgumentException($"Notification type {service.NotificationType} not supported");
-                        return result;
-                    }
-
-                    async Task PerformActionOnServiceDown()
-                    {
-                        serviceManager.Restart();
-
-                        if (IsRetryCountExceededOrEqual() && IsMultipleOfMaxRetryCount())
-                        {
-                            if (IAmAllowedToSendANewNotification())
-                            {
-                                log.Warn($"Sending Fail Notification");
-                                await notificationService.SendNotificationAsync(service.RecipientAddress, service.FailMessage, $"Attention: {service.ServiceName} service is down");
-                                item.LastNotificationSentAtThisTimeUTC = DateTime.UtcNow;
-                            }
-                        }
-                        log.Info($"{service.ServiceName} is not active");
-
-                        #region Local Functions
-
-                        bool IAmAllowedToSendANewNotification()
-                        {
-                            return IsRepeatedMailTimeoutElapsed();
-
-                            #region Local Functions
-
-                            bool IsRepeatedMailTimeoutElapsed()
-                            {
-                                var timeout = GetServiceSendRepeatedNotificationAfterSecondsOrDefault();
-
-                                return DateTime.UtcNow.Subtract(item.LastNotificationSentAtThisTimeUTC.GetValueOrDefault(DateTime.MinValue)) >= timeout;
-                            }
-
-                            #endregion
-                        }
-
-                        bool IsRetryCountExceededOrEqual() => item.RetryCount >= service.MaxRetryCount;
-
-                        bool IsMultipleOfMaxRetryCount() => item.RetryCount % service.MaxRetryCount == 0;
-
-                        #endregion
-                    }
-
-                    async Task PerformActionOnServiceAlive()
-                    {
-                        try
-                        {
-                            log.Info($"{service.ServiceName} is active");
-                            if (item.RetryCount > 0)
-                            {
-                                log.Info($"Send Restored Notification");
-                                await notificationService.SendNotificationAsync(service.RecipientAddress, service.RestoredMessage, $"Good news: {service.ServiceName} service has been restored succesfully");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            log.Error(ex, "Unable to send email");
-                        }
-                        finally
-                        {
-                            item.RetryCount = 0;
-                        }
-                    }
-
-                    TimeSpan GetServiceSendRepeatedNotificationAfterSecondsOrDefault() =>
-                        TimeSpan.FromSeconds(service.SendRepeatedNotificationAfterSeconds.GetValueOrDefault(Config.SendReminderEmailAfterRetryCount));
-
-
-                    #endregion
-                }
-            }
         }
     }
 }

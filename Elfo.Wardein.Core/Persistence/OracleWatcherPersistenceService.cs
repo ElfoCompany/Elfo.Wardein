@@ -37,11 +37,11 @@ namespace Elfo.Firmenich.Wardein.Core.Persistence
                 },
                 new OracleParameter("p_wtchr_cnfg_id", OracleDbType.Int32, watcherConfigurationId, System.Data.ParameterDirection.Input),
                 new OracleParameter("p_appl_id", OracleDbType.Int32, applicationId, System.Data.ParameterDirection.Input),
-                new OracleParameter("p_hostname", OracleDbType.Varchar2, applicationId, System.Data.ParameterDirection.Input),
-                new OracleParameter("p_is_healthy", OracleDbType.Varchar2, applicationId, System.Data.ParameterDirection.Input),
-                new OracleParameter("p_flr_msg", OracleDbType.Varchar2, applicationId, System.Data.ParameterDirection.Input),
-                new OracleParameter("po_flr_count", OracleDbType.Int32, applicationId, System.Data.ParameterDirection.Output),
-                new OracleParameter("po_prv_status", OracleDbType.Varchar2, applicationId, System.Data.ParameterDirection.Output)
+                new OracleParameter("p_hostname", OracleDbType.Varchar2, applicationHostname, System.Data.ParameterDirection.Input),
+                new OracleParameter("p_is_healthy", OracleDbType.Varchar2, isHealthy ? "Y" : "N" , System.Data.ParameterDirection.Input),
+                new OracleParameter("p_flr_msg", OracleDbType.Varchar2, failureException != null ?  failureException.ToString() : null, System.Data.ParameterDirection.Input),
+                new OracleParameter("po_flr_count", OracleDbType.Int32, System.Data.ParameterDirection.Output),
+                new OracleParameter("po_prv_status", OracleDbType.Varchar2, System.Data.ParameterDirection.Output)
             );
         }
     }
