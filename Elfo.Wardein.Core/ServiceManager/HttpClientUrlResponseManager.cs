@@ -75,6 +75,29 @@ namespace Elfo.Firmenich.Wardein.Core.ServiceManager
         {
             new IISPoolManager(poolName).Restart();
             return Task.CompletedTask;
-        }  
+        }
+
+        //private List<string> AuthCredentials(string username, string password)
+        //{
+        //    List<string> result = null;
+
+        //    CredentialCache.DefaultNetworkCredentials.UserName = username;
+        //    CredentialCache.DefaultNetworkCredentials.Password = password;
+
+        //    using (var authtHandler = new HttpClientHandler { Credentials = CredentialCache.DefaultNetworkCredentials })
+        //    {
+        //        using (var httpClient = new HttpClient(authtHandler))
+        //        {
+        //            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("Keep-Alive"));
+        //            HttpResponseMessage message = httpClient.GetAsync("<service URI>").Result;
+        //            if (message.IsSuccessStatusCode)
+        //            {
+        //                var inter = message.Content.ReadAsStringAsync();
+        //                result = JsonConvert.DeserializeObject<List<string>>(inter.Result);
+        //            }
+        //        }
+        //    }
+        //    return result;
+        //}
     }
 }

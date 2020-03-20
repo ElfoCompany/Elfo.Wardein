@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace Elfo.Wardein.Watchers.WebWatcher
 {
@@ -42,5 +43,18 @@ namespace Elfo.Wardein.Watchers.WebWatcher
 
         [JsonProperty(PropertyName = "connectionString")]
         public string ConnectionString { get; protected set; }
+
+        [JsonProperty(PropertyName = "watcherConfigurationId")]
+        public int WatcherConfigurationId { get; protected set; }
+        [JsonProperty(PropertyName = "applicationId")]
+        public int ApplicationId { get; protected set; }
+        [JsonProperty(PropertyName = "applicationHostname")]
+        public string ApplicationHostname { get; protected set; }
+
+        [JsonProperty(PropertyName = "url")]
+        public Uri Url { get; protected set; }
+
+        [JsonProperty(PropertyName = "urlAlias")]
+        public string UrlAlias { get; protected set; }
     }
 }
