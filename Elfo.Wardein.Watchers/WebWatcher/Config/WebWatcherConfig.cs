@@ -39,5 +39,8 @@ namespace Elfo.Wardein.Watchers.WebWatcher
 
         [JsonProperty(PropertyName = "restoredMessage")]
         public string RestoredMessage { get; protected set; }
+
+        [JsonProperty(PropertyName = "connectionString")]
+        public string ConnectionString { get; protected set; }
     }
 }

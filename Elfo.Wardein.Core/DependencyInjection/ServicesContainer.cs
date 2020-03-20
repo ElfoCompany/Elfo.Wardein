@@ -1,5 +1,7 @@
 ﻿using Elfo.Firmenich.Wardein.Abstractions.HeartBeat;
+using Elfo.Firmenich.Wardein.Abstractions.Watchers;
 using Elfo.Firmenich.Wardein.Core.HeartBeat;
+using Elfo.Firmenich.Wardein.Core.Persistence;
 using Elfo.Wardein.Abstractions.Configuration;
 using Elfo.Wardein.Abstractions.Services;
 using Elfo.Wardein.Abstractions.Services.Models;
@@ -70,6 +72,8 @@ namespace Elfo.Wardein.Core
                 .AddTransient<Func<string, OracleConnectionConfiguration>>(sp => (connectionString)  => new OracleConnectionConfiguration(connectionString))
                 .AddTransient<Func<string, IAmWardeinHeartBeatPersistanceService>>(sp => (connectionString) 
                     => new OracleWardeinHeartBeatPersistanceService(new OracleConnectionConfiguration.Builder(connectionString).Build()) // TODO add clientinfo etc
+                ).AddTransient<Func<string, IAmWatcherPersistenceService>>(sp => (connectionString)
+                    => new OracleWatcherPersistenceService(new OracleConnectionConfiguration.Builder(connectionString).Build()) // TODO add clientinfo etc
                 );
     
 
@@ -107,6 +111,12 @@ namespace Elfo.Wardein.Core
         {
             var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmPersistenceService<WindowsServiceStats>>>();
             return instanceResolver(filePath);
+        }
+
+        public static IAmWatcherPersistenceService WatcherPersistenceService(string connectionString)
+        {
+            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmWatcherPersistenceService>>();
+            return instanceResolver(connectionString);
         }
 
         public static IAmWardeinHeartBeatPersistanceService WardeinHeartBeatPersistenceService(string connectionString)
