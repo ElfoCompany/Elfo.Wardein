@@ -12,14 +12,14 @@ namespace Elfo.Firmenich.Wardein.Core.ServiceManager
     public class HttpClientUrlResponseManager : IAmUrlResponseManager
     {
 
-        public async Task<bool> IsHealthy(bool assertWithStatusCode, string assertWithRegex)
+        public async Task<bool> IsHealthy(bool assertWithStatusCode, string assertWithRegex, Uri url)
         {
             var endPoint = "";
             using (var handler = new HttpClientHandler())
             using (var client = new HttpClient(handler))
             {
                 // TODO support authentication
-                client.BaseAddress = new Uri("http://google.com/");
+                client.BaseAddress = url;
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 

@@ -16,6 +16,7 @@ namespace Elfo.Wardein.Watchers.WebWatcher
     {
         private readonly WebWatcherConfig configuration;
         private readonly IAmWatcherPersistenceService watcherPersistenceService;
+        private readonly HttpClientUrlResponseManager urlResponseManager;
         protected static ILogger log = LogManager.GetCurrentClassLogger();
 
         protected WebWatcher(string name, WebWatcherConfig config, string group) : base(name, config, group)
@@ -31,6 +32,7 @@ namespace Elfo.Wardein.Watchers.WebWatcher
 
             configuration = config;
             watcherPersistenceService = ServicesContainer.WatcherPersistenceService(configuration.ConnectionString);
+
         }
 
         public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
@@ -57,10 +59,8 @@ namespace Elfo.Wardein.Watchers.WebWatcher
         {
             log.Info($"Starting check on {GetUrlDisplayName}");
 
-            IAmUrlResponseManager urlResponseManager = new HttpClientUrlResponseManager();
-
             var notificationService = ServicesContainer.NotificationService(NotificationType.Mail);
-            var isHealthy = await urlResponseManager.IsHealthy(configuration.AssertWithStatusCode, configuration.AssertWithRegex);
+            var isHealthy = await urlResponseManager.IsHealthy(configuration.AssertWithStatusCode, configuration.AssertWithRegex, configuration.Url);
             var currentStatus = await watcherPersistenceService.UpsertCurrentStatus
             (
                 watcherConfigurationId: configuration.WatcherConfigurationId,
