@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace Elfo.Wardein.Core.NotificationService
+namespace Elfo.Wardein.Abstractions
 {
     public enum NotificationType
     {

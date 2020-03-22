@@ -9,6 +9,7 @@ using System.Text;
 
 namespace Elfo.Wardein.Core.Persistence
 {
+    [Obsolete]
     public class WindowsServiceStatsPersistenceInJSON : IAmPersistenceService<WindowsServiceStats>
     {
         private readonly string filePath;

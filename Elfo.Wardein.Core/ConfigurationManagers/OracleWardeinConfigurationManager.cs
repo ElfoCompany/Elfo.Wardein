@@ -1,27 +1,24 @@
 ﻿using Elfo.Wardein.Abstractions.Configuration;
 using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Core.Helpers;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace Elfo.Firmenich.Wardein.Core.ConfigurationManagers
+namespace Elfo.Wardein.Core.ConfigurationManagers
 {
     public class OracleWardeinConfigurationManager : IAmWardeinConfigurationManager
     {
         private readonly OracleConnectionConfiguration configuration;
+        private readonly IOracleHelper oracleHelper;
         private readonly string hostname;
-        private readonly OracleHelper oracleHelper;
 
-        public OracleWardeinConfigurationManager(OracleConnectionConfiguration configuration, string hostname)
+        public OracleWardeinConfigurationManager(IOracleHelper oracleHelper, string hostname)
         {
-            this.configuration = configuration;
+            this.oracleHelper = oracleHelper;
             this.hostname = hostname;
-            this.oracleHelper = new OracleHelper(configuration);
         }
 
         public bool IsInMaintenanceMode => throw new NotImplementedException();
@@ -34,23 +31,21 @@ namespace Elfo.Firmenich.Wardein.Core.ConfigurationManagers
                 ["APPL_HOSTNAME"] = new OracleParameter("APPL_HOSTNAME", OracleDbType.Varchar2).Value = hostname
             };
             var query = @"SELECT * FROM V_WRD_WATCHERS WHERE ""ApplicationHostname"" = :APPL_HOSTNAME";
-            var result = this.oracleHelper.Query<WardeinConfigurationModel>(query, parameters);
+            var waredinWatcherConfigs = this.oracleHelper.Query<WardeinConfigurationModel>(query, parameters);
 
             // TODO: Test to see if it works.. code will probably need refactoring
-            //var json = JObject.Parse(result.FirstOrDefault().WardeinConfig);
-            //foreach (var watcherConfig in result)
-            //{
-            //    var watcherTypeConfigTest = JObject.Parse(watcherConfig.WatcherTypeJsonConfig);
-            //    var watcherConfigTest = JObject.Parse(watcherConfig.WatcherJsonConfig);
-            //    watcherTypeConfigTest.Merge(watcherConfigTest);
-            //    json.Merge(watcherTypeConfigTest);
-            //}
+            var wardeinConfig = JObject.Parse(waredinWatcherConfigs.FirstOrDefault().WardeinConfig);
+            foreach (var wardeinWatcherConfig in waredinWatcherConfigs)
+            {
+                var watcherTypeConfig = JObject.Parse((string)wardeinWatcherConfig.WatcherTypeJsonConfig);
+                var watcherConfig = JObject.Parse((string)wardeinWatcherConfig.WatcherJsonConfig);
+                watcherConfig.AddDefaultProps(wardeinWatcherConfig.WatcherType, wardeinWatcherConfig.WatcherConfigurationId, wardeinWatcherConfig.ApplicationId);
+                watcherTypeConfig.Merge(watcherConfig);
+                wardeinConfig.Merge(watcherTypeConfig);
+            }
 
             // TODO: Cahe the config
-            var rawJson = "{\"timeSpanFromSeconds\":60,\"serviceManagerType\":1,\"services\":[{\"serviceName\":\"MSMQ\",\"maxRetryCount\":2,\"serviceManagerType\":0}],\"iisPools\":[{\"serviceName\":\"Elfo.Firmenich.CoreDbDocGen\",\"maxRetryCount\":2,\"serviceManagerType\":1}],\"urls\":[{\"url\":\"www.google.com\",\"urlAlias\":\"Google\",\"assertWithStatusCode\":true,\"assertWithRegex\":\"\\d*\"}]}";
-            var json = JObject.Parse(rawJson);
-            var tests = JsonConvert.DeserializeObject<WardeinConfig>(json.ToString());
-            return json.ToObject<WardeinConfig>();
+            return wardeinConfig.ToObject<WardeinConfig>();
         }
 
         public void InvalidateCache()
@@ -74,8 +69,58 @@ namespace Elfo.Firmenich.Wardein.Core.ConfigurationManagers
         public int WatcherConfigurationId { get; set; }
         public int ApplicationId { get; set; }
         public string ApplicationHostname { get; set; }
+        public WardeinWatcherType WatcherType { get; set; }
         public string WatcherJsonConfig { get; set; }
         public string WatcherTypeJsonConfig { get; set; }
         public string WardeinConfig { get; set; }
+    }
+
+    public enum WardeinWatcherType
+    {
+        Unknown,
+        WindowsService,
+        CleanUp,
+        IISPool,
+        Web,
+        WardeinHeartbeat,
+        HealthAPI
+    }
+
+    internal static class JObjectExtensions
+    {
+        internal static void AddDefaultProps(this JObject config, WardeinWatcherType watcherType, int watcherConfigurationId, int applicationId)
+        {
+            JToken tokens;
+            switch (watcherType)
+            {
+                case WardeinWatcherType.WindowsService:
+                    if (config.TryGetValue("services", out tokens))
+                        foreach (var token in tokens.AsJEnumerable())
+                            token.AddDefaultProps(watcherConfigurationId, applicationId);
+                    break;
+                case WardeinWatcherType.IISPool:
+                    if (config.TryGetValue("iisPools", out tokens))
+                        foreach (var token in tokens.AsJEnumerable())
+                            token.AddDefaultProps(watcherConfigurationId, applicationId);
+                    break;
+                case WardeinWatcherType.Web:
+                    if (config.TryGetValue("urls", out tokens))
+                        foreach (var token in tokens.AsJEnumerable())
+                            token.AddDefaultProps(watcherConfigurationId, applicationId);
+                    break;
+                case WardeinWatcherType.WardeinHeartbeat:
+                    if (config.TryGetValue("heartbeat", out tokens))
+                        tokens.AddDefaultProps(watcherConfigurationId, applicationId);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        internal static void AddDefaultProps(this JToken token, int watcherConfigurationId, int applicationId)
+        {
+            token["applicationId"] = applicationId;
+            token["watcherConfigurationId"] = watcherConfigurationId;
+        }
     }
 }

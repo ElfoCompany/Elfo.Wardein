@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Warden;
+﻿using Elfo.Wardein.Abstractions.Configuration.Models;
+using System;
 using Warden.Core;
 using Warden.Watchers;
 
@@ -10,7 +8,7 @@ namespace Elfo.Wardein.Watchers.FileSystem
     public static class Extensions
     {
         public static WardenConfiguration.Builder AddFileSystemWatcher(this WardenConfiguration.Builder builder,
-            FileSystemWatcherConfig config,
+            FileSystemConfigurationModel config,
             string group = null,
             Action<WatcherHooksConfiguration.Builder> hooks = null)
         {

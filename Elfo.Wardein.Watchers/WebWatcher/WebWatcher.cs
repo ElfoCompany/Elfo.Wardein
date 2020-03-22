@@ -1,6 +1,6 @@
-﻿using Elfo.Firmenich.Wardein.Abstractions.Watchers;
-using Elfo.Firmenich.Wardein.Abstractions.WebWatcher;
-using Elfo.Firmenich.Wardein.Core.ServiceManager;
+﻿using Elfo.Wardein.Abstractions.Watchers;
+using Elfo.Wardein.Abstractions.WebWatcher;
+using Elfo.Wardein.Core.ServiceManager;
 using Elfo.Wardein.Core;
 using Elfo.Wardein.Core.Helpers;
 using Elfo.Wardein.Core.NotificationService;
@@ -9,123 +9,82 @@ using NLog.Fluent;
 using System;
 using System.Threading.Tasks;
 using Warden.Watchers;
+using Elfo.Wardein.Abstractions.Configuration.Models;
 
 namespace Elfo.Wardein.Watchers.WebWatcher
 {
-    public class WebWatcher : WardeinWatcher<WebWatcherConfig>
+    public class WebWatcher : WardeinWatcherWithResolution<WebWatcherConfigurationModel>
     {
-        private readonly WebWatcherConfig configuration;
         private readonly IAmWatcherPersistenceService watcherPersistenceService;
-        private readonly HttpClientUrlResponseManager urlResponseManager;
+        private readonly IAmUrlResponseManager urlResponseManager;
         protected static ILogger log = LogManager.GetCurrentClassLogger();
 
-        protected WebWatcher(string name, WebWatcherConfig config, string group) : base(name, config, group)
+        protected WebWatcher(string name, string group, WebWatcherConfigurationModel config) : base(name, config, group)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Watcher name can not be empty.");
 
-            if (configuration == null)
+            if (config == null)
             {
-                throw new ArgumentNullException(nameof(configuration),
+                throw new ArgumentNullException(nameof(config),
                     "Web Watcher configuration has not been provided.");
             }
+            watcherPersistenceService = ServicesContainer.WatcherPersistenceService();
+            urlResponseManager = ServicesContainer.UrlResponseManager();
+        }
 
-            configuration = config;
-            watcherPersistenceService = ServicesContainer.WatcherPersistenceService(configuration.ConnectionString);
-
+        public static WebWatcher Create(WebWatcherConfigurationModel config, string group = null)
+        {
+            return new WebWatcher($"{nameof(WebWatcher)}", group, config);
         }
 
         public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
         {
+            bool result = false;
             Log.Info($"---\tStarting {Name}\t---");
             try
             {
                 var guid = Guid.NewGuid();
                 log.Info($"{Environment.NewLine}{"-".Repeat(24)} UrlWatcher check @ {guid} started {"-".Repeat(24)}");
 
-                await RunCheck();
+                result = await RunCheck();
 
-                log.Info($"{Environment.NewLine}{"-".Repeat(24)} UrlWatcher check @ {guid} finished {"-".Repeat(24)}{Environment.NewLine.Repeat(24)}");
+                log.Info($"{Environment.NewLine}{"-".Repeat(24)} UrlWatcher check @ {guid} finished {"-".Repeat(24)}{Environment.NewLine}");
             }
             catch (Exception ex)
             {
                 log.Error(ex, $"Exception inside UrlWatcher action: {ex.ToString()}\n");
             }
-
-            return await Task.FromResult<IWatcherCheckResult>(null);
+            return WebWatcherCheckResult.Create(this, result);
         }
 
-        internal virtual async Task RunCheck()
+        internal virtual async Task<bool> RunCheck()
         {
-            log.Info($"Starting check on {GetUrlDisplayName}");
+            log.Info($"Starting check on {GetLoggingDisplayName}");
 
-            var notificationService = ServicesContainer.NotificationService(NotificationType.Mail);
-            var isHealthy = await urlResponseManager.IsHealthy(configuration.AssertWithStatusCode, configuration.AssertWithRegex, configuration.Url);
+            var notificationService = ServicesContainer.NotificationService(Config.NotificationType);
+            var isHealthy = await urlResponseManager.IsHealthy(Config.AssertWithStatusCode, Config.AssertWithRegex, Config.Url);
             var currentStatus = await watcherPersistenceService.UpsertCurrentStatus
             (
-                watcherConfigurationId: configuration.WatcherConfigurationId,
-                applicationId: configuration.ApplicationId,
-                applicationHostname: configuration.ApplicationHostname,
+                watcherConfigurationId: Config.WatcherConfigurationId,
+                applicationId: Config.ApplicationId,
+                applicationHostname: Config.ApplicationHostname,
                 isHealthy: isHealthy
             );
 
             if (!isHealthy)
             {
-                await PerformActionOnServiceDown(configuration.AssociatedIISPool);
+                await PerformActionOnServiceDown(currentStatus, async configuration => await urlResponseManager.RestartPool(configuration.AssociatedIISPool));
             }
             else
             {
-                await PerformActionOnServiceAlive();
+                await PerformActionOnServiceAlive(currentStatus);
             }
 
-            log.Info($"Finished checking {GetUrlDisplayName}");
-            #region Local Functions
-
-            async Task PerformActionOnServiceDown(string poolName)
-            {
-                if (IsFailureCountEqualToMaxRetyrCount() || IsMultipleOfReminderRetryCount())
-                {
-                    log.Warn($"Sending Fail Notification for {GetUrlDisplayName}");
-                    await notificationService.SendNotificationAsync(configuration.RecipientAddresses, configuration.FailureMessage,
-                            $"Attention: {GetUrlDisplayName} is down on {configuration.ApplicationHostname}");
-                }
-
-                if (string.IsNullOrWhiteSpace(poolName))
-                {
-                    log.Info($"trying to restore {poolName} on {configuration.ApplicationHostname}");
-                    await urlResponseManager.RestartPool(poolName);
-                    log.Info($"{poolName} was restarted");
-                }
-
-                #region Local Functions
-
-                bool IsFailureCountEqualToMaxRetyrCount() => currentStatus.FailureCount == configuration.MaxRetryCount;
-
-                bool IsMultipleOfReminderRetryCount() => currentStatus.FailureCount % configuration.SendReminderEmailAfterRetryCount == 0;
-
-                #endregion
-            }
-
-            async Task PerformActionOnServiceAlive()
-            {
-                try
-                {
-                    log.Info($"{GetUrlDisplayName} is active");
-                    if (!currentStatus.PreviousStatus)
-                    {
-                        log.Info($"Send Restored Notification for {GetUrlDisplayName}");
-                        await notificationService.SendNotificationAsync(configuration.RecipientAddresses, configuration.RestoredMessage,
-                              $"Good news: {GetUrlDisplayName} has been restored succesfully");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    log.Error(ex, $"Unable to send email fro {GetUrlDisplayName}");
-                }
-            }
-            #endregion
+            log.Info($"Finished checking {GetLoggingDisplayName}");
+            return isHealthy;
         }
 
-        private string GetUrlDisplayName => string.IsNullOrWhiteSpace(configuration.UrlAlias) ? configuration.Url.AbsoluteUri : configuration.UrlAlias;
+        protected override string GetLoggingDisplayName => string.IsNullOrWhiteSpace(Config.UrlAlias) ? Config.Url.AbsoluteUri : Config.UrlAlias;
     }
 }

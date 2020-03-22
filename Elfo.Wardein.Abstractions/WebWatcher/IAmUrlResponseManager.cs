@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Elfo.Firmenich.Wardein.Abstractions.WebWatcher
+namespace Elfo.Wardein.Abstractions.WebWatcher
 {
     public interface IAmUrlResponseManager
     {

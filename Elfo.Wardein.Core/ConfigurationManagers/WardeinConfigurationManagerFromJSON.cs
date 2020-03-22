@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elfo.Wardein.Core.ConfigurationReader
+namespace Elfo.Wardein.Core.ConfigurationManagers
 {
     public class WardeinConfigurationManagerFromJSON : IAmWardeinConfigurationManager
     {

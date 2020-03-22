@@ -1,14 +1,12 @@
-﻿using Elfo.Firmenich.Wardein.Abstractions.Configuration.Models;
-using Elfo.Firmenich.Wardein.Abstractions.HeartBeat;
-using Elfo.Firmenich.Wardein.Abstractions.Watchers;
-using Elfo.Firmenich.Wardein.Abstractions.WebWatcher;
-using Elfo.Firmenich.Wardein.Core.HeartBeat;
-using Elfo.Firmenich.Wardein.Core.Persistence;
-using Elfo.Firmenich.Wardein.Core.ServiceManager;
+﻿using Elfo.Wardein.Abstractions;
 using Elfo.Wardein.Abstractions.Configuration;
+using Elfo.Wardein.Abstractions.Configuration.Models;
+using Elfo.Wardein.Abstractions.HeartBeat;
 using Elfo.Wardein.Abstractions.Services;
-using Elfo.Wardein.Abstractions.Services.Models;
-using Elfo.Wardein.Core.ConfigurationReader;
+using Elfo.Wardein.Abstractions.Watchers;
+using Elfo.Wardein.Abstractions.WebWatcher;
+using Elfo.Wardein.Core.ConfigurationManagers;
+using Elfo.Wardein.Core.HeartBeat;
 using Elfo.Wardein.Core.Helpers;
 using Elfo.Wardein.Core.NotificationService;
 using Elfo.Wardein.Core.Persistence;
@@ -27,14 +25,16 @@ namespace Elfo.Wardein.Core
         private IServiceCollection serviceCollection;
         private static volatile ServicesContainer serviceContainer;
         private ServiceProvider serviceProvider;
+        private readonly WardeinBaseConfiguration wardeinBaseConfiguration;
 
         #endregion
 
         #region Constructor
 
-        protected ServicesContainer()
+        protected ServicesContainer(WardeinBaseConfiguration wardeinBaseConfiguration)
         {
             Configure();
+            this.wardeinBaseConfiguration = wardeinBaseConfiguration;
         }
 
         #endregion
@@ -44,10 +44,56 @@ namespace Elfo.Wardein.Core
         protected void Configure()
         {
 
-            serviceCollection = serviceCollection = new ServiceCollection()
-                .AddSingleton<Func<string, IAmMailConfigurationManager>>(sp => filePath => new MailConfigurationManagerFromJSON(filePath))
-                .AddSingleton<Func<string, IAmWardeinConfigurationManager>>(sp => filePath => new WardeinConfigurationManagerFromJSON(filePath))
-                .AddTransient<Func<string, IAmPersistenceService<WindowsServiceStats>>>(sp => filePath => new WindowsServiceStatsPersistenceInJSON(filePath))
+            serviceCollection = new ServiceCollection()
+                .AddSingleton<IAmMailConfigurationManager>(sp =>
+                {
+                    switch (wardeinBaseConfiguration.MailConnectionType)
+                    {
+                        case ConnectionType.FileSystem:
+                            return new MailConfigurationManagerFromJSON(wardeinBaseConfiguration.MailConnectionString);
+                        default:
+                            throw new NotImplementedException();
+
+                    }
+                })
+                .AddSingleton<IAmWardeinConfigurationManager>(sp =>
+                {
+                    switch (wardeinBaseConfiguration.StorageConnectionType)
+                    {
+                        case ConnectionType.FileSystem:
+                            return new WardeinConfigurationManagerFromJSON(wardeinBaseConfiguration.StorageConnectionString);
+                        case ConnectionType.Oracle:
+                            return new OracleWardeinConfigurationManager(sp.GetService<IOracleHelper>(), HostHelper.GetName());
+                        default:
+                            throw new NotImplementedException();
+
+                    }
+                })
+                .AddSingleton<OracleConnectionConfiguration>(sp =>
+                {
+                    var configs = wardeinBaseConfiguration.OracleAdditionalParams;
+                    var builder = new OracleConnectionConfiguration.Builder(wardeinBaseConfiguration.StorageConnectionString);
+                    if (configs != null)
+                        builder
+                            .WithClientId(configs.ClientId)
+                            .WithClientInfo(configs.ClientInfo)
+                            .WithModuleName(configs.ModuleName)
+                            .WithDateLanguage(configs.DateLanguage);
+                    return builder.Build();
+                })
+                .AddSingleton<IAmUrlResponseManager>(new HttpClientUrlResponseManager())
+                .AddTransient<IOracleHelper>(sp => new OracleHelper(sp.GetService<OracleConnectionConfiguration>()))
+                .AddTransient<IAmWatcherPersistenceService>(sp =>
+                {
+                    switch (wardeinBaseConfiguration.StorageConnectionType)
+                    {
+                        case ConnectionType.Oracle:
+                            return new OracleWatcherPersistenceService(sp.GetService<OracleConnectionConfiguration>());
+                        default:
+                            throw new NotImplementedException();
+
+                    }
+                })
                 .AddTransient<Func<NotificationType, IAmNotificationService>>(sp => notificationType =>
                 {
                     switch (notificationType)
@@ -72,16 +118,20 @@ namespace Elfo.Wardein.Core
                             throw new KeyNotFoundException($"Notification service {serviceManagerType.ToString()} not supported yet");
                     }
                 })
-                .AddTransient<Func<string, OracleConnectionConfiguration>>(sp => (connectionString)  => new OracleConnectionConfiguration(connectionString))
-                .AddTransient<Func<string, IAmWardeinHeartBeatPersistanceService>>(sp => (connectionString) 
-                    => new OracleWardeinHeartBeatPersistanceService(new OracleConnectionConfiguration.Builder(connectionString).Build()) // TODO add clientinfo etc
-                ).AddTransient<Func<string, IAmWatcherPersistenceService>>(sp => (connectionString)
-                    => new OracleWatcherPersistenceService(new OracleConnectionConfiguration.Builder(connectionString).Build()) // TODO add clientinfo etc
-                )
-                .AddTransient<Func<HttpClientUrlResponseManager, IAmUrlResponseManager>>();
-    
+                .AddTransient<IAmWardeinHeartBeatPersistanceService>(sp =>
+                {
+                    switch (wardeinBaseConfiguration.StorageConnectionType)
+                    {
+                        case ConnectionType.Oracle:
+                            return new OracleWardeinHeartBeatPersistanceService(sp.GetService<OracleConnectionConfiguration>());
+                        default:
+                            throw new NotImplementedException();
 
-                serviceProvider = serviceCollection.BuildServiceProvider();
+                    }
+                });
+
+
+            serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
         #endregion
@@ -100,10 +150,22 @@ namespace Elfo.Wardein.Core
                     lock (sync)
                     {
                         if (serviceContainer == null)
-                            serviceContainer = new ServicesContainer();
+                            throw new InvalidOperationException("ServicesContainer must be initialized first");
                     }
                 }
                 return serviceContainer;
+            }
+        }
+
+        public static void Initialize(WardeinBaseConfiguration wardeinBaseConfiguration)
+        {
+            if (serviceContainer == null)
+            {
+                lock (sync)
+                {
+                    if (serviceContainer == null)
+                        serviceContainer = new ServicesContainer(wardeinBaseConfiguration);
+                }
             }
         }
 
@@ -111,35 +173,13 @@ namespace Elfo.Wardein.Core
 
         #region Objects
 
-        public static IAmPersistenceService<WindowsServiceStats> PersistenceService(string filePath)
-        {
-            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmPersistenceService<WindowsServiceStats>>>();
-            return instanceResolver(filePath);
-        }
-
-        public static IAmWatcherPersistenceService WatcherPersistenceService(string connectionString)
-        {
-            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmWatcherPersistenceService>>();
-            return instanceResolver(connectionString);
-        }
-
-        public static IAmWardeinHeartBeatPersistanceService WardeinHeartBeatPersistenceService(string connectionString)
-        {
-            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmWardeinHeartBeatPersistanceService>>();
-            return instanceResolver(connectionString);
-        }
-
-        public static IAmMailConfigurationManager MailConfigurationManager(string filePath)
-        {
-            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmMailConfigurationManager>>();
-            return instanceResolver(filePath);
-        }
-
-        public static IAmWardeinConfigurationManager WardeinConfigurationManager(string filePath)
-        {
-            var instanceResolver = Current.serviceProvider.GetService<Func<string, IAmWardeinConfigurationManager>>();
-            return instanceResolver(filePath);
-        }
+        public static IAmWatcherPersistenceService WatcherPersistenceService() => Current.serviceProvider.GetService<IAmWatcherPersistenceService>();
+        public static IAmWardeinHeartBeatPersistanceService WardeinHeartBeatPersistenceService() => Current.serviceProvider.GetService<IAmWardeinHeartBeatPersistanceService>();
+        public static IAmMailConfigurationManager MailConfigurationManager() => Current.serviceProvider.GetService<IAmMailConfigurationManager>();
+        public static IAmWardeinConfigurationManager WardeinConfigurationManager() => Current.serviceProvider.GetService<IAmWardeinConfigurationManager>();
+        public static OracleConnectionConfiguration OracleConnectionConfiguration() => Current.serviceProvider.GetService<OracleConnectionConfiguration>();
+        public static IAmUrlResponseManager UrlResponseManager() => Current.serviceProvider.GetService<IAmUrlResponseManager>();
+        public static IOracleHelper OracleHelper() => Current.serviceProvider.GetService<IOracleHelper>();
 
         public static IAmNotificationService NotificationService(NotificationType notificationType)
         {
@@ -151,7 +191,7 @@ namespace Elfo.Wardein.Core
         {
             var instanceResolver = Current.serviceProvider.GetService<Func<ServiceManagerType, string, IAmServiceManager>>();
             return instanceResolver(serviceManagerType, serviceName);
-        }
+        }        
 
         #endregion
     }

@@ -27,7 +27,7 @@ namespace Elfo.Wardein.Core.NotificationService
 
             MailConfiguration GetMailConfiguration()
             {
-                var config = ServicesContainer.MailConfigurationManager(Const.MAIL_CONFIG_PATH)?.GetConfiguration();
+                var config = ServicesContainer.MailConfigurationManager()?.GetConfiguration();
 
                 if (config == null)
                     throw new ArgumentNullException("Cannot find Mail SMTP Configuration");

@@ -10,7 +10,7 @@ namespace Elfo.Wardein.APIs.Abstractions
     {
         public IAmRouteImplementation(bool blockActionIfInMaintenanceMode)
         {
-            if (blockActionIfInMaintenanceMode && ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH).IsInMaintenanceMode)
+            if (blockActionIfInMaintenanceMode && ServicesContainer.WardeinConfigurationManager().IsInMaintenanceMode)
             {
                 throw new InvalidOperationException("Wardein is in maintenance mode. Please try again later");
             }

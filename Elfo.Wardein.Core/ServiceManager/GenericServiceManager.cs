@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Elfo.Wardein.Core.ServiceManager
 {
@@ -25,9 +26,9 @@ namespace Elfo.Wardein.Core.ServiceManager
         }
         #endregion
 
-        public override bool IsStillAlive => this.serviceController?.Status == ServiceControllerStatus.Running;
+        public override async Task<bool> IsStillAlive() => await Task.FromResult(this.serviceController?.Status == ServiceControllerStatus.Running);
 
-        public override void ForceKill()
+        public override async Task ForceKill()
         {
             try
             {
@@ -56,11 +57,11 @@ namespace Elfo.Wardein.Core.ServiceManager
             }
         }
 
-        public override void Start()
+        public override async Task Start()
         {
             try
             {
-                if (!IsStillAlive)
+                if (!await IsStillAlive())
                     this.serviceController.Start();
             }
             catch (Exception ex)
@@ -70,12 +71,12 @@ namespace Elfo.Wardein.Core.ServiceManager
             }
         }
 
-        public override void Stop()
+        public override async Task Stop()
         {
             try
             {
-                if (IsStillAlive)
-                    ForceKill();
+                if (await IsStillAlive())
+                    await ForceKill();
             }
             catch (Exception ex)
             {
@@ -84,14 +85,14 @@ namespace Elfo.Wardein.Core.ServiceManager
             }
         }
 
-        public override void Restart()
+        public override async Task Restart()
         {
             try
             {
-                Stop();
+                await Stop();
                 this.serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30)); // TODO: get this value from config
                 log.Info($"Service {base.serviceName} stopped @ {DateTime.Now}.");
-                Start();
+                await Start();
                 this.serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30)); // TODO: get this value from config
                 log.Info($"Service {base.serviceName} started @ {DateTime.Now}.");
             }
@@ -102,11 +103,11 @@ namespace Elfo.Wardein.Core.ServiceManager
             }
         }
 
-        public override string GetStatus()
+        public override async Task<string> GetStatus()
         {
             try
             {
-                return this.serviceController.Status.ToString();
+                return await Task.FromResult(this.serviceController.Status.ToString());
             }
             catch (Exception ex)
             {

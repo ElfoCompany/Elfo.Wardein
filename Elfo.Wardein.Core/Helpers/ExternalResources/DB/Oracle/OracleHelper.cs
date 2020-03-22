@@ -1,4 +1,4 @@
-﻿using Elfo.Firmenich.Wardein.Abstractions.Watchers;
+﻿using Elfo.Wardein.Abstractions.Watchers;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Elfo.Wardein.Core.Helpers
 {
-    public class OracleHelper
+    public class OracleHelper : IOracleHelper
     {
         private readonly OracleConnectionConfiguration oracleConfiguration;
 
@@ -46,7 +46,7 @@ namespace Elfo.Wardein.Core.Helpers
             }
         }
 
-        public Task<T> CallProcedureAsync<T>(string packageName, string procedureName, Func<OracleParameter[], T> howToGetResult, params OracleParameter[] parameters)
+        public async Task<T> CallProcedureAsync<T>(string packageName, string procedureName, Func<OracleParameter[], T> howToGetResult, params OracleParameter[] parameters)
         {
             try
             {
@@ -74,18 +74,18 @@ namespace Elfo.Wardein.Core.Helpers
 
                             command.ExecuteNonQuery();
 
+                            await transaction.CommitAsync();
+
                             if (parameters.Count() > 0)
                             {
-                                return Task.FromResult(
-                                    howToGetResult(
-                                        parameters.Where(x =>
-                                            x.Direction == ParameterDirection.Output || x.Direction == ParameterDirection.InputOutput
-                                        ).ToArray()
-                                    )
+                                return howToGetResult(
+                                    parameters.Where(x =>
+                                        x.Direction == ParameterDirection.Output || x.Direction == ParameterDirection.InputOutput
+                                    ).ToArray()
                                 );
                             }
-                            else 
-                                return Task.FromResult(default(T));
+                            else
+                                return default(T);
                         }
                     }
                 }

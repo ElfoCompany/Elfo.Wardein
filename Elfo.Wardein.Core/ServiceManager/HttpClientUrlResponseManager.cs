@@ -1,4 +1,4 @@
-﻿using Elfo.Firmenich.Wardein.Abstractions.WebWatcher;
+﻿using Elfo.Wardein.Abstractions.WebWatcher;
 using Elfo.Wardein.Core.ServiceManager;
 using System;
 using System.Net;
@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Elfo.Firmenich.Wardein.Core.ServiceManager
+namespace Elfo.Wardein.Core.ServiceManager
 {
     public class HttpClientUrlResponseManager : IAmUrlResponseManager
     {

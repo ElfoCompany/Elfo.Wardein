@@ -1,9 +1,12 @@
-﻿using Elfo.Firmenich.Wardein.Core.ConfigurationManagers;
+﻿using Elfo.Wardein.Core.ConfigurationManagers;
+using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Core.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Elfo.Wardein.Core.Tests
@@ -11,34 +14,21 @@ namespace Elfo.Wardein.Core.Tests
     [TestClass]
     public class OracleWardeinConfigurationManagerTest
     {
-        private string connectionString = string.Empty;
-        private IConfiguration configuration;
-        private OracleConnectionConfiguration config;
-
-        [TestInitialize]
-        public void Initialize()
-        {
-            this.configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            .Build();
-
-            connectionString = configuration["ConnectionStrings:Db"];
-
-            this.config = new OracleConnectionConfiguration.Builder(this.connectionString)
-                .WithClientId(configuration["Oracle:ClientId"])
-                .WithClientInfo(configuration["Oracle:ClientInfo"])
-                .WithModuleName(configuration["Oracle:ModuleName"])
-                .WithDateLanguage(configuration["Oracle:DateLanguage"])
-                .Build();
-        }
 
         [TestMethod]
-        [TestCategory("ManualTest")]
         public void CanReadConfigurations()
         {
-            var manager = new OracleWardeinConfigurationManager(config, "SRVWEB07");
+            var oracleHelper = Substitute.For<IOracleHelper>();
+            oracleHelper.Query<WardeinConfigurationModel>(Arg.Any<string>(), Arg.Any<IDictionary<string, object>>()).Returns(new List<WardeinConfigurationModel>()
+            {
+                new WardeinConfigurationModel() { WatcherConfigurationId = 1, ApplicationHostname = "SRVWEB07", ApplicationId = 1, WardeinConfig = "{\"timeSpanFromSeconds\":60}", WatcherTypeJsonConfig = "{}", WatcherJsonConfig = "{\"services\":[{\"serviceName\":\"MSMQ\",\"maxRetryCount\":2,\"serviceManagerType\":0}]}" },
+                new WardeinConfigurationModel() { WatcherConfigurationId = 2, ApplicationHostname = "SRVWEB07", ApplicationId = 1, WardeinConfig = "{\"timeSpanFromSeconds\":60}", WatcherTypeJsonConfig = "{}", WatcherJsonConfig = "{\"iisPools\":[{\"serviceName\":\"Elfo.Wardein\",\"maxRetryCount\":2,\"serviceManagerType\":1}]}" }
+            });
+            var manager = new OracleWardeinConfigurationManager(oracleHelper, "SRVWEB07");
             var configs = manager.GetConfiguration();
-            Assert.IsNotNull(configs);
+            Assert.AreEqual(60, configs.TimeSpanFromSeconds);
+            Assert.AreEqual(1, configs.IISPools.Count());
+            Assert.AreEqual(1, configs.Services.Count());
         }
     }
 }

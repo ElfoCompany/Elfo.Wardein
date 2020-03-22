@@ -1,4 +1,4 @@
-﻿using Elfo.Firmenich.Wardein.Abstractions.Watchers;
+﻿using Elfo.Wardein.Abstractions.Watchers;
 using Elfo.Wardein.Core.Helpers;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Elfo.Firmenich.Wardein.Core.Persistence
+namespace Elfo.Wardein.Core.Persistence
 {
     public class OracleWatcherPersistenceService : IAmWatcherPersistenceService
     {
@@ -41,7 +41,7 @@ namespace Elfo.Firmenich.Wardein.Core.Persistence
                 new OracleParameter("p_is_healthy", OracleDbType.Varchar2, isHealthy ? "Y" : "N" , System.Data.ParameterDirection.Input),
                 new OracleParameter("p_flr_msg", OracleDbType.Varchar2, failureException != null ?  failureException.ToString() : null, System.Data.ParameterDirection.Input),
                 new OracleParameter("po_flr_count", OracleDbType.Int32, System.Data.ParameterDirection.Output),
-                new OracleParameter("po_prv_status", OracleDbType.Varchar2, System.Data.ParameterDirection.Output)
+                new OracleParameter("po_prv_status", OracleDbType.Varchar2, 3, "N", System.Data.ParameterDirection.Output)
             );
         }
     }

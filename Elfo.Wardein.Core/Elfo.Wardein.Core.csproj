@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>Elfo.Firmenich.Wardein.Core</AssemblyName>
-		<RootNamespace>Elfo.Firmenich.Wardein.Core</RootNamespace>
+    <AssemblyName>Elfo.Wardein.Core</AssemblyName>
+		<RootNamespace>Elfo.Wardein.Core</RootNamespace>
     <Version>1.1.0</Version>
   </PropertyGroup>
 

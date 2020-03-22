@@ -31,12 +31,12 @@ namespace Elfo.Wardein.APIs
             return context.Response.WriteAsync($"Service {serviceName} stopped");
         }
 
-        public Task GetServiceStatus(HttpContext context)
+        public async Task<string> GetServiceStatus(HttpContext context)
         {
             string serviceName = context.GetRouteValue("name").ToString();
 
-            var status = GetServiceStatus(serviceName);
-            return context.Response.WriteAsync(status);
+            var status = await GetServiceStatus(serviceName);
+            return status; // TODO: print on webpage
         }
 
         public Task StartService(HttpContext context)
@@ -72,12 +72,12 @@ namespace Elfo.Wardein.APIs
             return context.Response.WriteAsync($"ApplicationPool {applicationPoolName} stopped");
         }
 
-        public Task GetPoolStatus(HttpContext context)
+        public async Task<string> GetPoolStatus(HttpContext context)
         {
             string applicationPoolName = context.GetRouteValue("name").ToString();
 
-            var status = GetIISPoolStatus(applicationPoolName);
-            return context.Response.WriteAsync(status);
+            var status = await GetIISPoolStatus(applicationPoolName);
+            return status; // TODO: print in webpage
         }
 
         #endregion
@@ -98,14 +98,14 @@ namespace Elfo.Wardein.APIs
 
         #region Local Functions
 
-        void RestartService(string serviceName) => new WindowsServiceManager(serviceName).Restart();
-        void StopService(string serviceName) => new WindowsServiceManager(serviceName).Stop();
-        void StartService(string serviceName) => new WindowsServiceManager(serviceName).Start();
-        string GetServiceStatus(string serviceName) => new WindowsServiceManager(serviceName).GetStatus();
-        void RefreshIISPool(string iisPoolName) => new IISPoolManager(iisPoolName).Restart();
-        void StopIISPool(string issPoolName) => new IISPoolManager(issPoolName).Stop();
-        string GetIISPoolStatus(string iisPoolName) => new IISPoolManager(iisPoolName).GetStatus();
-        void StartIISPool(string iisPoolName) => new IISPoolManager(iisPoolName).Start();
+        async Task RestartService(string serviceName) => await new WindowsServiceManager(serviceName).Restart();
+        async Task StopService(string serviceName) => await new WindowsServiceManager(serviceName).Stop();
+        async Task StartService(string serviceName) => await new WindowsServiceManager(serviceName).Start();
+        async Task<string> GetServiceStatus(string serviceName) => await new WindowsServiceManager(serviceName).GetStatus();
+        async Task RefreshIISPool(string iisPoolName) => await new IISPoolManager(iisPoolName).Restart();
+        async Task StopIISPool(string issPoolName) => await new IISPoolManager(issPoolName).Stop();
+        async Task<string> GetIISPoolStatus(string iisPoolName) => await new IISPoolManager(iisPoolName).GetStatus();
+        async Task StartIISPool(string iisPoolName) => await new IISPoolManager(iisPoolName).Start();
 
         #endregion
     }

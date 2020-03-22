@@ -21,20 +21,20 @@ namespace Elfo.Wardein.APIs
             if (!double.TryParse(context.GetRouteData().Values["durationInSeconds"]?.ToString(), out double durationInSecond))
                 durationInSecond = TimeSpan.FromMinutes(5).TotalSeconds; // Default value
 
-            ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH).StartMaintenanceMode(durationInSecond);
+            ServicesContainer.WardeinConfigurationManager().StartMaintenanceMode(durationInSecond);
             return context.Response.WriteAsync($"Maintenance Mode Started");
         }
 
         public Task StopMaintenanceMode(HttpContext context)
         {
-            ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH).StopMaintenaceMode();
+            ServicesContainer.WardeinConfigurationManager().StopMaintenaceMode();
             return context.Response.WriteAsync($"Maintenance Mode Stopped");
         }
 
         public Task GetMaintenanceModeStatus(HttpContext context)
         {
             var result = "Wardein is not in maintenance mode";
-            if (ServicesContainer.WardeinConfigurationManager(Const.WARDEIN_CONFIG_PATH).IsInMaintenanceMode)
+            if (ServicesContainer.WardeinConfigurationManager().IsInMaintenanceMode)
                 result = "Wardein is in maintenance mode";
             return context.Response.WriteAsync(result);
         }

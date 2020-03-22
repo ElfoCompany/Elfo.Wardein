@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Elfo.Firmenich.Wardein.Abstractions.HeartBeat
+namespace Elfo.Wardein.Abstractions.HeartBeat
 {
     public interface IAmWardeinHeartBeatPersistanceService
     {

@@ -1,7 +1,10 @@
-﻿using Elfo.Wardein.Services;
+﻿using Elfo.Wardein.Core;
+using Elfo.Wardein.Services;
 using Elfo.Wardein.Watchers;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using NLog;
 using PeterKottas.DotNetCore.WindowsService;
 using PeterKottas.DotNetCore.WindowsService.Interfaces;
@@ -17,6 +20,14 @@ namespace Elfo.Wardein
         {
             try
             {
+                var appConfiguration = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .Build();
+
+                WardeinBaseConfiguration wbc = new WardeinBaseConfiguration();
+                appConfiguration.Bind(wbc);
+                ServicesContainer.Initialize(wbc);
+
                 var serviceBuilder = new ServiceBuilder();
                 var wardeinService = new WardeinMicroService(serviceBuilder);
 
@@ -52,15 +63,15 @@ namespace Elfo.Wardein
                     });
                 }).Start();
 
-                new Thread(() =>
-                {
-                    Thread.CurrentThread.IsBackground = true;
+                //new Thread(() =>
+                //{
+                //    Thread.CurrentThread.IsBackground = true;
 
-                    log.Debug("Starting APIs...");
-                    serviceBuilder.ConfigureAndRunAPIHosting().Wait();
-                    log.Debug("APIs started");
+                //    log.Debug("Starting APIs...");
+                //    serviceBuilder.ConfigureAndRunAPIHosting().Wait();
+                //    log.Debug("APIs started");
 
-                }).Start();
+                //}).Start();
             }
             catch (Exception ex)
             {

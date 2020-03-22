@@ -1,10 +1,11 @@
-﻿using NLog;
+﻿using Elfo.Wardein.Abstractions.Configuration.Models;
+using NLog;
 using System.Threading.Tasks;
 using Warden.Watchers;
 
 namespace Elfo.Wardein.Watchers
 {
-    public abstract class WardeinWatcher<TConfig> : IWatcher where TConfig : IWatcherConfig
+    public abstract class WardeinWatcher<TConfig> : IWatcher where TConfig : IAmBaseConfigurationModel
     {
         protected WardeinWatcher(string name, TConfig config, string group = null)
         {

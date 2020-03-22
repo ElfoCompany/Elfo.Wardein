@@ -1,6 +1,6 @@
-using Elfo.Firmenich.Wardein.Abstractions.Watchers;
-using Elfo.Firmenich.Wardein.Abstractions.WebWatcher;
-using Elfo.Firmenich.Wardein.Core.ServiceManager;
+using Elfo.Wardein.Abstractions.Watchers;
+using Elfo.Wardein.Abstractions.WebWatcher;
+using Elfo.Wardein.Core.ServiceManager;
 using Elfo.Wardein.Core.Helpers;
 using Elfo.Wardein.Integrations.Oracle.Integration;
 using Elfo.Wardein.Watchers.WebWatcher;
@@ -38,7 +38,7 @@ namespace Elfo.Wardein.Core.Tests
                 .Build();
 
             oracleIntegration = new OracleIntegration(OracleConnectionConfiguration);
-            watcherPersistenceService = ServicesContainer.WatcherPersistenceService(connectionString);
+            watcherPersistenceService = ServicesContainer.WatcherPersistenceService();
         }
 
         [TestMethod]

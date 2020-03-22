@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Elfo.Wardein.Core.ServiceManager
 {
@@ -24,9 +25,9 @@ namespace Elfo.Wardein.Core.ServiceManager
                 throw new ArgumentNullException($"ApplicationPool {appPoolName} doesn't exist");
         }
 
-        public override bool IsStillAlive => this.applicationPool.State == ObjectState.Started;
+        public override async Task<bool> IsStillAlive() => await Task.FromResult(this.applicationPool.State == ObjectState.Started);
 
-        public override void ForceKill()
+        public override async Task ForceKill()
         {
             try
             {
@@ -42,12 +43,12 @@ namespace Elfo.Wardein.Core.ServiceManager
             }
         }
 
-        public override void Restart()
+        public override async Task Restart()
         {
             try
             {
-                Stop();
-                Start();
+                await Stop();
+                await Start();
             }
             catch (Exception ex)
             {
@@ -56,12 +57,12 @@ namespace Elfo.Wardein.Core.ServiceManager
             }
         }
 
-        public override void Start()
+        public override async Task Start()
         {
             try
             {
                 log.Info($"Starting pool {base.serviceName} @ {DateTime.UtcNow}");
-                if (!IsStillAlive)
+                if (!await IsStillAlive())
                     this.applicationPool.Start();
                 this.applicationPool.WaitForStatus(ObjectState.Started, TimeSpan.FromSeconds(30));
                 log.Info($"{base.serviceName} pool started @ {DateTime.UtcNow}");
@@ -73,12 +74,12 @@ namespace Elfo.Wardein.Core.ServiceManager
             }
         }
 
-        public override void Stop()
+        public override async Task Stop()
         {
             try
             {
-                if (IsStillAlive)
-                    this.ForceKill();
+                if (await IsStillAlive())
+                    await this.ForceKill();
             }
             catch (Exception ex)
             {
@@ -87,11 +88,11 @@ namespace Elfo.Wardein.Core.ServiceManager
             }
         }
 
-        public override string GetStatus()
+        public override async Task<string> GetStatus()
         {
             try
             {
-                return this.applicationPool.State.ToString();
+                return await Task.FromResult(this.applicationPool.State.ToString());
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 ﻿using Elfo.CleanUpManager;
+using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Core.Helpers;
 using System;
 using System.Text;
@@ -7,12 +8,12 @@ using Warden.Watchers;
 
 namespace Elfo.Wardein.Watchers.FileSystem
 {
-    public class FileSystemWatcher : WardeinWatcher<FileSystemWatcherConfig>
+    public class FileSystemWatcher : WardeinWatcher<FileSystemConfigurationModel>
     {
-        protected FileSystemWatcher(FileSystemWatcherConfig config, string group = null) : base(nameof(FileSystemWatcher), config, group)
+        protected FileSystemWatcher(FileSystemConfigurationModel config, string group = null) : base(nameof(FileSystemWatcher), config, group)
         { }
 
-        public static FileSystemWatcher Create(FileSystemWatcherConfig config, string group = null)
+        public static FileSystemWatcher Create(FileSystemConfigurationModel config, string group = null)
         {
             return new FileSystemWatcher(config, group);
         }

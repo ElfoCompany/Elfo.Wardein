@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Elfo.Wardein.Abstractions.Configuration.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Warden.Core;
@@ -8,16 +9,13 @@ namespace Elfo.Wardein.Watchers.WebWatcher
 {
     public static class Extensions
     {
-        //internal static string GetFullUrl(this IHttpRequest request, string baseUrl)
-        //{
-        //    var endpoint = request.Endpoint;
-        //    if (string.IsNullOrWhiteSpace(endpoint))
-        //        return baseUrl;
-
-        //    if (baseUrl.EndsWith("/"))
-        //        return $"{baseUrl}{(endpoint.StartsWith("/") ? endpoint.Substring(1) : $"{endpoint}")}";
-
-        //    return $"{baseUrl}{(endpoint.StartsWith("/") ? endpoint : $"/{endpoint}")}";
-        //}
+        public static WardenConfiguration.Builder AddWebWatcher(this WardenConfiguration.Builder builder,
+           WebWatcherConfigurationModel config,
+           string group = null,
+           Action<WatcherHooksConfiguration.Builder> hooks = null)
+        {
+            builder.AddWatcher(WebWatcher.Create(config, group), hooks, TimeSpan.FromSeconds(config.TimeSpanFromSeconds));
+            return builder;
+        }
     }
 }

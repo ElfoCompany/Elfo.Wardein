@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elfo.Firmenich.Wardein.Abstractions.Watchers
+namespace Elfo.Wardein.Abstractions.Watchers
 {
     public class WatcherStatusResult
     {

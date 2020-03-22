@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>Elfo.Firmenich.Wardein.Abstractions</AssemblyName>
-    <RootNamespace>Elfo.Firmenich.Wardein.Abstractions</RootNamespace>
+    <AssemblyName>Elfo.Wardein.Abstractions</AssemblyName>
+    <RootNamespace>Elfo.Wardein.Abstractions</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

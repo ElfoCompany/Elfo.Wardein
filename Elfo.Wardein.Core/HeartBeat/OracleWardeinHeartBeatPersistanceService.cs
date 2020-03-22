@@ -1,4 +1,4 @@
-﻿using Elfo.Firmenich.Wardein.Abstractions.HeartBeat;
+﻿using Elfo.Wardein.Abstractions.HeartBeat;
 using Elfo.Wardein.Core.Helpers;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Elfo.Firmenich.Wardein.Core.HeartBeat
+namespace Elfo.Wardein.Core.HeartBeat
 {
     public class OracleWardeinHeartBeatPersistanceService : IAmWardeinHeartBeatPersistanceService
     {

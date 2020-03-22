@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Elfo.Wardein.Abstractions.Services
 {
@@ -16,11 +17,11 @@ namespace Elfo.Wardein.Abstractions.Services
             this.serviceName = serviceName;
         }
 
-        public abstract bool IsStillAlive { get; }
-        public abstract void ForceKill();
-        public abstract void Restart();
-        public abstract void Start();
-        public abstract void Stop();
-        public abstract string GetStatus();
+        public abstract Task<bool> IsStillAlive();
+        public abstract Task ForceKill();
+        public abstract Task Restart();
+        public abstract Task Start();
+        public abstract Task Stop();
+        public abstract Task<string> GetStatus();
     }
 }

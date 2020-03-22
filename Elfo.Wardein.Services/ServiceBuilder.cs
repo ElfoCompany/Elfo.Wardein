@@ -13,6 +13,12 @@ using Elfo.Wardein.Watchers.FileSystem;
 using Elfo.Wardein.Watchers.WindowsService;
 using Elfo.Wardein.Watchers.IISPool;
 using Elfo.Wardein.Watchers.HeartBeat;
+using Elfo.Wardein.Core.ConfigurationManagers;
+using Elfo.Wardein.Core.Helpers;
+using System.Linq;
+using Elfo.Wardein.Watchers.GenericService;
+using Elfo.Wardein.Core;
+using Elfo.Wardein.Watchers.WebWatcher;
 
 namespace Elfo.Wardein.Services
 {
@@ -22,22 +28,32 @@ namespace Elfo.Wardein.Services
 
         public async Task ConfigureAndRunWarden()
         {
-            var appConfiguration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .Build();
+            var wardeinConfigurationManager = ServicesContainer.WardeinConfigurationManager();
+            var wardeinConfiguration = wardeinConfigurationManager.GetConfiguration();
 
-            var connectionString = appConfiguration["ConnectionStrings:Db"];
-
-            var configuration = WardenConfiguration
+            var configurationBuilder = WardenConfiguration
                 .Create()
-                .IntegrateWithOracle(connectionString)
-                .AddFileSystemWatcher(null)
-                .AddWindowsServiceWatcher(null)
-                .AddIISPoolWatcher(null)
-                .AddWardeinHeartBeatWatcher(null)
-                .Build();
+                .AddWardeinHeartBeatWatcher(wardeinConfiguration.Heartbeat, "HeartbeatWatcher");
 
-            warden = WardenInstance.Create(configuration);
+            // TODO: refactor and add oracle integration (even if useles at the moment)
+
+            if (wardeinConfiguration.Urls?.Count() > 0)
+                foreach (var url in wardeinConfiguration.Urls)
+                    configurationBuilder.AddWebWatcher(url, "WebWatcher");
+
+            if (wardeinConfiguration.Services?.Count() > 0)
+                foreach (var service in wardeinConfiguration.Services)
+                    configurationBuilder.AddWindowsServiceWatcher(service, "ServiceWatcher");
+
+            if (wardeinConfiguration.IISPools?.Count() > 0)
+                foreach (var pool in wardeinConfiguration.IISPools)
+                    configurationBuilder.AddIISPoolWatcher(pool, "WebWatcher");
+
+            if (wardeinConfiguration.CleanUps?.Count() > 0)
+                foreach (var cleanUp in wardeinConfiguration.CleanUps)
+                    configurationBuilder.AddFileSystemWatcher(cleanUp, "CleanUpWatcher");
+
+            warden = WardenInstance.Create(configurationBuilder.Build());
             await warden.StartAsync();
         }
 
