@@ -1,9 +1,6 @@
 using Elfo.Wardein.Abstractions.Watchers;
-using Elfo.Wardein.Abstractions.WebWatcher;
-using Elfo.Wardein.Core.ServiceManager;
 using Elfo.Wardein.Core.Helpers;
 using Elfo.Wardein.Integrations.Oracle.Integration;
-using Elfo.Wardein.Watchers.WebWatcher;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -20,7 +17,6 @@ namespace Elfo.Wardein.Core.Tests
         private OracleIntegration oracleIntegration;
         private IAmWatcherPersistenceService watcherPersistenceService;
 
-
         [TestInitialize]
         public void Initialize()
         {
@@ -28,15 +24,18 @@ namespace Elfo.Wardein.Core.Tests
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .Build();
 
-            connectionString = configuration["ConnectionStrings:Db"];
+            connectionString = configuration["StorageConnectionString"];
+
+            WardeinBaseConfiguration wbc = new WardeinBaseConfiguration();
+            configuration.Bind(wbc);
+            ServicesContainer.Initialize(wbc);
 
             OracleConnectionConfiguration = new OracleConnectionConfiguration.Builder(connectionString)
-                .WithClientId(configuration["Oracle:ClientId"])
-                .WithClientInfo(configuration["Oracle:ClientInfo"])
-                .WithModuleName(configuration["Oracle:ModuleName"])
-                .WithDateLanguage(configuration["Oracle:DateLanguage"])
+                .WithClientId(configuration["OracleAdditionalParams:ClientId"])
+                .WithClientInfo(configuration["OracleAdditionalParams:ClientInfo"])
+                .WithModuleName(configuration["OracleAdditionalParams:ModuleName"])
+                .WithDateLanguage(configuration["OracleAdditionalParams:DateLanguage"])
                 .Build();
-
             oracleIntegration = new OracleIntegration(OracleConnectionConfiguration);
             watcherPersistenceService = ServicesContainer.WatcherPersistenceService();
         }

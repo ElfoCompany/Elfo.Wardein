@@ -14,7 +14,6 @@ namespace Elfo.Wardein.Core.ServiceManager
 
         public async Task<bool> IsHealthy(bool assertWithStatusCode, string assertWithRegex, Uri url)
         {
-            var endPoint = "";
             using (var handler = new HttpClientHandler())
             using (var client = new HttpClient(handler))
             {
@@ -23,7 +22,7 @@ namespace Elfo.Wardein.Core.ServiceManager
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var response = await client.GetAsync(endPoint);
+                var response = await client.GetAsync(url);
 
                 if (!assertWithStatusCode)
                 {

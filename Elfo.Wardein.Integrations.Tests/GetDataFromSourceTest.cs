@@ -69,11 +69,11 @@ namespace Elfo.Wardein.Integrations.Tests
 		{
 			var updateDateParameter = new Dictionary<string, object>
 			{
-				["DT_LAST_HB"] = new OracleParameter("DT_LAST_HB", OracleDbType.Date).Value = DateTime.UtcNow,
-				["APPL_HOSTNAME"] = new OracleParameter("APPL_HOSTNAME", OracleDbType.Varchar2).Value = "SRVWEB07"
+				["JSON_CNFG"] = new OracleParameter("JSON_CNFG", OracleDbType.Clob).Value = "{}",
+				["WTCHR_CNFG_ID"] = new OracleParameter("WTCHR_CNFG_ID", OracleDbType.Int32).Value = 1
 			};
 
-			string query = "UPDATE WRD_CNFG SET DT_LAST_HB = :DT_LAST_HB WHERE APPL_HOSTNAME = :APPL_HOSTNAME";
+			string query = "UPDATE WRD_WTCHR_CNFG SET JSON_CNFG = :JSON_CNFG WHERE WTCHR_CNFG_ID = :WTCHR_CNFG_ID";
 
 			var result  = await oracleIntegration.ExecuteAsync(query, updateDateParameter);
 			Assert.IsNotNull(result);
