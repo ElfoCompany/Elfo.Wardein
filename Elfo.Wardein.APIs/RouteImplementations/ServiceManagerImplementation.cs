@@ -3,9 +3,6 @@ using Elfo.Wardein.Core;
 using Elfo.Wardein.Core.ServiceManager;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Elfo.Wardein.APIs
@@ -35,8 +32,22 @@ namespace Elfo.Wardein.APIs
         {
             string serviceName = context.GetRouteValue("name").ToString();
 
+            var result = $"{serviceName} is not running";
+
             var status = await GetServiceStatus(serviceName);
-            return status; // TODO: print on webpage
+            if (status == "Running")
+            {
+                result = $"{serviceName} is running";
+            }    
+            return context.Response.WriteAsync(result).ToString();
+        }
+
+        public Task GetMaintenanceModeStatus(HttpContext context)
+        {
+            var result = "Wardein is not in maintenance mode";
+            if (ServicesContainer.WardeinConfigurationManager().IsInMaintenanceMode)
+                result = "Wardein is in maintenance mode";
+            return context.Response.WriteAsync(result);
         }
 
         public Task StartService(HttpContext context)
@@ -75,9 +86,15 @@ namespace Elfo.Wardein.APIs
         public async Task<string> GetPoolStatus(HttpContext context)
         {
             string applicationPoolName = context.GetRouteValue("name").ToString();
-
+           
+            var result = $"{applicationPoolName} is not running";
+            
             var status = await GetIISPoolStatus(applicationPoolName);
-            return status; // TODO: print in webpage
+            if (status == "Started")
+            {
+                result = $"{applicationPoolName} is running";
+            }
+            return context.Response.WriteAsync(result).ToString();
         }
 
         #endregion
