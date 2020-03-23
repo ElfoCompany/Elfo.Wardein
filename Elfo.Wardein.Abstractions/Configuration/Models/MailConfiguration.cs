@@ -12,7 +12,7 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         [JsonProperty(PropertyName = "enableSSL")]
         public bool EnableSSL { get; set; }
         [JsonProperty(PropertyName = "deliveryMethod")]
-        public string DeliveryMethod { get; set; }
+        public int DeliveryMethod { get; set; } = 0;
         [JsonProperty(PropertyName = "useDefaultCredentials")]
         public bool UseDefaultCredentials { get; set; }
         [JsonProperty(PropertyName = "fromAddress")]

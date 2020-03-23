@@ -49,7 +49,7 @@ namespace Elfo.Wardein.Core.NotificationService
 
                 #region Local functions
 
-                SmtpDeliveryMethod GetSmtpDelivertyMethod() => Enum.Parse<SmtpDeliveryMethod>(mailConfiguration.DeliveryMethod);
+                SmtpDeliveryMethod GetSmtpDelivertyMethod() => (SmtpDeliveryMethod)mailConfiguration.DeliveryMethod;
 
                 void SetSmtpCredentialsIfNeccesary()
                 {
