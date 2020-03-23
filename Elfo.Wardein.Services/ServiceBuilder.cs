@@ -33,6 +33,7 @@ namespace Elfo.Wardein.Services
 
             var configurationBuilder = WardenConfiguration
                 .Create()
+                .SetHooks(hooks => hooks.OnStartAsync(() => ConfigureAndRunAPIHosting()))
                 .AddWardeinHeartBeatWatcher(wardeinConfiguration.Heartbeat, "HeartbeatWatcher");
 
             // TODO: refactor and add oracle integration (even if useles at the moment)
