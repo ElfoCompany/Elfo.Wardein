@@ -9,10 +9,10 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
     {
         [JsonProperty(PropertyName = "associatedIISPool")]
         public string AssociatedIISPool { get; set; }
-        
+
         [JsonProperty(PropertyName = "url")]
         public Uri Url { get; set; }
-        
+
         [JsonProperty(PropertyName = "urlAlias")]
         public string UrlAlias { get; set; }
         
@@ -43,5 +43,22 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         public string RestoredMessage { get; set; }
         public int MaxRetryCount { get; set; } = 2;
         public int SendReminderEmailAfterRetryCount { get; set; } = 120;
+        public enum HttpCallApiMethod
+        {
+            Get = 1,
+            Post = 2
+        }
+
+        public HttpCallApiMethod Method { get; }
+
+        /// <summary>
+        /// Request Body that may be required for POST request.
+        /// </summary>
+        public string Body { get; } = null;
+
+        /// <summary>
+        /// Request headers.
+        /// </summary>
+        public IDictionary<string, string> Headers { get; } = null;
     }
 }

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Elfo.Wardein.Abstractions.Configuration.Models;
 using System.Threading.Tasks;
+using static Elfo.Wardein.Abstractions.Configuration.Models.WebWatcherConfigurationModel;
 
 namespace Elfo.Wardein.Abstractions.WebWatcher
 {
     public interface IAmUrlResponseManager
     {
-        Task<bool> IsHealthy(bool assertWithStatusCode, string assertWithRegex, Uri url);
+        Task<bool> IsHealthy(WebWatcherConfigurationModel configuration, HttpCallApiMethod method);
         Task RestartPool(string poolName);
     }
 }

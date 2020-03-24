@@ -1,9 +1,7 @@
 ﻿using Elfo.Wardein.Abstractions.Watchers;
 using Elfo.Wardein.Abstractions.WebWatcher;
-using Elfo.Wardein.Core.ServiceManager;
 using Elfo.Wardein.Core;
 using Elfo.Wardein.Core.Helpers;
-using Elfo.Wardein.Core.NotificationService;
 using NLog;
 using NLog.Fluent;
 using System;
@@ -63,7 +61,7 @@ namespace Elfo.Wardein.Watchers.WebWatcher
             log.Info($"Starting check on {GetLoggingDisplayName}");
 
             var notificationService = ServicesContainer.NotificationService(Config.NotificationType);
-            var isHealthy = await urlResponseManager.IsHealthy(Config.AssertWithStatusCode, Config.AssertWithRegex, Config.Url);
+            var isHealthy = await urlResponseManager.IsHealthy(Config, Config.Method);
             var currentStatus = await watcherPersistenceService.UpsertCurrentStatus
             (
                 watcherConfigurationId: Config.WatcherConfigurationId,
