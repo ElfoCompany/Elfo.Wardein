@@ -69,7 +69,7 @@ namespace Elfo.Wardein.Integrations.Tests
 		{
 			var updateDateParameter = new Dictionary<string, object>
 			{
-				["JSON_CNFG"] = new OracleParameter("JSON_CNFG", OracleDbType.Clob).Value = "{}",
+				["JSON_CNFG"] = new OracleParameter("JSON_CNFG", OracleDbType.Clob).Value = "{\"services\": [{\n\"serviceName\": \"SQLWriter\",\n\"maxRetryCount\": \"2\", \n\"serviceManagerType\": \"0\" }\n]}",
 				["WTCHR_CNFG_ID"] = new OracleParameter("WTCHR_CNFG_ID", OracleDbType.Int32).Value = 1
 			};
 
