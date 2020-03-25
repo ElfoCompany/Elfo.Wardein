@@ -27,12 +27,6 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
 
         [JsonProperty(PropertyName = "timeSpanFromSeconds")]
         public double TimeSpanFromSeconds { get; set; } = 60;
-
-        [JsonProperty(PropertyName = "useAuthentication")]
-        public bool UseAuthentication { get; set; }
-
-        [JsonProperty(PropertyName = "authCredentials")]
-        public string AuthCredentials { get; set; }
         
         public int WatcherConfigurationId { get; set; }
         public int ApplicationId { get; set; }
