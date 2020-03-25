@@ -18,34 +18,15 @@ namespace Elfo.Wardein.Core.ServiceManager
 {
     public class HttpClientUrlResponseManager : IAmUrlResponseManager
     {
-        private string userNameToImpersonate;
-        private string domainToImpersonate;
-        private string userPasswordToImpersonate;
-
         protected static ILogger log = LogManager.GetCurrentClassLogger();
-
-        public HttpClientUrlResponseManager()
-        {
-            var configuration = new ConfigurationBuilder()
-           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-           .Build();
-
-            userNameToImpersonate = configuration["Impersonate:userNameToImpersonate"];
-            domainToImpersonate = configuration["Impersonate:userDomainToImpersonate"];
-            userPasswordToImpersonate = configuration["Impersonate:userPasswordToImpersonate"];
-        }
-
- 
 
         public async Task<bool> IsHealthy(WebWatcherConfigurationModel configuration, HttpCallApiMethod method)
         {
             HttpResponseMessage response = null;
             var apiClient = InitializeApiClient(configuration);
-            ImpersonateUser iu = new ImpersonateUser();
             try
             {
-                iu.RunImpersonated(domainToImpersonate, userNameToImpersonate, userPasswordToImpersonate,
-                 async () => response = await apiClient.GetAsync(configuration.Url.AbsoluteUri));
+                response = await apiClient.GetAsync(configuration.Url);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -110,44 +91,6 @@ namespace Elfo.Wardein.Core.ServiceManager
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             return client;
-        }
-
-        public class ImpersonateUser
-        {
-            [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-            public static extern bool LogonUser(String lpszUsername, String lpszDomain, String lpszPassword,
-                int dwLogonType, int dwLogonProvider, out SafeAccessTokenHandle phToken);
-
-            // Test harness. 
-            // If you incorporate this code into a DLL, be sure to demand FullTrust.
-
-            [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-            public void RunImpersonated(string domainName, string userName, string password, Action action)
-            {
-                try
-                {
-                    const int LOGON32_PROVIDER_DEFAULT = 0;
-                    //This parameter causes LogonUser to create a primary token. 
-                    const int LOGON32_LOGON_INTERACTIVE = 2;
-
-                    // Call LogonUser to obtain a handle to an access token. 
-                    SafeAccessTokenHandle safeAccessTokenHandle;
-                    bool returnValue = LogonUser(userName, domainName, password,
-                        LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT,
-                        out safeAccessTokenHandle);
-
-                    if (false == returnValue)
-                    {
-                        int ret = Marshal.GetLastWin32Error();
-                        throw new System.ComponentModel.Win32Exception(ret);
-                    }
-                    WindowsIdentity.RunImpersonated(safeAccessTokenHandle, action);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Exception occurred. " + ex.Message);
-                }
-            }
         }
     }
 }

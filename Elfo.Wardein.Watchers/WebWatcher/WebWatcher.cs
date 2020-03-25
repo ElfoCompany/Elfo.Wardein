@@ -72,7 +72,12 @@ namespace Elfo.Wardein.Watchers.WebWatcher
 
             if (!isHealthy)
             {
-                await PerformActionOnServiceDown(currentStatus, async configuration => await urlResponseManager.RestartPool(configuration.AssociatedIISPool));
+                await PerformActionOnServiceDown(currentStatus, async (configuration) => {
+                    if (!string.IsNullOrWhiteSpace(configuration.AssociatedIISPool))
+                        await urlResponseManager.RestartPool(configuration.AssociatedIISPool);
+                    else
+                        log.Info($"UrlWatcher check @ {GetLoggingDisplayName} can't restart assoicated IIS Pool cause it is not specified");
+                });
             }
             else
             {
