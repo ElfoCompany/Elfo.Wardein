@@ -8,13 +8,6 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
     public class FileSystemConfigurationModel : IAmBaseConfigurationModel
     {
         /// <summary>
-        /// Property defines if watcher has to be running in maintainance mode
-        /// Default value false
-        /// </summary>
-        [JsonProperty(PropertyName = "isInMaintenanceMode")]
-        public bool IsInMaintenanceMode { get; set; } = false;
-
-        /// <summary>
         /// Property that defines frequency of watcher polling
         /// Default value 10 seconds
         /// </summary>

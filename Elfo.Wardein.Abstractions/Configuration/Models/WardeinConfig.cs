@@ -11,24 +11,12 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         [JsonProperty(PropertyName = "timeSpanFromSeconds")]
         public double TimeSpanFromSeconds { get; set; }
 
-        [JsonProperty(PropertyName = "connectionString")]
-        public string ConnectionString { get; set; }
-
-        [JsonProperty(PropertyName = "sendRepeatedNotificationAfterSeconds")]
-        public double SendRepeatedNotificationAfterSeconds { get; set; } = 3600; // Default values
-
-        [JsonProperty(PropertyName = "numberOfNotificationsWithoutRateLimitation")]
-        public int NumberOfNotificationsWithoutRateLimitation { get; set; } = 2; // Default values
-
-        [JsonProperty(PropertyName = "persistenceType")]
-        public string PersistenceType { get; set; } = "JSON";
-
         [JsonProperty(PropertyName = "maintenanceModeStatus")]
         public MaintenanceModeStatus MaintenanceModeStatus { get; set; } = new MaintenanceModeStatus()
         {
             DurationInSeconds = 300,
             IsInMaintenanceMode = false,
-            MaintenanceModeStartDateInUTC = DateTime.UtcNow
+            MaintenanceModeStartDateInUTC = DateTime.UtcNow.AddMinutes(-1)
         }; // Default values
 
         [JsonProperty(PropertyName = "heartbeat")]

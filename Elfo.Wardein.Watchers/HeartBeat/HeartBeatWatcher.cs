@@ -13,7 +13,7 @@ namespace Elfo.Wardein.Watchers.HeartBeat
         private readonly IAmWardeinHeartBeatPersistanceService heartBeatPersistanceService;
 
 
-        public HeartBeatWatcher(HeartbeatConfigurationModel config, string name, string group = null) : base(name, config, group )
+        public HeartBeatWatcher(HeartbeatConfigurationModel config, string name, string group = null) : base(name, config, group, true)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Application name can not be empty", nameof(HeartBeatWatcher));

@@ -9,8 +9,6 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
     {
         public string ApplicationHostname => HostHelper.GetName();
 
-        public bool IsInMaintenanceMode => false;
-
         public double TimeSpanFromSeconds => 60;
 
         public int WatcherConfigurationId { get; set; }

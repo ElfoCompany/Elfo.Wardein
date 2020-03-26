@@ -11,7 +11,6 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         public string ServiceName { get; set; }
         [JsonProperty(PropertyName = "serviceManagerType")]
         public ServiceManagerType ServiceManagerType { get; set; }
-        public bool IsInMaintenanceMode { get; set; }
         public double TimeSpanFromSeconds { get; set; } = 60;
         public int WatcherConfigurationId { get; set; }
         public int ApplicationId { get; set; }

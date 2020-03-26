@@ -22,9 +22,6 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         [JsonProperty(PropertyName = "assertWithStatusCode")]
         public bool AssertWithStatusCode { get; set; } = true;
 
-        [JsonProperty(PropertyName = "isInMaintenanceMode")]
-        public bool IsInMaintenanceMode { get; set; } = false;
-
         [JsonProperty(PropertyName = "timeSpanFromSeconds")]
         public double TimeSpanFromSeconds { get; set; } = 60;
         

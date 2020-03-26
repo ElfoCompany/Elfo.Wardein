@@ -1,4 +1,6 @@
-﻿using Elfo.Wardein.Abstractions.Configuration.Models;
+﻿using Elfo.Wardein.Abstractions.Configuration;
+using Elfo.Wardein.Abstractions.Configuration.Models;
+using Elfo.Wardein.Core;
 using NLog;
 using System.Threading.Tasks;
 using Warden.Watchers;
@@ -7,11 +9,16 @@ namespace Elfo.Wardein.Watchers
 {
     public abstract class WardeinWatcher<TConfig> : IWatcher where TConfig : IAmBaseConfigurationModel
     {
-        protected WardeinWatcher(string name, TConfig config, string group = null)
+        private readonly IAmWardeinConfigurationManager wardeinConfigurationManager;
+        private readonly bool skipMaintenanceMode;
+
+        protected WardeinWatcher(string name, TConfig config, string group = null, bool skipMaintenanceMode = false)
         {
             Name = name;
             Group = group;
+            this.skipMaintenanceMode = skipMaintenanceMode;
             Config = config;
+            wardeinConfigurationManager = ServicesContainer.WardeinConfigurationManager();
         }
 
         public virtual string Name { get; protected set; }
@@ -24,7 +31,7 @@ namespace Elfo.Wardein.Watchers
 
         public async Task<IWatcherCheckResult> ExecuteAsync()
         {
-            if (Config.IsInMaintenanceMode)
+            if (!skipMaintenanceMode && wardeinConfigurationManager.IsInMaintenanceMode)
             {
                 var message = $"Wardein {Name} running in maintainance mode. Skipping Execution.";
                 log.Info(message);

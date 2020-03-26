@@ -77,7 +77,6 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
                     wardeinConfig.Merge(watcherTypeConfig);
                 }
 
-                // TODO: Cahe the config
                 return cachedWardeinConfig = wardeinConfig.ToObject<WardeinConfig>();
             }
              
