@@ -37,22 +37,23 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         public string RestoredMessage { get; set; }
         public int MaxRetryCount { get; set; } = 2;
         public int SendReminderEmailAfterRetryCount { get; set; } = 120;
-        public enum HttpCallApiMethod
-        {
-            Get = 1,
-            Post = 2
-        }
 
-        public HttpCallApiMethod Method { get; }
+        public HttpCallApiMethod Method { get; set; } = HttpCallApiMethod.Get;
 
         /// <summary>
         /// Request Body that may be required for POST request.
         /// </summary>
-        public string Body { get; } = null;
+        public object Body { get; set; } = null;
 
         /// <summary>
         /// Request headers.
         /// </summary>
-        public IDictionary<string, string> Headers { get; } = null;
+        public IDictionary<string, string> Headers { get; set; } = null;
+    }
+
+    public enum HttpCallApiMethod
+    {
+        Get = 1,
+        Post = 2
     }
 }

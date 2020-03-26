@@ -61,7 +61,7 @@ namespace Elfo.Wardein.Watchers.WebWatcher
             log.Info($"Starting check on {GetLoggingDisplayName}");
 
             var notificationService = ServicesContainer.NotificationService(Config.NotificationType);
-            var isHealthy = await urlResponseManager.IsHealthy(Config, Config.Method);
+            var isHealthy = await urlResponseManager.IsHealthy(Config);
             var currentStatus = await watcherPersistenceService.UpsertCurrentStatus
             (
                 watcherConfigurationId: Config.WatcherConfigurationId,

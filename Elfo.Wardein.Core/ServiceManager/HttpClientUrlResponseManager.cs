@@ -2,6 +2,7 @@
 using Elfo.Wardein.Abstractions.WebWatcher;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Win32.SafeHandles;
+using Newtonsoft.Json;
 using NLog;
 using System;
 using System.Net;
@@ -10,6 +11,7 @@ using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Security.Principal;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Elfo.Wardein.Abstractions.Configuration.Models.WebWatcherConfigurationModel;
@@ -20,13 +22,16 @@ namespace Elfo.Wardein.Core.ServiceManager
     {
         protected static ILogger log = LogManager.GetCurrentClassLogger();
 
-        public async Task<bool> IsHealthy(WebWatcherConfigurationModel configuration, HttpCallApiMethod method)
+        public async Task<bool> IsHealthy(WebWatcherConfigurationModel configuration)
         {
             HttpResponseMessage response = null;
             var apiClient = InitializeApiClient(configuration);
             try
             {
-                response = await apiClient.GetAsync(configuration.Url);
+                if (configuration.Method == HttpCallApiMethod.Get)
+                    response = await apiClient.GetAsync(configuration.Url);
+                else
+                    response = await apiClient.PostAsync(configuration.Url, new StringContent(JsonConvert.SerializeObject(configuration.Body ?? new Object()), UnicodeEncoding.UTF8, "application/json"));
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -41,14 +46,14 @@ namespace Elfo.Wardein.Core.ServiceManager
                 }
                 else
                 {
-                    return await Task.FromResult(true);
+                    return true;
                 }
             }
             else
             {
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return await Task.FromResult(false);
+                    return false;
                 }
                 else
                 {
@@ -65,16 +70,16 @@ namespace Elfo.Wardein.Core.ServiceManager
                 var isMatch = Regex.IsMatch(htmlResponse, assertionRegex);
                 if (isMatch)
                 {
-                    return await Task.FromResult(false);
+                    return false;
                 }
                 else
                 {
-                    return await Task.FromResult(true);
+                    return true;
                 }
             }
             else
             {
-                return await Task.FromResult(true);
+                return true;
             }
         }
 

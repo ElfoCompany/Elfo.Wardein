@@ -6,7 +6,7 @@ namespace Elfo.Wardein.Abstractions.WebWatcher
 {
     public interface IAmUrlResponseManager
     {
-        Task<bool> IsHealthy(WebWatcherConfigurationModel configuration, HttpCallApiMethod method);
+        Task<bool> IsHealthy(WebWatcherConfigurationModel configuration);
         Task RestartPool(string poolName);
     }
 }
