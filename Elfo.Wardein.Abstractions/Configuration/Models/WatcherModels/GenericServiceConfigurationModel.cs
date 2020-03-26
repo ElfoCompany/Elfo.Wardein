@@ -16,11 +16,11 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         public int WatcherConfigurationId { get; set; }
         public int ApplicationId { get; set; }
         public string ApplicationHostname => HostHelper.GetName();
-        public string RecipientAddresses { get; set; } = "yaroslav.husynin@elfo.net;";
+        public string RecipientAddresses { get; set; }
         public string FailureMessage { get; set; }
         public int SendReminderEmailAfterRetryCount { get; set; } = 120;
         public NotificationType NotificationType { get; set; } = NotificationType.Mail;
-        public string RestoredMessage { get; set; } = "Restored Message Test";
+        public string RestoredMessage { get; set; }
         public int MaxRetryCount { get; set; } = 2;
     }
 }
