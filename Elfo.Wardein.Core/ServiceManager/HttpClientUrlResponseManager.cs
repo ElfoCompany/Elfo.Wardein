@@ -95,6 +95,10 @@ namespace Elfo.Wardein.Core.ServiceManager
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
+            if (configuration.Headers?.Count > 0)
+                foreach (var header in configuration.Headers)
+                    client.DefaultRequestHeaders.Add(header.Key, header.Value);
+
             return client;
         }
     }

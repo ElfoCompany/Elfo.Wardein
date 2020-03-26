@@ -48,7 +48,7 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         /// <summary>
         /// Request headers.
         /// </summary>
-        public IDictionary<string, string> Headers { get; set; } = null;
+        public IDictionary<string, string> Headers { get; set; }
     }
 
     public enum HttpCallApiMethod
