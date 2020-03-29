@@ -25,16 +25,16 @@ namespace Elfo.Wardein.Watchers
         {
             if (IsFailureCountEqualToMaxRetyrCount() || IsMultipleOfReminderRetryCount())
             {
-                log.Warn($"Sending Fail Notification for {GetLoggingDisplayName}");
+                log.Debug($"Sending Fail Notification for {GetLoggingDisplayName}");
                 await notificationService.SendNotificationAsync(Config.RecipientAddresses, Config.FailureMessage,
                         $"Attention: {GetLoggingDisplayName} is down on {Config.ApplicationHostname}");
             }
 
             if (howToActInCaseOfError != null)
             {
-                log.Info($"trying to restore {GetLoggingDisplayName} on {Config.ApplicationHostname}");
+                log.Debug($"Trying to restore {GetLoggingDisplayName} on {Config.ApplicationHostname}");
                 await howToActInCaseOfError(Config);
-                log.Info($"{GetLoggingDisplayName} was restarted");
+                log.Debug($"{GetLoggingDisplayName} was restarted");
             }
 
             #region Local Functions
@@ -50,10 +50,10 @@ namespace Elfo.Wardein.Watchers
         {
             try
             {
-                log.Info($"{GetLoggingDisplayName} is active");
+                log.Debug($"{GetLoggingDisplayName} is active");
                 if (!watcherStatusResult.PreviousStatus)
                 {
-                    log.Info($"Send Restored Notification for {GetLoggingDisplayName}");
+                    log.Debug($"Send Restored Notification for {GetLoggingDisplayName}");
                     await notificationService.SendNotificationAsync(Config.RecipientAddresses, Config.RestoredMessage,
                           $"Good news: {GetLoggingDisplayName} has been restored succesfully");
                 }

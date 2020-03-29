@@ -20,7 +20,7 @@ namespace Elfo.Wardein.Watchers.FileSystem
 
         public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
         {
-            log.Info("---\tStarting FileSystemWatcher\t---");
+            log.Debug("---\tStarting FileSystemWatcher\t---");
 
             var resultDescription = new StringBuilder(string.Empty);
 
@@ -30,14 +30,14 @@ namespace Elfo.Wardein.Watchers.FileSystem
                 try
                 {
                     var guid = Guid.NewGuid();
-                    log.Info($"{Environment.NewLine}{"-".Repeat(24)} Cache cleanup @ {guid} started {"-".Repeat(24)}");
+                    log.Debug($"{Environment.NewLine}{"-".Repeat(24)} Cache cleanup @ {guid} started {"-".Repeat(24)}");
 
                     var options = GetCleanUpOptions(cleanUp);
                     var filesProcessor = new Cleaner(log, options);
 
                     filesProcessor.CleanUp();
 
-                    log.Info($"{Environment.NewLine}{"-".Repeat(24)} Cache cleanup @ {guid} finished {"-".Repeat(24)}{Environment.NewLine.Repeat(3)}");
+                    log.Debug($"{Environment.NewLine}{"-".Repeat(24)} Cache cleanup @ {guid} finished {"-".Repeat(24)}{Environment.NewLine.Repeat(3)}");
                 }
                 catch (Exception ex)
                 {

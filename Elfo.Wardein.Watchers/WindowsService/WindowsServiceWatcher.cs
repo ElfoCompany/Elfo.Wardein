@@ -12,5 +12,7 @@ namespace Elfo.Wardein.Watchers.WindowsService
         {
             return new WindowsServiceWatcher(config, $"{nameof(WindowsServiceWatcher)}", group);
         }
+
+        protected override string GetLoggingDisplayName => $"Windows Service {Config.ServiceName}";
     }
 }

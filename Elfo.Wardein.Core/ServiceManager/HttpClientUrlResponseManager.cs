@@ -38,11 +38,12 @@ namespace Elfo.Wardein.Core.ServiceManager
                 log.Error($"Exception got while waiting response from {configuration.Url.AbsoluteUri} - {ex}");
                 throw;
             }
+            var htmlResponse = await response.Content.ReadAsStringAsync();
             if (!configuration.AssertWithStatusCode)
             {
                 if (!string.IsNullOrWhiteSpace(configuration.AssertWithRegex))
                 {
-                    return await CheckIsMatch(configuration.AssertWithRegex, response);
+                    return await CheckIsMatch(configuration.AssertWithRegex, htmlResponse);
                 }
                 else
                 {
@@ -53,21 +54,22 @@ namespace Elfo.Wardein.Core.ServiceManager
             {
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
+                    log.Warn($"WebWatcher on {configuration.UrlAlias} failed with status code: {response.StatusCode}");
                     return false;
                 }
                 else
                 {
-                    return await CheckIsMatch(configuration.AssertWithRegex, response);
+                    return await CheckIsMatch(configuration.AssertWithRegex, htmlResponse);
                 }
             }
         }
 
-        private async Task<bool> CheckIsMatch(string assertionRegex, HttpResponseMessage response)
+        private async Task<bool> CheckIsMatch(string assertionRegex, string response)
         {
             if (!string.IsNullOrWhiteSpace(assertionRegex))
             {
-                var htmlResponse = await response.Content.ReadAsStringAsync();
-                var isMatch = Regex.IsMatch(htmlResponse, assertionRegex);
+                var htmlResponse = response;
+                var isMatch = Regex.IsMatch(htmlResponse, assertionRegex, RegexOptions.Singleline);
                 if (isMatch)
                 {
                     return false;
@@ -90,7 +92,12 @@ namespace Elfo.Wardein.Core.ServiceManager
 
         HttpClient InitializeApiClient(WebWatcherConfigurationModel configuration)
         {
-            var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true, PreAuthenticate = true });
+            var handler = new HttpClientHandler
+            {
+                Credentials = new CredentialCache { { configuration.Url, "NTLM", CredentialCache.DefaultNetworkCredentials } },
+                PreAuthenticate = true
+            };
+            var client = new HttpClient(handler);
             client.BaseAddress = new Uri(configuration.Url.AbsoluteUri);
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

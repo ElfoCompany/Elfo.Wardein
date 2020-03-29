@@ -31,10 +31,10 @@ namespace Elfo.Wardein.Core.ServiceManager
         {
             try
             {
-                log.Info($"Stopping pool {base.serviceName} @ {DateTime.UtcNow}");
+                log.Debug($"Stopping pool {base.serviceName}");
                 this.applicationPool.Stop();
                 this.applicationPool.WaitForStatus(ObjectState.Stopped, TimeSpan.FromSeconds(30));
-                log.Info($"{base.serviceName} pool stopped @ {DateTime.UtcNow}");
+                log.Debug($"{base.serviceName} pool stopped @ {DateTime.UtcNow}");
             }
             catch (Exception ex)
             {
@@ -61,11 +61,11 @@ namespace Elfo.Wardein.Core.ServiceManager
         {
             try
             {
-                log.Info($"Starting pool {base.serviceName} @ {DateTime.UtcNow}");
+                log.Debug($"Starting pool {base.serviceName}");
                 if (!await IsStillAlive())
                     this.applicationPool.Start();
                 this.applicationPool.WaitForStatus(ObjectState.Started, TimeSpan.FromSeconds(30));
-                log.Info($"{base.serviceName} pool started @ {DateTime.UtcNow}");
+                log.Debug($"{base.serviceName} pool started");
             }
             catch (Exception ex)
             {

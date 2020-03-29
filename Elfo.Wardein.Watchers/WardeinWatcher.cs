@@ -34,7 +34,7 @@ namespace Elfo.Wardein.Watchers
             if (!skipMaintenanceMode && wardeinConfigurationManager.IsInMaintenanceMode)
             {
                 var message = $"Wardein {Name} running in maintainance mode. Skipping Execution.";
-                log.Info(message);
+                log.Debug(message);
                 return await Task.FromResult(WatcherCheckResult.Create(this, true, message));
             }
 

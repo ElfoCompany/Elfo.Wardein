@@ -45,13 +45,13 @@ namespace Elfo.Wardein
 
                             serviceConfig.OnStart((service, extraParams) =>
                             {
-                                log.Info($"Service {name} started");
+                                log.Debug($"Service {name} started");
                                 service.Start();
                             });
 
                             serviceConfig.OnStop(service =>
                             {
-                                log.Info($"Service {name} stopped");
+                                log.Debug($"Service {name} stopped");
                                 service.Stop();
                             });
 

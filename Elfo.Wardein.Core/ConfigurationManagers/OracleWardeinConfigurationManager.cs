@@ -72,7 +72,7 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
                 {
                     var watcherTypeConfig = JObject.Parse((string)wardeinWatcherConfig.WatcherTypeJsonConfig);
                     var watcherConfig = JObject.Parse((string)wardeinWatcherConfig.WatcherJsonConfig);
-                    watcherConfig.AddDefaultProps(wardeinWatcherConfig.WatcherType, wardeinWatcherConfig.WatcherConfigurationId, wardeinWatcherConfig.ApplicationId);
+                    watcherConfig.AddDefaultProps(wardeinWatcherConfig.WatcherType, wardeinWatcherConfig.WatcherConfigurationId, wardeinWatcherConfig.ApplicationId, wardeinWatcherConfig.ApplicationHostname);
                     watcherTypeConfig.Merge(watcherConfig);
                     wardeinConfig.Merge(watcherTypeConfig);
                 }
@@ -168,7 +168,7 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
 
     internal static class JObjectExtensions
     {
-        internal static void AddDefaultProps(this JObject config, WardeinWatcherType watcherType, int watcherConfigurationId, int applicationId)
+        internal static void AddDefaultProps(this JObject config, WardeinWatcherType watcherType, int watcherConfigurationId, int applicationId, string applicationHostname)
         {
             JToken tokens;
             switch (watcherType)
@@ -176,31 +176,32 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
                 case WardeinWatcherType.WindowsService:
                     if (config.TryGetValue("services", out tokens))
                         foreach (var token in tokens.AsJEnumerable())
-                            token.AddDefaultProps(watcherConfigurationId, applicationId);
+                            token.AddDefaultProps(watcherConfigurationId, applicationId, applicationHostname);
                     break;
                 case WardeinWatcherType.IISPool:
                     if (config.TryGetValue("iisPools", out tokens))
                         foreach (var token in tokens.AsJEnumerable())
-                            token.AddDefaultProps(watcherConfigurationId, applicationId);
+                            token.AddDefaultProps(watcherConfigurationId, applicationId, applicationHostname);
                     break;
                 case WardeinWatcherType.Web:
                     if (config.TryGetValue("urls", out tokens))
                         foreach (var token in tokens.AsJEnumerable())
-                            token.AddDefaultProps(watcherConfigurationId, applicationId);
+                            token.AddDefaultProps(watcherConfigurationId, applicationId, applicationHostname);
                     break;
                 case WardeinWatcherType.WardeinHeartbeat:
                     if (config.TryGetValue("heartbeat", out tokens))
-                        tokens.AddDefaultProps(watcherConfigurationId, applicationId);
+                        tokens.AddDefaultProps(watcherConfigurationId, applicationId, applicationHostname);
                     break;
                 default:
                     return;
             }
         }
 
-        internal static void AddDefaultProps(this JToken token, int watcherConfigurationId, int applicationId)
+        internal static void AddDefaultProps(this JToken token, int watcherConfigurationId, int applicationId, string applicationHostname)
         {
             token["applicationId"] = applicationId;
             token["watcherConfigurationId"] = watcherConfigurationId;
+            token["applicationHostname"] = applicationHostname;
         }
     }
 }

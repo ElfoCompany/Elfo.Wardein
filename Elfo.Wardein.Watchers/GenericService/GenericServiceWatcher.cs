@@ -13,12 +13,10 @@ namespace Elfo.Wardein.Watchers.GenericService
 {
     public abstract class GenericServiceWatcher : WardeinWatcherWithResolution<GenericServiceConfigurationModel>
     {
-        private readonly IAmServiceManager serviceManager;
         private readonly IAmWatcherPersistenceService watcherPersistenceService;
 
         internal GenericServiceWatcher(GenericServiceConfigurationModel config, string name, string group = null) : base(name, config, group)
         {
-            serviceManager = GetServiceManager();
             watcherPersistenceService = ServicesContainer.WatcherPersistenceService();
         }
 
@@ -27,15 +25,14 @@ namespace Elfo.Wardein.Watchers.GenericService
         public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
         {
             bool result = false;
-            Log.Info($"---\tStarting {Name}\t---");
             try
             {
                 var guid = Guid.NewGuid();
-                log.Info($"{Environment.NewLine}{"-".Repeat(24)} {ServiceDisplayType} health check on {Config.ServiceName} @ {guid} started {"-".Repeat(24)}");
+                log.Debug($"{GetLoggingDisplayName} check started");
 
                 result = await RunCheck();
 
-                log.Info($"{Environment.NewLine}{"-".Repeat(24)} {ServiceDisplayType} health check on {Config.ServiceName} @ {guid} finished {"-".Repeat(24)}{Environment.NewLine}");
+                log.Debug($"{GetLoggingDisplayName} check finished{Environment.NewLine}");
             }
             catch (Exception ex)
             {
@@ -47,10 +44,10 @@ namespace Elfo.Wardein.Watchers.GenericService
 
         internal virtual async Task<bool> RunCheck()
         {
-            log.Info($"{Environment.NewLine}> CHECKING SERVICES HEALTH");
-            
+            var serviceManager = ServicesContainer.ServiceManager(Config.ServiceName, Config.ServiceManagerType);
             var notificationService = ServicesContainer.NotificationService(Config.NotificationType);
             var isHealthy = await serviceManager.IsStillAlive();
+            log.Info($"{GetLoggingDisplayName} check isHealthy: {isHealthy}");
             var currentStatus = await watcherPersistenceService.UpsertCurrentStatus
             (
                 watcherConfigurationId: Config.WatcherConfigurationId,
@@ -68,20 +65,6 @@ namespace Elfo.Wardein.Watchers.GenericService
                 await PerformActionOnServiceAlive(currentStatus);
             }
             return await Task.FromResult(false);
-        }
-
-        protected virtual IAmServiceManager GetServiceManager()
-        {
-            IAmServiceManager svc = null;
-            try
-            {
-                svc = ServicesContainer.ServiceManager(Config.ServiceName, Config.ServiceManagerType);
-            }
-            catch (ArgumentNullException ex)
-            {
-                log.Warn(ex.Message);
-            }
-            return svc;
         }
     }
 }

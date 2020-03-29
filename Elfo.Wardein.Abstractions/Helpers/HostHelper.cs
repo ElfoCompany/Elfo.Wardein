@@ -9,11 +9,7 @@ namespace Elfo.Wardein.Abstractions
     {
         public static string GetName()
         {
-#if DEBUG
-            return "SRVWEB07";
-#else
             return Dns.GetHostName()?.ToUpperInvariant();
-#endif
         }
     }
 }

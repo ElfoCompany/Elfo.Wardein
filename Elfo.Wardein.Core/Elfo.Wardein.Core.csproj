@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -10,14 +10,10 @@
 
   <ItemGroup>
     <None Remove="Assets\MailConfig.json" />
-    <None Remove="Assets\WardeinConfig.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\MailConfig.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\WardeinConfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

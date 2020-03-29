@@ -1,4 +1,5 @@
-﻿using Elfo.Wardein.Abstractions.Configuration.Models;
+﻿using Elfo.Wardein.Abstractions;
+using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Abstractions.Services;
 using Elfo.Wardein.Core.Helpers;
 using NLog;
@@ -19,9 +20,11 @@ namespace Elfo.Wardein.Core.NotificationService
         {
             var mailConfiguration = GetMailConfiguration();
 
-            log.Info("Sending email to {0}", recipientAddress);
+            log.Debug("Sending email to {0}", recipientAddress);
             GetSmtpClient().Send(GetMailMessage());
-            log.Info("Email sent to {0}", recipientAddress);
+            log.Debug("Email sent to {0}", recipientAddress);
+
+            await Task.CompletedTask;
 
             #region Local functions
 
@@ -64,7 +67,7 @@ namespace Elfo.Wardein.Core.NotificationService
             {
                 var msg = new MailMessage()
                 {
-                    From = new MailAddress(mailConfiguration.FromAddress, mailConfiguration.FromDisplayName),
+                    From = new MailAddress(mailConfiguration.FromAddress, GetFromDisplayName()),
                     Subject = notificationTitle,
                     IsBodyHtml = true,
                     Body = notificationBody,
@@ -82,6 +85,14 @@ namespace Elfo.Wardein.Core.NotificationService
                     }
                 }
                 #endregion
+            }
+
+            string GetFromDisplayName()
+            {
+                if (!string.IsNullOrWhiteSpace(mailConfiguration.FromDisplayName))
+                    return mailConfiguration.FromDisplayName;
+                else
+                    return $"Elfo.Wardein from {HostHelper.GetName()}";
             }
 
             #endregion

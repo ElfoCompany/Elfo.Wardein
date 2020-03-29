@@ -19,11 +19,11 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         /// </summary>
         [JsonProperty(PropertyName = "cleanUps")]
         public IEnumerable<FileSystemCleanUpConfig> CleanUps { get; set; } = new List<FileSystemCleanUpConfig>();
-
+        [JsonProperty(PropertyName = "watcherConfigurationId")]
         public int WatcherConfigurationId { get; set; }
-
+        [JsonProperty(PropertyName = "applicationId")]
         public int ApplicationId { get; set; }
-
+        [JsonProperty(PropertyName = "applicationHostname")]
         public string ApplicationHostname => HostHelper.GetName();
     }
 

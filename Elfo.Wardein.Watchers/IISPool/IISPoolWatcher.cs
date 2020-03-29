@@ -14,5 +14,6 @@ namespace Elfo.Wardein.Watchers.IISPool
             return new IISPoolWatcher(config, $"{nameof(IISPoolWatcher)}", group);
         }
 
+        protected override string GetLoggingDisplayName => $"IISPool {Config.ServiceName}";
     }
 }

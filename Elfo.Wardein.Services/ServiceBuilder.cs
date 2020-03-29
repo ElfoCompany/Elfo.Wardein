@@ -19,12 +19,14 @@ using System.Linq;
 using Elfo.Wardein.Watchers.GenericService;
 using Elfo.Wardein.Core;
 using Elfo.Wardein.Watchers.WebWatcher;
+using NLog;
 
 namespace Elfo.Wardein.Services
 {
     public class ServiceBuilder
     {
         static IWarden warden;
+        protected static ILogger log = LogManager.GetCurrentClassLogger();
 
         public async Task ConfigureAndRunWarden()
         {
@@ -33,7 +35,12 @@ namespace Elfo.Wardein.Services
 
             var configurationBuilder = WardenConfiguration
                 .Create()
-                .SetHooks(hooks => hooks.OnStart(() =>  ConfigureAndRunAPIHosting()))
+                .SetHooks(hooks =>
+                {
+                    hooks.OnStart(() => ConfigureAndRunAPIHosting());
+                    hooks.OnIterationStart(n => log.Debug($"Iteration n°{n} started{"-".Repeat(5)}{Environment.NewLine.Repeat(2)}"));
+                    hooks.OnIterationCompleted(iteration => log.Debug($"Iteration completed{"-".Repeat(5)}{Environment.NewLine.Repeat(2)}"));
+                })
                 .AddWardeinHeartBeatWatcher(wardeinConfiguration.Heartbeat, "HeartbeatWatcher");
 
             // TODO: refactor and add oracle integration (even if useles at the moment)

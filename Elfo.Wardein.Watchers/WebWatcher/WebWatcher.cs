@@ -39,15 +39,14 @@ namespace Elfo.Wardein.Watchers.WebWatcher
         public override async Task<IWatcherCheckResult> ExecuteWatcherActionAsync()
         {
             bool result = false;
-            Log.Info($"---\tStarting {Name}\t---");
             try
             {
                 var guid = Guid.NewGuid();
-                log.Info($"{Environment.NewLine}{"-".Repeat(24)} UrlWatcher check @ {guid} started {"-".Repeat(24)}");
+                log.Debug($"{GetLoggingDisplayName} web check started");
 
                 result = await RunCheck();
 
-                log.Info($"{Environment.NewLine}{"-".Repeat(24)} UrlWatcher check @ {guid} finished {"-".Repeat(24)}{Environment.NewLine}");
+                log.Debug($"{GetLoggingDisplayName} web check finished{Environment.NewLine}");
             }
             catch (Exception ex)
             {
@@ -58,10 +57,9 @@ namespace Elfo.Wardein.Watchers.WebWatcher
 
         internal virtual async Task<bool> RunCheck()
         {
-            log.Info($"Starting check on {GetLoggingDisplayName}");
-
             var notificationService = ServicesContainer.NotificationService(Config.NotificationType);
             var isHealthy = await urlResponseManager.IsHealthy(Config);
+            log.Info($"{GetLoggingDisplayName} web check isHealthy: {isHealthy}");
             var currentStatus = await watcherPersistenceService.UpsertCurrentStatus
             (
                 watcherConfigurationId: Config.WatcherConfigurationId,
@@ -76,7 +74,7 @@ namespace Elfo.Wardein.Watchers.WebWatcher
                     if (!string.IsNullOrWhiteSpace(configuration.AssociatedIISPool))
                         await urlResponseManager.RestartPool(configuration.AssociatedIISPool);
                     else
-                        log.Info($"UrlWatcher check @ {GetLoggingDisplayName} can't restart assoicated IIS Pool cause it is not specified");
+                        log.Debug($"UrlWatcher check @ {GetLoggingDisplayName} can't restart assoicated IIS Pool cause it is not specified");
                 });
             }
             else
@@ -84,7 +82,7 @@ namespace Elfo.Wardein.Watchers.WebWatcher
                 await PerformActionOnServiceAlive(currentStatus);
             }
 
-            log.Info($"Finished checking {GetLoggingDisplayName}");
+            log.Debug($"Finished checking {GetLoggingDisplayName}");
             return isHealthy;
         }
 

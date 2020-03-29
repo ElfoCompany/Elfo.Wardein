@@ -31,17 +31,17 @@ namespace Elfo.Wardein.Core.ServiceManager
             try
             {
                 ServiceController sc = ServiceController.GetServices().FirstOrDefault(s => s.ServiceName.Equals(base.serviceName));
-                log.Info($"Stopping {sc.ServiceName}");
+                log.Debug($"Stopping {sc.ServiceName}");
                 if (sc != null)
                 {
                     sc.Stop();
                     Process[] procs = Process.GetProcesses().Where(x => x.ProcessName.StartsWith(base.serviceName)).ToArray();
-                    log.Info(string.Join(",", procs.Select(x => x.ProcessName)));
+                    log.Debug(string.Join(",", procs.Select(x => x.ProcessName)));
                     if (procs.Length > 0)
                     {
                         foreach (Process proc in procs)
                         {
-                            log.Info($"Killing {proc.ProcessName} with PID: {proc.Id}");
+                            log.Debug($"Killing {proc.ProcessName} with PID: {proc.Id}");
                             //do other stuff if you need to find out if this is the correct proc instance if you have more than one
                             proc.Kill();
                         }
@@ -89,10 +89,10 @@ namespace Elfo.Wardein.Core.ServiceManager
             {
                 await Stop();
                 this.serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30)); // TODO: get this value from config
-                log.Info($"Service {base.serviceName} stopped @ {DateTime.Now}.");
+                log.Debug($"Service {base.serviceName} stopped");
                 await Start();
                 this.serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30)); // TODO: get this value from config
-                log.Info($"Service {base.serviceName} started @ {DateTime.Now}.");
+                log.Debug($"Service {base.serviceName} started");
             }
             catch (Exception ex)
             {
