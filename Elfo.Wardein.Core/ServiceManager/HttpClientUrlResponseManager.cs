@@ -41,7 +41,9 @@ namespace Elfo.Wardein.Core.ServiceManager
             var htmlResponse = await response.Content.ReadAsStringAsync();
             if (!configuration.AssertWithStatusCode)
             {
-                if (!string.IsNullOrWhiteSpace(configuration.AssertWithRegex))
+                if (!IsWebsiteAvailable(response))
+                    return false;
+                else if (!string.IsNullOrWhiteSpace(configuration.AssertWithRegex))
                 {
                     return await CheckIsMatch(configuration.AssertWithRegex, htmlResponse);
                 }
@@ -68,8 +70,7 @@ namespace Elfo.Wardein.Core.ServiceManager
         {
             if (!string.IsNullOrWhiteSpace(assertionRegex))
             {
-                var htmlResponse = response;
-                var isMatch = Regex.IsMatch(htmlResponse, assertionRegex, RegexOptions.Singleline);
+                var isMatch = Regex.IsMatch(response, assertionRegex, RegexOptions.Singleline);
                 if (isMatch)
                 {
                     return false;
@@ -90,7 +91,7 @@ namespace Elfo.Wardein.Core.ServiceManager
             await new IISPoolManager(poolName).Restart();
         }
 
-        HttpClient InitializeApiClient(WebWatcherConfigurationModel configuration)
+        private HttpClient InitializeApiClient(WebWatcherConfigurationModel configuration)
         {
             var handler = new HttpClientHandler
             {
@@ -107,6 +108,11 @@ namespace Elfo.Wardein.Core.ServiceManager
                     client.DefaultRequestHeaders.Add(header.Key, header.Value);
 
             return client;
+        }
+
+        private bool IsWebsiteAvailable(HttpResponseMessage response)
+        {
+            return response.StatusCode != HttpStatusCode.ServiceUnavailable;
         }
     }
 }
