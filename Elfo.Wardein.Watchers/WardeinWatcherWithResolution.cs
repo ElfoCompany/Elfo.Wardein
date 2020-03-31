@@ -51,7 +51,7 @@ namespace Elfo.Wardein.Watchers
             try
             {
                 log.Debug($"{GetLoggingDisplayName} is active");
-                if (!watcherStatusResult.PreviousStatus)
+                if (HasToSendMailOnServiceAlive(watcherStatusResult))
                 {
                     log.Debug($"Send Restored Notification for {GetLoggingDisplayName}");
                     await notificationService.SendNotificationAsync(Config.RecipientAddresses, Config.RestoredMessage,
@@ -62,6 +62,14 @@ namespace Elfo.Wardein.Watchers
             {
                 log.Error(ex, $"Unable to send email from {GetLoggingDisplayName} watcher");
             }
+        }
+
+        protected virtual bool HasToSendMailOnServiceAlive(WatcherStatusResult watcherStatusResult)
+        {
+            if (Config.SendSuccessMailOnlyIfMaxRetryCountExceeded)
+                return watcherStatusResult.FailureCount > Config.MaxRetryCount;
+            else
+                return !watcherStatusResult.PreviousStatus;
         }
     }
 }

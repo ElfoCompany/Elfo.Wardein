@@ -24,5 +24,8 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
 
         [JsonProperty(PropertyName = "sendReminderEmailAfterRetryCount")]
         public int SendReminderEmailAfterRetryCount { get; set; }
+
+        [JsonProperty(PropertyName = "sendSuccessMailOnlyIfMaxRetryCountExceeded")]
+        public bool SendSuccessMailOnlyIfMaxRetryCountExceeded { get; set; }
     }
 }

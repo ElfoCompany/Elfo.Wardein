@@ -43,6 +43,8 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         public object Body { get; set; } = null;
         [JsonProperty(PropertyName = "headers")]
         public IDictionary<string, string> Headers { get; set; }
+        [JsonProperty(PropertyName = "sendSuccessMailOnlyIfMaxRetryCountExceeded")]
+        public bool SendSuccessMailOnlyIfMaxRetryCountExceeded { get; set; } = false;
     }
 
     public enum HttpCallApiMethod

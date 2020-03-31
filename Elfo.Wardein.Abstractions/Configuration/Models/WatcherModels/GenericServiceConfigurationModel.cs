@@ -31,5 +31,7 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         public string RestoredMessage { get; set; }
         [JsonProperty(PropertyName = "maxRetryCount")]
         public int MaxRetryCount { get; set; } = 2;
+        [JsonProperty(PropertyName = "sendSuccessMailOnlyIfMaxRetryCountExceeded")]
+        public bool SendSuccessMailOnlyIfMaxRetryCountExceeded { get; set; } = false;
     }
 }
