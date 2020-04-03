@@ -11,9 +11,10 @@ namespace Elfo.Wardein.Watchers.IISPool
         public static WardenConfiguration.Builder AddIISPoolWatcher(this WardenConfiguration.Builder builder,
             GenericServiceConfigurationModel config,
             string group = null,
-            Action<WatcherHooksConfiguration.Builder> hooks = null)
+            Action<WatcherHooksConfiguration.Builder> hooks = null,
+            double timeSpanFromSeconds = 60)
         {
-            builder.AddWatcher(IISPoolWatcher.Create(config, group), hooks, TimeSpan.FromSeconds(config.TimeSpanFromSeconds));
+            builder.AddWatcher(IISPoolWatcher.Create(config, group), hooks, TimeSpan.FromSeconds(config.TimeSpanFromSeconds ?? timeSpanFromSeconds));
             return builder;
         }
     }

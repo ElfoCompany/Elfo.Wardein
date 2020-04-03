@@ -2,6 +2,7 @@
 using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Core.Helpers;
 using Newtonsoft.Json;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Text;

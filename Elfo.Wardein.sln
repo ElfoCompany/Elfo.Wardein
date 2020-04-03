@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Abstractions",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Services", "Elfo.Wardein.Services\Elfo.Wardein.Services.csproj", "{B744AEF5-79D6-4413-A921-D57D005FCE29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elfo.Wardein.Core.Tests", "Elfo.Wardein.Core.Tests\Elfo.Wardein.Core.Tests.csproj", "{6D1F4166-9584-4565-BBBD-A96C49E66736}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Core.Tests", "Elfo.Wardein.Core.Tests\Elfo.Wardein.Core.Tests.csproj", "{6D1F4166-9584-4565-BBBD-A96C49E66736}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

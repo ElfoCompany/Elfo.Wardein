@@ -12,7 +12,7 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         [JsonProperty(PropertyName = "serviceManagerType")]
         public ServiceManagerType ServiceManagerType { get; set; }
         [JsonProperty(PropertyName = "timeSpanFromSeconds")]
-        public double TimeSpanFromSeconds { get; set; } = 60;
+        public double? TimeSpanFromSeconds { get; set; }
         [JsonProperty(PropertyName = "watcherConfigurationId")]
         public int WatcherConfigurationId { get; set; }
         [JsonProperty(PropertyName = "applicationId")]

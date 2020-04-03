@@ -8,7 +8,7 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
     public interface IAmBaseConfigurationModel
     {
         [JsonProperty(PropertyName = "timeSpanFromSeconds")]
-        double TimeSpanFromSeconds { get; }
+        double? TimeSpanFromSeconds { get; }
         [JsonProperty(PropertyName = "watcherConfigurationId")]
         public int WatcherConfigurationId { get; }
         [JsonProperty(PropertyName = "applicationId")]

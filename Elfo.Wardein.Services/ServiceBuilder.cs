@@ -47,19 +47,19 @@ namespace Elfo.Wardein.Services
 
             if (wardeinConfiguration.Urls?.Count() > 0)
                 foreach (var url in wardeinConfiguration.Urls)
-                    configurationBuilder.AddWebWatcher(url, "WebWatcher");
+                    configurationBuilder.AddWebWatcher(url, "WebWatcher", timeSpanFromSeconds: wardeinConfiguration.TimeSpanFromSeconds);
 
             if (wardeinConfiguration.Services?.Count() > 0)
                 foreach (var service in wardeinConfiguration.Services)
-                    configurationBuilder.AddWindowsServiceWatcher(service, "ServiceWatcher");
+                    configurationBuilder.AddWindowsServiceWatcher(service, "ServiceWatcher", timeSpanFromSeconds: wardeinConfiguration.TimeSpanFromSeconds);
 
             if (wardeinConfiguration.IISPools?.Count() > 0)
                 foreach (var pool in wardeinConfiguration.IISPools)
-                    configurationBuilder.AddIISPoolWatcher(pool, "WebWatcher");
+                    configurationBuilder.AddIISPoolWatcher(pool, "WebWatcher", timeSpanFromSeconds: wardeinConfiguration.TimeSpanFromSeconds);
 
             if (wardeinConfiguration.CleanUps?.Count() > 0)
                 foreach (var cleanUp in wardeinConfiguration.CleanUps)
-                    configurationBuilder.AddFileSystemWatcher(cleanUp, "CleanUpWatcher");
+                    configurationBuilder.AddFileSystemWatcher(cleanUp, "CleanUpWatcher", timeSpanFromSeconds: wardeinConfiguration.TimeSpanFromSeconds);
 
             warden = WardenInstance.Create(configurationBuilder.Build());
             await warden.StartAsync();
@@ -77,6 +77,11 @@ namespace Elfo.Wardein.Services
                 .UseStartup<Startup>()
                 .Build()
                 .RunAsync();
+        }
+
+        public async Task Stop()
+        {
+            await warden.StopAsync();
         }
     }
 }

@@ -12,9 +12,10 @@ namespace Elfo.Wardein.Watchers.WebWatcher
         public static WardenConfiguration.Builder AddWebWatcher(this WardenConfiguration.Builder builder,
            WebWatcherConfigurationModel config,
            string group = null,
-           Action<WatcherHooksConfiguration.Builder> hooks = null)
+           Action<WatcherHooksConfiguration.Builder> hooks = null,
+           double timeSpanFromSeconds = 60)
         {
-            builder.AddWatcher(WebWatcher.Create(config, group), hooks, TimeSpan.FromSeconds(config.TimeSpanFromSeconds));
+            builder.AddWatcher(WebWatcher.Create(config, group), hooks, TimeSpan.FromSeconds(config.TimeSpanFromSeconds ?? timeSpanFromSeconds));
             return builder;
         }
     }

@@ -1,7 +1,9 @@
 ﻿using Elfo.Wardein.Abstractions.Configuration;
 using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Core.Helpers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,7 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
         private readonly IOracleHelper oracleHelper;
         private readonly string hostname;
         private WardeinConfig cachedWardeinConfig;
+        static Logger log = LogManager.GetCurrentClassLogger();
 
         public OracleWardeinConfigurationManager(IOracleHelper oracleHelper, string hostname)
         {
@@ -40,7 +43,9 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
 
                 bool IsMaintenanceModeTimeoutExpired()
                 {
-                    return GetExpirationDate() <= DateTime.UtcNow;
+                    var expirationDate = GetExpirationDate();
+                    log.Debug($"MaintenanceMode ExpirationDate: {GetExpirationDate()}");
+                    return expirationDate <= DateTime.UtcNow;
 
                     #region Local Functions
 
@@ -58,15 +63,16 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
         {
             if (cachedWardeinConfig == null)
             {
-                // TODO: Add dynamic Appl hostname and check if it's possible ot remove deplendency towards managed data access
+                log.Debug($"Searching config for {hostname}");
                 var parameters = new Dictionary<string, object>
                 {
                     ["APPL_HOSTNAME"] = new OracleParameter("APPL_HOSTNAME", OracleDbType.Varchar2).Value = hostname
                 };
+                
                 var query = @"SELECT * FROM V_WRD_WATCHERS WHERE ""ApplicationHostname"" = :APPL_HOSTNAME";
                 var waredinWatcherConfigs = this.oracleHelper.Query<WardeinConfigurationModel>(query, parameters);
 
-                // TODO: Test to see if it works.. code will probably need refactoring
+                log.Debug($"Config found {waredinWatcherConfigs is null == false}");
                 var wardeinConfig = JObject.Parse(waredinWatcherConfigs.FirstOrDefault().WardeinConfig);
                 foreach (var wardeinWatcherConfig in waredinWatcherConfigs)
                 {
@@ -95,6 +101,7 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
 
         public void StopMaintenaceMode()
         {
+            log.Debug($"Stopping MaintenanceMode before: {JsonConvert.SerializeObject(GetConfiguration().MaintenanceModeStatus)}");
             var parameters = new Dictionary<string, object>
             {
                 ["DT_MNTNC_END"] = new OracleParameter("DT_MNTNC_END", OracleDbType.Date).Value = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(1)),
@@ -103,6 +110,7 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
             var query = @"UPDATE WRD_CNFG SET DT_MNTNC_END  = :DT_MNTNC_END WHERE APPL_HOSTNAME =:APPL_HOSTNAME";
             oracleHelper.ExecuteAsync(query, parameters);
             ToggleAndPersistMaintenanceModeStatus(startmaintenanceMode: false);
+            log.Debug($"Stopping MaintenanceMode after: {JsonConvert.SerializeObject(GetConfiguration().MaintenanceModeStatus)}");
         }
 
         private void ToggleAndPersistMaintenanceModeStatus(bool startmaintenanceMode, double? durationInSeconds = null)

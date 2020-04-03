@@ -96,7 +96,8 @@ namespace Elfo.Wardein.Core.ServiceManager
             var handler = new HttpClientHandler
             {
                 Credentials = new CredentialCache { { configuration.Url, "NTLM", CredentialCache.DefaultNetworkCredentials } },
-                PreAuthenticate = true
+                PreAuthenticate = true,
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
             client.BaseAddress = new Uri(configuration.Url.AbsoluteUri);

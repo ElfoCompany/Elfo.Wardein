@@ -18,7 +18,7 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         [JsonProperty(PropertyName = "assertWithStatusCode")]
         public bool AssertWithStatusCode { get; set; } = true;
         [JsonProperty(PropertyName = "timeSpanFromSeconds")]
-        public double TimeSpanFromSeconds { get; set; } = 60;
+        public double? TimeSpanFromSeconds { get; set; }
         [JsonProperty(PropertyName = "watcherConfigurationId")]
         public int WatcherConfigurationId { get; set; }
         [JsonProperty(PropertyName = "applicationId")]

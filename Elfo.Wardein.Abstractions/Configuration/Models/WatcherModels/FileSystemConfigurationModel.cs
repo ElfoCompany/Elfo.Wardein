@@ -12,7 +12,7 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         /// Default value 10 seconds
         /// </summary>
         [JsonProperty(PropertyName = "timeSpanFromSeconds")]
-        public double TimeSpanFromSeconds { get; set; } = 300;
+        public double? TimeSpanFromSeconds { get; set; }
 
         /// <summary>
         /// List of folder configurations that has to be monitored and cleaned by criteria

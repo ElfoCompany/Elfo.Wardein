@@ -32,7 +32,7 @@ namespace Elfo.Wardein.APIs
         public async Task Restart(HttpContext context)
         {
             await Stop(context);
-            await wardenInstance.StartAsync();
+            wardenInstance.StartAsync();            
             await context.Response.WriteAsync($"Periodic check restarted");
         } 
 

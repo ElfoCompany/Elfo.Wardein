@@ -20,17 +20,6 @@ namespace Elfo.Wardein
         {
             try
             {
-                var appConfiguration = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                    .Build();
-
-                WardeinBaseConfiguration wbc = new WardeinBaseConfiguration();
-                appConfiguration.Bind(wbc);
-                ServicesContainer.Initialize(wbc);
-
-                var serviceBuilder = new ServiceBuilder();
-                var wardeinService = new WardeinMicroService(serviceBuilder);
-
                 new Thread(() =>
                 {
                     ServiceRunner<WardeinMicroService>.Run(config =>
@@ -40,6 +29,18 @@ namespace Elfo.Wardein
                         {
                             serviceConfig.ServiceFactory((extraArguments, controller) =>
                             {
+                                var appConfiguration = new ConfigurationBuilder()
+                                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                                .Build();
+
+                                log.Debug("Reading appsetting.json configs");
+                                WardeinBaseConfiguration wbc = new WardeinBaseConfiguration();
+                                appConfiguration.Bind(wbc);
+                                ServicesContainer.Initialize(wbc);
+                                log.Debug($"appsetting.json found and binded succesfully: {wbc is null == false}");
+                                var serviceBuilder = new ServiceBuilder();
+                                var wardeinService = new WardeinMicroService(serviceBuilder);
+                                log.Debug("Returning WardeinMicroService");
                                 return wardeinService;
                             });
 

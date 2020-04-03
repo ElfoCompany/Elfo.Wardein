@@ -12,7 +12,7 @@ namespace Elfo.Wardein.Watchers.HeartBeat
            string group = null,
            Action<WatcherHooksConfiguration.Builder> hooks = null)
         {
-            builder.AddWatcher(HeartBeatWatcher.Create(config, group), hooks, TimeSpan.FromSeconds(config.TimeSpanFromSeconds));
+            builder.AddWatcher(HeartBeatWatcher.Create(config, group), hooks, TimeSpan.FromSeconds(config.TimeSpanFromSeconds ?? 60));
             return builder;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Elfo.Wardein.Services;
+using NLog;
 using PeterKottas.DotNetCore.WindowsService.Base;
 using PeterKottas.DotNetCore.WindowsService.Interfaces;
 using System;
@@ -10,20 +11,22 @@ namespace Elfo.Wardein
     internal class WardeinMicroService : MicroService, IMicroService
     {
         ServiceBuilder serviceBuilder;
+        static Logger log = LogManager.GetCurrentClassLogger();
 
         public WardeinMicroService(ServiceBuilder serviceBuilder)
         {
+            log.Debug($"WardeinMicroService initialized, serviceBuilder initialized: {serviceBuilder is null == false}");
             this.serviceBuilder = serviceBuilder;
         }
 
         public void Start()
         {
-            serviceBuilder.ConfigureAndRunWarden().Wait();
+            serviceBuilder.ConfigureAndRunWarden();
         }
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            serviceBuilder.Stop();
         }
     }
 }

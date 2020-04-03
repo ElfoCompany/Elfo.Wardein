@@ -10,9 +10,10 @@ namespace Elfo.Wardein.Watchers.FileSystem
         public static WardenConfiguration.Builder AddFileSystemWatcher(this WardenConfiguration.Builder builder,
             FileSystemConfigurationModel config,
             string group = null,
-            Action<WatcherHooksConfiguration.Builder> hooks = null)
+            Action<WatcherHooksConfiguration.Builder> hooks = null,
+            double timeSpanFromSeconds = 300)
         {
-            builder.AddWatcher(FileSystemWatcher.Create(config, group), hooks, TimeSpan.FromSeconds(config.TimeSpanFromSeconds));
+            builder.AddWatcher(FileSystemWatcher.Create(config, group), hooks, TimeSpan.FromSeconds(config.TimeSpanFromSeconds ?? timeSpanFromSeconds));
             return builder;
         }
     }
