@@ -31,6 +31,9 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         [JsonProperty(PropertyName = "urls")]
         public IEnumerable<WebWatcherConfigurationModel> Urls { get; set; }
 
+        [JsonProperty(PropertyName = "performances")]
+        public IEnumerable<PerformanceWatcherConfigurationModel> Performances { get; set; }
+
         [JsonProperty(PropertyName = "cleanUps")]
         public IEnumerable<FileSystemConfigurationModel> CleanUps { get; set; }
     }
