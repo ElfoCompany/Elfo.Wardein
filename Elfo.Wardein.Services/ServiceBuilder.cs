@@ -37,7 +37,7 @@ namespace Elfo.Wardein.Services
                 .Create()
                 .SetHooks(hooks =>
                 {
-                    hooks.OnStart(() => ConfigureAndRunAPIHosting());
+                    hooks.OnStart(() => ConfigureAndRunAspNetAPIHosting());
                     hooks.OnIterationStart(n => log.Debug($"Iteration n°{n} started{"-".Repeat(5)}{Environment.NewLine.Repeat(2)}"));
                     hooks.OnIterationCompleted(iteration => log.Debug($"Iteration completed{"-".Repeat(5)}{Environment.NewLine.Repeat(2)}"));
                 })
@@ -74,7 +74,21 @@ namespace Elfo.Wardein.Services
                 {
                     serviceCollection.AddSingleton<IWarden>(warden);
                 })
-                .UseStartup<Startup>()
+                .UseStartup<Elfo.Wardein.APIs.Startup>()
+                .Build()
+                .RunAsync();
+        }
+
+        public async Task ConfigureAndRunAspNetAPIHosting()
+        {
+            await new WebHostBuilder()
+                .UseUrls("http://*:5000")
+                .ConfigureServices(serviceCollection =>
+                {
+                    serviceCollection.AddSingleton<IWarden>(warden);
+                    serviceCollection.AddScoped<Abstractions.Configuration.IAmWardeinConfigurationManager, OracleWardeinConfigurationManager>();
+                })
+                .UseStartup<Elfo.Wardein.Backend.Startup>()
                 .Build()
                 .RunAsync();
         }
