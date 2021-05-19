@@ -1,12 +1,7 @@
-﻿using Elfo.Wardein.Abstractions.Configuration.Models;
-using System.Threading.Tasks;
-using static Elfo.Wardein.Abstractions.Configuration.Models.WebWatcherConfigurationModel;
+﻿using Elfo.Wardein.Abstractions.BaseUrlWatcher;
+using Elfo.Wardein.Abstractions.Configuration.Models;
 
 namespace Elfo.Wardein.Abstractions.WebWatcher
 {
-    public interface IAmUrlResponseManager
-    {
-        Task<bool> IsHealthy(WebWatcherConfigurationModel configuration);
-        Task RestartPool(string poolName);
-    }
+    public interface IAmUrlResponseManager : IAmUrlManager<WebWatcherConfigurationModel> { }
 }

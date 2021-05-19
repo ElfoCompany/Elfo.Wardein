@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Elfo.Wardein.Abstractions.Configuration.Models
 {
-    public class WebWatcherConfigurationModel : BaseUrlWatcherConfigurationModel
+    public class PerformanceWatcherConfigurationModel : BaseUrlWatcherConfigurationModel
     {
         [JsonProperty(PropertyName = "assertWithRegex")]
         public string AssertWithRegex { get; set; }
@@ -13,11 +13,7 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models
         public HttpCallApiMethod Method { get; set; } = HttpCallApiMethod.Get;
         [JsonProperty(PropertyName = "body")]
         public object Body { get; set; } = null;
-    }
-
-    public enum HttpCallApiMethod
-    {
-        Get = 1,
-        Post = 2
+        [JsonProperty(PropertyName = "firstThresholdInMilliseconds")]
+        public int FirstThresholdInMilliseconds { get; set; }
     }
 }

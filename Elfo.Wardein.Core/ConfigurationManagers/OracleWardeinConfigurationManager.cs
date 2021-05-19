@@ -59,7 +59,7 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
             }
         }
 
-    public WardeinConfig GetConfiguration()
+        public WardeinConfig GetConfiguration()
         {
             if (cachedWardeinConfig == null)
             {
@@ -68,7 +68,7 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
                 {
                     ["APPL_HOSTNAME"] = new OracleParameter("APPL_HOSTNAME", OracleDbType.Varchar2).Value = hostname
                 };
-                
+
                 var query = @"SELECT * FROM V_WRD_WATCHERS WHERE ""ApplicationHostname"" = :APPL_HOSTNAME";
                 var waredinWatcherConfigs = this.oracleHelper.Query<WardeinConfigurationModel>(query, parameters);
 
@@ -85,7 +85,7 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
 
                 return cachedWardeinConfig = wardeinConfig.ToObject<WardeinConfig>();
             }
-             
+
             return cachedWardeinConfig;
         }
 
@@ -171,7 +171,8 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
         IISPool,
         Web,
         WardeinHeartbeat,
-        HealthAPI
+        HealthAPI,
+        Performance
     }
 
     internal static class JObjectExtensions
@@ -193,6 +194,11 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
                     break;
                 case WardeinWatcherType.Web:
                     if (config.TryGetValue("urls", out tokens))
+                        foreach (var token in tokens.AsJEnumerable())
+                            token.AddDefaultProps(watcherConfigurationId, applicationId, applicationHostname);
+                    break;
+                case WardeinWatcherType.Performance:
+                    if (config.TryGetValue("performances", out tokens))
                         foreach (var token in tokens.AsJEnumerable())
                             token.AddDefaultProps(watcherConfigurationId, applicationId, applicationHostname);
                     break;

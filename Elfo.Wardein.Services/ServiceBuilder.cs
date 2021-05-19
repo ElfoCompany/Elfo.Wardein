@@ -21,6 +21,7 @@ using Elfo.Wardein.Core;
 using Elfo.Wardein.Watchers.WebWatcher;
 using NLog;
 using Microsoft.AspNetCore;
+using Elfo.Wardein.Watchers.PerformanceWatcher;
 
 namespace Elfo.Wardein.Services
 {
@@ -45,6 +46,10 @@ namespace Elfo.Wardein.Services
                 .AddWardeinHeartBeatWatcher(wardeinConfiguration.Heartbeat, "HeartbeatWatcher");
 
             // TODO: refactor and add oracle integration (even if useles at the moment)
+
+            if (wardeinConfiguration.Performances?.Count() > 0)
+                foreach (var performance in wardeinConfiguration.Performances)
+                    configurationBuilder.AddPerformanceWatcher(performance, "PerformanceWatcher", timeSpanFromSeconds: wardeinConfiguration.TimeSpanFromSeconds);
 
             if (wardeinConfiguration.Urls?.Count() > 0)
                 foreach (var url in wardeinConfiguration.Urls)

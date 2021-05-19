@@ -2,6 +2,7 @@
 using Elfo.Wardein.Abstractions.Configuration;
 using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Abstractions.HeartBeat;
+using Elfo.Wardein.Abstractions.PerformanceWatcher;
 using Elfo.Wardein.Abstractions.Services;
 using Elfo.Wardein.Abstractions.Watchers;
 using Elfo.Wardein.Abstractions.WebWatcher;
@@ -82,6 +83,7 @@ namespace Elfo.Wardein.Core
                     return builder.Build();
                 })
                 .AddSingleton<IAmUrlResponseManager>(new HttpClientUrlResponseManager())
+                .AddSingleton<IAmUrlPerformanceManager>(new HttpClientUrlPerformanceManager())
                 .AddTransient<IOracleHelper>(sp => new OracleHelper(sp.GetService<OracleConnectionConfiguration>()))
                 .AddTransient<IAmWatcherPersistenceService>(sp =>
                 {
@@ -179,6 +181,7 @@ namespace Elfo.Wardein.Core
         public static IAmWardeinConfigurationManager WardeinConfigurationManager() => Current.serviceProvider.GetService<IAmWardeinConfigurationManager>();
         public static OracleConnectionConfiguration OracleConnectionConfiguration() => Current.serviceProvider.GetService<OracleConnectionConfiguration>();
         public static IAmUrlResponseManager UrlResponseManager() => Current.serviceProvider.GetService<IAmUrlResponseManager>();
+         public static IAmUrlPerformanceManager UrlPerformanceManager() => Current.serviceProvider.GetService<IAmUrlPerformanceManager>();
         public static IOracleHelper OracleHelper() => Current.serviceProvider.GetService<IOracleHelper>();
 
         public static IAmNotificationService NotificationService(NotificationType notificationType)
