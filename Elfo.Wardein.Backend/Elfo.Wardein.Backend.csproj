@@ -5,7 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Elfo.Wardein.Abstractions\Elfo.Wardein.Abstractions.csproj" />
+    <ProjectReference Include="..\Elfo.Wardein.Core\Elfo.Wardein.Core.csproj" />
   </ItemGroup>
 
 

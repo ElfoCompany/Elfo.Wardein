@@ -9,13 +9,23 @@ namespace Elfo.Wardein.Backend.Controllers
 {
     [ApiController]
     [Route("api/new/maintenance")]
-    public class MaintenanceController : Controller
+    public class MaintenanceController : ControllerBase
     {
         private readonly IAmWardeinConfigurationManager wardeinConfigurationManager;
+        private readonly IServiceProvider serviceProvider;
 
         public MaintenanceController(IAmWardeinConfigurationManager wardeinConfigurationManager)
         {
             this.wardeinConfigurationManager = wardeinConfigurationManager;
+            //this.serviceProvider = serviceProvider;
+        }
+
+        [HttpGet]
+        public ActionResult<string> Get()
+        {
+            var result = "Wardein is not in maintenance mode";
+            
+            return Ok(result);
         }
 
         [HttpGet("status")]
@@ -25,6 +35,23 @@ namespace Elfo.Wardein.Backend.Controllers
             if (wardeinConfigurationManager.IsInMaintenanceMode)
                 result = "Wardein is in maintenance mode";
             return Ok(result);
+        }
+
+        [HttpGet("start/{durationInSecond}")]
+        public ActionResult StartMaintenanceMode([FromRoute]double? durationInSecond = null)
+        {
+            if (!durationInSecond.HasValue)
+                durationInSecond = TimeSpan.FromMinutes(5).TotalSeconds; // Default value
+
+            wardeinConfigurationManager.StartMaintenanceMode(durationInSecond.Value);
+            return Ok($"Maintenance Mode Started");
+        }
+
+        [HttpGet("stop")]
+        public ActionResult StopMaintenanceMode()
+        {
+            wardeinConfigurationManager.StopMaintenaceMode();
+            return Ok($"Maintenance Mode Stopped");
         }
     }
 }

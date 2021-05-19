@@ -20,6 +20,7 @@ using Elfo.Wardein.Watchers.GenericService;
 using Elfo.Wardein.Core;
 using Elfo.Wardein.Watchers.WebWatcher;
 using NLog;
+using Microsoft.AspNetCore;
 
 namespace Elfo.Wardein.Services
 {
@@ -81,12 +82,11 @@ namespace Elfo.Wardein.Services
 
         public async Task ConfigureAndRunAspNetAPIHosting()
         {
-            await new WebHostBuilder()
+            await WebHost.CreateDefaultBuilder()
                 .UseUrls("http://*:5000")
                 .ConfigureServices(serviceCollection =>
                 {
                     serviceCollection.AddSingleton<IWarden>(warden);
-                    serviceCollection.AddScoped<Abstractions.Configuration.IAmWardeinConfigurationManager, OracleWardeinConfigurationManager>();
                 })
                 .UseStartup<Elfo.Wardein.Backend.Startup>()
                 .Build()
