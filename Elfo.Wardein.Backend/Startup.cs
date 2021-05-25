@@ -52,7 +52,7 @@ namespace Elfo.Wardein.Backend
                 options.AddPolicy("AllowSpecificOrigins", builder =>
                 {
                     builder
-                    .WithOrigins("http://localhost:5000")
+                    .WithOrigins($"http://localhost:{Configuration["BackendbasePort"]}")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials()

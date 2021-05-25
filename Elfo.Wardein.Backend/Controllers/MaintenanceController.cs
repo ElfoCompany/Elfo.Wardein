@@ -1,7 +1,9 @@
 ﻿using Elfo.Wardein.Abstractions.Configuration;
+using Elfo.Wardein.Core;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,12 +22,11 @@ namespace Elfo.Wardein.Backend.Controllers
             //this.serviceProvider = serviceProvider;
         }
 
+
         [HttpGet]
-        public ActionResult<string> Get()
+        public ActionResult<bool> Get()
         {
-            var result = "Wardein is not in maintenance mode";
-            
-            return Ok(result);
+            return Ok(wardeinConfigurationManager.IsInMaintenanceMode);
         }
 
         [HttpGet("status")]

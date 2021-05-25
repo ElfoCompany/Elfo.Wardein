@@ -2,6 +2,7 @@
 using Elfo.Wardein.Abstractions.Configuration.Models;
 using Elfo.Wardein.Core;
 using NLog;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Warden.Watchers;
 
@@ -31,11 +32,18 @@ namespace Elfo.Wardein.Watchers
 
         public async Task<IWatcherCheckResult> ExecuteAsync()
         {
-            if (!skipMaintenanceMode && wardeinConfigurationManager.IsInMaintenanceMode)
+            if (!skipMaintenanceMode)
             {
-                var message = $"Wardein {Name} running in maintainance mode. Skipping Execution.";
-                log.Debug(message);
-                return await Task.FromResult(WatcherCheckResult.Create(this, true, message));
+                using (var httpClient = new HttpClient())
+                {
+                    var isMaintenanceModeEnabled = await httpClient.GetStringAsync($"http://localhost:{ServicesContainer.WardeinBaseConfiguration().BackendBasePort}/api/new/maintenance");
+                    if (isMaintenanceModeEnabled?.ToLowerInvariant() == "true")
+                    {
+                        var message = $"Wardein {Name} running in maintainance mode. Skipping Execution.";
+                        log.Debug(message);
+                        return await Task.FromResult(WatcherCheckResult.Create(this, true, message));
+                    }
+                }
             }
 
             return await ExecuteWatcherActionAsync();

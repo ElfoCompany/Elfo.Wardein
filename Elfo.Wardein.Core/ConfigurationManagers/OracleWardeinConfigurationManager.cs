@@ -32,7 +32,7 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
                 if (!GetMaintenanceModeValue())
                     return false;
 
-                if (IsMaintenanceModeTimeoutExpired())
+                 if (IsMaintenanceModeTimeoutExpired())
                     StopMaintenaceMode();
 
                 return GetMaintenanceModeValue();
@@ -68,12 +68,15 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
                 {
                     ["APPL_HOSTNAME"] = new OracleParameter("APPL_HOSTNAME", OracleDbType.Varchar2).Value = hostname
                 };
-
                 var query = @"SELECT * FROM V_WRD_WATCHERS WHERE ""ApplicationHostname"" = :APPL_HOSTNAME";
                 var waredinWatcherConfigs = this.oracleHelper.Query<WardeinConfigurationModel>(query, parameters);
 
+                query = @"SELECT DT_MNTNC_END FROM WRD_CNFG WHERE APPL_HOSTNAME = :APPL_HOSTNAME";
+                var maintenanceDate = this.oracleHelper.Query<DateTime>(query, parameters).FirstOrDefault();
+
                 log.Debug($"Config found {waredinWatcherConfigs is null == false}");
-                var wardeinConfig = JObject.Parse(waredinWatcherConfigs.FirstOrDefault().WardeinConfig);
+                log.Debug($"{waredinWatcherConfigs?.Count()} watchers to be registered");
+                var wardeinConfig = JObject.Parse(waredinWatcherConfigs.FirstOrDefault()?.WardeinConfig);
                 foreach (var wardeinWatcherConfig in waredinWatcherConfigs)
                 {
                     var watcherTypeConfig = JObject.Parse((string)wardeinWatcherConfig.WatcherTypeJsonConfig);
@@ -83,7 +86,10 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
                     wardeinConfig.Merge(watcherTypeConfig);
                 }
 
-                return cachedWardeinConfig = wardeinConfig.ToObject<WardeinConfig>();
+                cachedWardeinConfig = wardeinConfig.ToObject<WardeinConfig>();
+                cachedWardeinConfig.MaintenanceModeStatus.MaintenanceModeStartDateInUTC = maintenanceDate;
+                cachedWardeinConfig.MaintenanceModeStatus.DurationInSeconds = 0;
+                cachedWardeinConfig.MaintenanceModeStatus.IsInMaintenanceMode = maintenanceDate >= DateTime.UtcNow;
             }
 
             return cachedWardeinConfig;
@@ -139,12 +145,15 @@ namespace Elfo.Wardein.Core.ConfigurationManagers
             {
                 if (startmaintenanceMode)
                 {
+                    var startDate = DateTime.UtcNow;
+                    var endDate = startDate.AddSeconds((double)durationInSeconds);
                     var parameters = new Dictionary<string, object>
                     {
-                        ["DT_MNTNC_END"] = new OracleParameter("DT_MNTNC_END", OracleDbType.Date).Value = DateTime.UtcNow.AddSeconds((double)durationInSeconds),
+                        ["DT_MNTNC_END"] = new OracleParameter("DT_MNTNC_END", OracleDbType.Date).Value = endDate,
                         ["APPL_HOSTNAME"] = new OracleParameter("APPL_HOSTNAME", OracleDbType.Varchar2).Value = hostname
                     };
                     var query = @"UPDATE WRD_CNFG SET DT_MNTNC_END  = :DT_MNTNC_END WHERE APPL_HOSTNAME =:APPL_HOSTNAME";
+                    GetConfiguration().MaintenanceModeStatus.MaintenanceModeStartDateInUTC = startDate;
                     oracleHelper.ExecuteAsync(query, parameters);
                 }
             }

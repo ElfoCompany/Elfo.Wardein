@@ -1,27 +1,20 @@
-﻿using Elfo.Wardein.APIs;
+﻿using Elfo.Wardein.Core;
+using Elfo.Wardein.Core.Helpers;
+using Elfo.Wardein.Watchers.FileSystem;
+using Elfo.Wardein.Watchers.HeartBeat;
+using Elfo.Wardein.Watchers.IISPool;
+using Elfo.Wardein.Watchers.PerformanceWatcher;
+using Elfo.Wardein.Watchers.WebWatcher;
+using Elfo.Wardein.Watchers.WindowsService;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using NLog;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Warden;
 using Warden.Core;
-using Microsoft.Extensions.Configuration;
-using Elfo.Wardein.Integrations;
-using Elfo.Wardein.Watchers.FileSystem;
-using Elfo.Wardein.Watchers.WindowsService;
-using Elfo.Wardein.Watchers.IISPool;
-using Elfo.Wardein.Watchers.HeartBeat;
-using Elfo.Wardein.Core.ConfigurationManagers;
-using Elfo.Wardein.Core.Helpers;
-using System.Linq;
-using Elfo.Wardein.Watchers.GenericService;
-using Elfo.Wardein.Core;
-using Elfo.Wardein.Watchers.WebWatcher;
-using NLog;
-using Microsoft.AspNetCore;
-using Elfo.Wardein.Watchers.PerformanceWatcher;
 
 namespace Elfo.Wardein.Services
 {
@@ -71,24 +64,10 @@ namespace Elfo.Wardein.Services
             await warden.StartAsync();
         }
 
-        public async Task ConfigureAndRunAPIHosting()
-        {
-            await new WebHostBuilder()
-                .UseUrls("http://*:5000")
-                .UseKestrel()
-                .ConfigureServices(serviceCollection =>
-                {
-                    serviceCollection.AddSingleton<IWarden>(warden);
-                })
-                .UseStartup<Elfo.Wardein.APIs.Startup>()
-                .Build()
-                .RunAsync();
-        }
-
         public async Task ConfigureAndRunAspNetAPIHosting()
         {
             await WebHost.CreateDefaultBuilder()
-                .UseUrls("http://*:5000")
+                .UseUrls($"http://*:{ServicesContainer.WardeinBaseConfiguration().BackendBasePort}")
                 .ConfigureServices(serviceCollection =>
                 {
                     serviceCollection.AddSingleton<IWarden>(warden);

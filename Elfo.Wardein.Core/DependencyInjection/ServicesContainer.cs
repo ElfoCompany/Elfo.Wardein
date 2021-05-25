@@ -183,6 +183,7 @@ namespace Elfo.Wardein.Core
         public static IAmUrlResponseManager UrlResponseManager() => Current.serviceProvider.GetService<IAmUrlResponseManager>();
          public static IAmUrlPerformanceManager UrlPerformanceManager() => Current.serviceProvider.GetService<IAmUrlPerformanceManager>();
         public static IOracleHelper OracleHelper() => Current.serviceProvider.GetService<IOracleHelper>();
+        public static WardeinBaseConfiguration WardeinBaseConfiguration() => Current.wardeinBaseConfiguration;
 
         public static IAmNotificationService NotificationService(NotificationType notificationType)
         {

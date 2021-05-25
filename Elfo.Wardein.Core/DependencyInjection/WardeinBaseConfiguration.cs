@@ -13,6 +13,7 @@ namespace Elfo.Wardein.Core
         public ConnectionType MailConnectionType { get; set; }
         public string MailConnectionString { get; set; }
 
+        public int BackendBasePort { get; set; } = 5000;
 
     }
 
