@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>Elfo.Wardein.Configurations</AssemblyName>
+    <RootNamespace>Elfo.Wardein.Configurations</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Warden" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Elfo.Wardein.Abstractions\Elfo.Wardein.Abstractions.csproj" />
+    <ProjectReference Include="..\Elfo.Wardein.Watchers\Elfo.Wardein.Watchers.csproj" />
+  </ItemGroup>
+
+</Project>

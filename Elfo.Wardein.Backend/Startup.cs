@@ -59,7 +59,17 @@ namespace Elfo.Wardein.Backend
                     .WithExposedHeaders("Content-Disposition");
                 });
             });
+            services.AddSingleton<IAmMailConfigurationManager>(sp =>
+             {
+                 switch (Enum.Parse(typeof(ConnectionType), Configuration["MailConnectionType"]))
+                 {
+                     case ConnectionType.FileSystem:
+                         return new MailConfigurationManagerFromJSON(Configuration["MailConnectionString"]);
+                     default:
+                         throw new NotImplementedException();
 
+                 }
+             });
             services.AddSingleton<IAmWardeinConfigurationManager>(sp =>
             {
                 switch (Enum.Parse(typeof(ConnectionType), Configuration["StorageConnectionType"]))
@@ -75,15 +85,15 @@ namespace Elfo.Wardein.Backend
             });
             services.AddTransient<IOracleHelper, OracleHelper>();
             services.AddSingleton<OracleConnectionConfiguration>(sp =>
-             {                 
-                 var builder = new OracleConnectionConfiguration.Builder(Configuration["StorageConnectionString"]);
-                     builder
-                         .WithClientId(Configuration["OracleAdditionalParams:ClientId"])
-                         .WithClientInfo(Configuration["OracleAdditionalParams:ClientInfo"])
-                         .WithModuleName(Configuration["OracleAdditionalParams:ModuleName"])
-                         .WithDateLanguage(Configuration["OracleAdditionalParams:DateLanguage"]);
-                 return builder.Build();
-             });
+            {
+                var builder = new OracleConnectionConfiguration.Builder(Configuration["StorageConnectionString"]);
+                builder.WithClientId(Configuration["OracleAdditionalParams:ClientId"])
+                    .WithClientInfo(Configuration["OracleAdditionalParams:ClientInfo"])
+                    .WithModuleName(Configuration["OracleAdditionalParams:ModuleName"])
+                    .WithDateLanguage(Configuration["OracleAdditionalParams:DateLanguage"]
+                );
+                return builder.Build();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
