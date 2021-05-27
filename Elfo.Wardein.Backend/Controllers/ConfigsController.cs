@@ -48,6 +48,7 @@ namespace Elfo.Wardein.Backend.Controllers
             //    config.ConfigureWardenConfigurationBuilder(wardeinConfigurationManager.GetConfiguration());
             //});
             //warden.StartAsync();
+            // Workaround to refresh cache since we are dealing with two different actors (api and win service)
             string tempPath = Path.Combine(Path.GetTempPath(),"Wardein");
             System.IO.Directory.CreateDirectory(tempPath);
             using (System.IO.File.Create(Path.Combine(tempPath, "cache.invalidate"))) ;

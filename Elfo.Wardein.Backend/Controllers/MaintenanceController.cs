@@ -46,6 +46,7 @@ namespace Elfo.Wardein.Backend.Controllers
 
             wardeinConfigurationManager.StartMaintenanceMode(durationInSecond.Value);
 
+            // Workaround to refresh cache since we are dealing with two different actors (api and win service)
             string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Wardein");
             System.IO.Directory.CreateDirectory(tempPath);
             using (System.IO.File.Create(System.IO.Path.Combine(tempPath, "cache.invalidate"))) ;
@@ -58,6 +59,7 @@ namespace Elfo.Wardein.Backend.Controllers
         {
             wardeinConfigurationManager.StopMaintenaceMode();
 
+            // Workaround to refresh cache since we are dealing with two different actors (api and win service)
             string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Wardein");
             System.IO.Directory.CreateDirectory(tempPath);
             using (System.IO.File.Create(System.IO.Path.Combine(tempPath, "cache.invalidate"))) ;

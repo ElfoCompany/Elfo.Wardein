@@ -1,13 +1,9 @@
 ﻿using Elfo.Wardein.Core;
 using Elfo.Wardein.Services;
-using Elfo.Wardein.Watchers;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using NLog;
 using PeterKottas.DotNetCore.WindowsService;
-using PeterKottas.DotNetCore.WindowsService.Interfaces;
 using System;
 using System.Threading;
 
