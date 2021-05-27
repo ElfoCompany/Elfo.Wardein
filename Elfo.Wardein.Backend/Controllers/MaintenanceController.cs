@@ -45,6 +45,11 @@ namespace Elfo.Wardein.Backend.Controllers
                 durationInSecond = TimeSpan.FromMinutes(5).TotalSeconds; // Default value
 
             wardeinConfigurationManager.StartMaintenanceMode(durationInSecond.Value);
+
+            string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Wardein");
+            System.IO.Directory.CreateDirectory(tempPath);
+            using (System.IO.File.Create(System.IO.Path.Combine(tempPath, "cache.invalidate"))) ;
+
             return Ok($"Maintenance Mode Started");
         }
 
@@ -52,6 +57,11 @@ namespace Elfo.Wardein.Backend.Controllers
         public ActionResult StopMaintenanceMode()
         {
             wardeinConfigurationManager.StopMaintenaceMode();
+
+            string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Wardein");
+            System.IO.Directory.CreateDirectory(tempPath);
+            using (System.IO.File.Create(System.IO.Path.Combine(tempPath, "cache.invalidate"))) ;
+
             return Ok($"Maintenance Mode Stopped");
         }
     }
