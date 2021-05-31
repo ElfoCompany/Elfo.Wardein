@@ -13,6 +13,7 @@ namespace Elfo.Wardein.Watchers.BaseUrlWatcher
         protected readonly IAmUrlManager<T> urlManager;
         private const string WebCheckLogWord = "web";
         private const string PerfomanceCheckLogWord = "perfomance";
+        private int previousFailureCount = 0;
 
         protected BaseUrlWatcher(string name, T config, string configErrorMessage, IAmUrlManager<T> urlManager, string group = null) : base(name, config, group)
 		{
@@ -50,18 +51,28 @@ namespace Elfo.Wardein.Watchers.BaseUrlWatcher
                 isHealthy: isHealthy
             );
 
-            if (!isHealthy)
+            try
+			{
+                if (!isHealthy)
+                {
+                    await PerformActionOnServiceDown(currentStatus, async (configuration) => {
+                        if (!string.IsNullOrWhiteSpace(configuration.AssociatedIISPool))
+                            await urlManager.RestartPool(configuration.AssociatedIISPool);
+                        else
+                            log.Debug($"UrlWatcher check @ {GetLoggingDisplayName} can't restart assoicated IIS Pool cause it is not specified");
+                    });
+                }
+                else
+                {
+                    // TODO: improve solution
+                    // workarounded for the time being
+                    currentStatus.FailureCount = previousFailureCount;
+                    await PerformActionOnServiceAlive(currentStatus);
+                }
+            } 
+            finally
             {
-                await PerformActionOnServiceDown(currentStatus, async (configuration) => {
-                    if (!string.IsNullOrWhiteSpace(configuration.AssociatedIISPool))
-                        await urlManager.RestartPool(configuration.AssociatedIISPool);
-                    else
-                        log.Debug($"UrlWatcher check @ {GetLoggingDisplayName} can't restart assoicated IIS Pool cause it is not specified");
-                });
-            }
-            else
-            {
-                await PerformActionOnServiceAlive(currentStatus);
+                previousFailureCount = currentStatus.FailureCount;
             }
 
             log.Debug($"Finished checking {GetLoggingDisplayName}");
