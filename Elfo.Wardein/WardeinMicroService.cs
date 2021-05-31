@@ -21,7 +21,15 @@ namespace Elfo.Wardein
 
         public void Start()
         {
-            serviceBuilder.ConfigureAndRunWarden();
+            try
+            {
+                serviceBuilder.ConfigureAndRunWarden();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "Error while starting wardein");
+                throw;
+            }
         }
 
         public void Stop()

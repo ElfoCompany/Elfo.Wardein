@@ -23,18 +23,19 @@ namespace Elfo.Wardein.Services
         {
             var wardeinConfigurationManager = ServicesContainer.WardeinConfigurationManager();
             WardeinConfig wardeinConfiguration = new WardeinConfig();
-            //using(var client = new HttpClient())
-            //{
-            //try
-            //{
-            //    var result = await client.GetStringAsync($"http://localhost:{ServicesContainer.WardeinBaseConfiguration().BackendBasePort}/api/new/configs");
-            //    wardeinConfiguration = JsonConvert.DeserializeObject<WardeinConfig>(result);
-            //}
-            //catch (Exception)
-            //{
-            wardeinConfiguration = wardeinConfigurationManager.GetConfiguration();
-            //}
-            //}
+
+            try
+            {
+                wardeinConfiguration = wardeinConfigurationManager.GetConfiguration();
+            }
+            catch (Exception ex)
+            {
+                new Thread(() =>
+                {
+                    log.Debug(ex, $"Error while reading and merging configs");
+                    throw new RestartWardeinServiceWithFakeException();
+                }).Start();
+            }
 
             var configurationBuilder = WardenHelper.GetWardenConfigurationBuilder(wardeinConfiguration);
             configurationBuilder
@@ -55,6 +56,7 @@ namespace Elfo.Wardein.Services
             {
                 try
                 {
+                    // Workaround to refresh cache since we are dealing with two different actors (api and win service)
                     var path = Path.Combine(Path.GetTempPath(), "Wardein");
                     var fileName = "cache.invalidate";
                     log.Debug($"Monitoring {path}");

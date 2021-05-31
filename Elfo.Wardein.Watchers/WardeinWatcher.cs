@@ -32,18 +32,11 @@ namespace Elfo.Wardein.Watchers
 
         public async Task<IWatcherCheckResult> ExecuteAsync()
         {
-            if (!skipMaintenanceMode)
+            if (!skipMaintenanceMode && wardeinConfigurationManager.IsInMaintenanceMode)
             {
-                using (var httpClient = new HttpClient())
-                {
-                    var isMaintenanceModeEnabled = await httpClient.GetStringAsync($"http://localhost:{ServicesContainer.WardeinBaseConfiguration().BackendBasePort}/api/new/maintenance");
-                    if (isMaintenanceModeEnabled?.ToLowerInvariant() == "true")
-                    {
-                        var message = $"Wardein {Name} running in maintainance mode. Skipping Execution.";
-                        log.Debug(message);
-                        return await Task.FromResult(WatcherCheckResult.Create(this, true, message));
-                    }
-                }
+                var message = $"Wardein {Name} running in maintainance mode. Skipping Execution.";
+                log.Debug(message);
+                return await Task.FromResult(WatcherCheckResult.Create(this, true, message));
             }
 
             return await ExecuteWatcherActionAsync();
