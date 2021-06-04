@@ -28,7 +28,7 @@ namespace Elfo.Wardein.Core.ServiceManager
                 if (configuration.Method == HttpCallApiMethod.Get)
                     response = await apiClient.GetAsync(configuration.Url);
                 else
-                    response = await apiClient.PostAsync(configuration.Url, new StringContent(JsonConvert.SerializeObject(configuration.Body ?? new Object()), UnicodeEncoding.UTF8, "application/json"));
+                    response = await apiClient.PostAsync(configuration.Url, new StringContent((configuration.Body ?? new Object()).ToString(), UnicodeEncoding.UTF8, "application/json"));
 
                 stopwatch.Stop();
 
