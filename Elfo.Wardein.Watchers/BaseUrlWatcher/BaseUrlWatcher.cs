@@ -7,16 +7,15 @@ using System.Threading.Tasks;
 
 namespace Elfo.Wardein.Watchers.BaseUrlWatcher
 {
-	public abstract class BaseUrlWatcher<T> : WardeinWatcherWithResolution<T> where T : BaseUrlWatcherConfigurationModel
+    public abstract class BaseUrlWatcher<T> : WardeinWatcherWithResolution<T> where T : BaseUrlWatcherConfigurationModel
     {
         protected readonly IAmWatcherPersistenceService watcherPersistenceService;
         protected readonly IAmUrlManager<T> urlManager;
         private const string WebCheckLogWord = "web";
         private const string PerfomanceCheckLogWord = "perfomance";
-        private int previousFailureCount = 0;
 
         protected BaseUrlWatcher(string name, T config, string configErrorMessage, IAmUrlManager<T> urlManager, string group = null) : base(name, config, group)
-		{
+        {
             ValidateWatcherName(name);
             ValidateWatcherConfigWithMessage(config, configErrorMessage);
             watcherPersistenceService = ServicesContainer.WatcherPersistenceService();
@@ -51,28 +50,28 @@ namespace Elfo.Wardein.Watchers.BaseUrlWatcher
                 isHealthy: isHealthy
             );
 
-            try
-			{
-                if (!isHealthy)
-                {
-                    await PerformActionOnServiceDown(currentStatus, async (configuration) => {
-                        if (!string.IsNullOrWhiteSpace(configuration.AssociatedIISPool))
-                            await urlManager.RestartPool(configuration.AssociatedIISPool);
-                        else
-                            log.Debug($"UrlWatcher check @ {GetLoggingDisplayName} can't restart assoicated IIS Pool cause it is not specified");
-                    });
-                }
-                else
-                {
-                    // TODO: improve solution
-                    // workarounded for the time being
-                    currentStatus.FailureCount = previousFailureCount;
-                    await PerformActionOnServiceAlive(currentStatus);
-                }
-            } 
-            finally
+            if (!isHealthy)
             {
-                previousFailureCount = currentStatus.FailureCount;
+                await PerformActionOnServiceDown(currentStatus, async (configuration) =>
+                {
+                    if (!string.IsNullOrWhiteSpace(configuration.AssociatedIISPool))
+                    {
+                        try
+                        {
+                            await urlManager.RestartPool(configuration.AssociatedIISPool);
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Error(ex, $"BaseUrlWatcher failed to restart pool {configuration.AssociatedIISPool}");
+                        }
+                    }
+                    else
+                        log.Debug($"UrlWatcher check @ {GetLoggingDisplayName} can't restart assoicated IIS Pool cause it is not specified");
+                });
+            }
+            else
+            {
+               await PerformActionOnServiceAlive(currentStatus);
             }
 
             log.Debug($"Finished checking {GetLoggingDisplayName}");

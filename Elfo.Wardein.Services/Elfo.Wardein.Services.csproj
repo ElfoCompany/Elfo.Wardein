@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Elfo.Wardein.APIs\Elfo.Wardein.API.csproj" />
     <ProjectReference Include="..\Elfo.Wardein.Backend\Elfo.Wardein.Backend.csproj" />
     <ProjectReference Include="..\Elfo.Wardein.Configurations\Elfo.Wardein.Configurations.csproj" />
     <ProjectReference Include="..\Elfo.Wardein.Watchers\Elfo.Wardein.Watchers.csproj" />

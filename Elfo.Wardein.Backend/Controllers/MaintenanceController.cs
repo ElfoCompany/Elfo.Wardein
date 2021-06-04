@@ -10,16 +10,14 @@ using System.Threading.Tasks;
 namespace Elfo.Wardein.Backend.Controllers
 {
     [ApiController]
-    [Route("api/new/maintenance")]
+    [Route("api/maintenance")]
     public class MaintenanceController : ControllerBase
     {
         private readonly IAmWardeinConfigurationManager wardeinConfigurationManager;
-        private readonly IServiceProvider serviceProvider;
 
         public MaintenanceController(IAmWardeinConfigurationManager wardeinConfigurationManager)
         {
             this.wardeinConfigurationManager = wardeinConfigurationManager;
-            //this.serviceProvider = serviceProvider;
         }
 
 
@@ -62,7 +60,7 @@ namespace Elfo.Wardein.Backend.Controllers
             // Workaround to refresh cache since we are dealing with two different actors (api and win service)
             string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Wardein");
             System.IO.Directory.CreateDirectory(tempPath);
-            using (System.IO.File.Create(System.IO.Path.Combine(tempPath, "cache.invalidate"))) ;
+            using (System.IO.File.Create(System.IO.Path.Combine(tempPath, "cache.invalidate")));
 
             return Ok($"Maintenance Mode Stopped");
         }

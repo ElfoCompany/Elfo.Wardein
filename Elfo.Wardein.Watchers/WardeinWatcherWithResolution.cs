@@ -67,7 +67,7 @@ namespace Elfo.Wardein.Watchers
         protected virtual bool HasToSendMailOnServiceAlive(WatcherStatusResult watcherStatusResult)
         {
             if (Config.SendSuccessMailOnlyIfMaxRetryCountExceeded)
-                return watcherStatusResult.FailureCount > Config.MaxRetryCount;
+                return watcherStatusResult.PreviousFailureCount >= Config.MaxRetryCount;
             else
                 return !watcherStatusResult.PreviousStatus;
         }

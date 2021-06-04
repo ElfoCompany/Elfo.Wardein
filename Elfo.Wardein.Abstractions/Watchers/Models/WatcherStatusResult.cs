@@ -7,6 +7,7 @@ namespace Elfo.Wardein.Abstractions.Watchers
     public class WatcherStatusResult
     {
         public bool PreviousStatus { get; set; }
+        public int PreviousFailureCount { get; set; }
         public int FailureCount { get; set; }
     }
 }

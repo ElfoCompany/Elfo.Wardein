@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Core", "Elfo.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein", "Elfo.Wardein\Elfo.Wardein.csproj", "{7EED5720-57EC-49E7-B831-C3E5538E7B3E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.API", "Elfo.Wardein.APIs\Elfo.Wardein.API.csproj", "{56FD636F-0F4E-4644-8713-6AA1FDFF713B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Watchers", "Elfo.Wardein.Watchers\Elfo.Wardein.Watchers.csproj", "{69EDA8D3-51B4-4986-A6AD-E57514071EEC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Integrations", "Elfo.Wardein.Integrations\Elfo.Wardein.Integrations.csproj", "{A9EBA788-3D89-4E26-ADB3-E3B29F4B0F7B}"
@@ -23,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Core.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Backend", "Elfo.Wardein.Backend\Elfo.Wardein.Backend.csproj", "{73E52A60-3A87-4365-888C-F40D779E7731}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elfo.Wardein.Configurations", "Elfo.Wardein.Configurations\Elfo.Wardein.Configurations.csproj", "{69AE77A5-4C3D-4BA8-8257-5FC0F940147A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elfo.Wardein.Configurations", "Elfo.Wardein.Configurations\Elfo.Wardein.Configurations.csproj", "{69AE77A5-4C3D-4BA8-8257-5FC0F940147A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +37,6 @@ Global
 		{7EED5720-57EC-49E7-B831-C3E5538E7B3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EED5720-57EC-49E7-B831-C3E5538E7B3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EED5720-57EC-49E7-B831-C3E5538E7B3E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56FD636F-0F4E-4644-8713-6AA1FDFF713B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56FD636F-0F4E-4644-8713-6AA1FDFF713B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56FD636F-0F4E-4644-8713-6AA1FDFF713B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56FD636F-0F4E-4644-8713-6AA1FDFF713B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69EDA8D3-51B4-4986-A6AD-E57514071EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69EDA8D3-51B4-4986-A6AD-E57514071EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69EDA8D3-51B4-4986-A6AD-E57514071EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU

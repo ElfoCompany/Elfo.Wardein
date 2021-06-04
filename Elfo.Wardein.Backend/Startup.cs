@@ -52,7 +52,7 @@ namespace Elfo.Wardein.Backend
                 options.AddPolicy("AllowSpecificOrigins", builder =>
                 {
                     builder
-                    .WithOrigins($"http://localhost:{Configuration["BackendbasePort"]}")
+                    .WithOrigins(Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new string[] { })
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials()

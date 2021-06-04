@@ -13,7 +13,7 @@ using Warden;
 namespace Elfo.Wardein.Backend.Controllers
 {
     [ApiController]
-    [Route("api/new/configs")]
+    [Route("api/configs")]
     public class ConfigsController : ControllerBase
     {
         private readonly IAmWardeinConfigurationManager wardeinConfigurationManager;

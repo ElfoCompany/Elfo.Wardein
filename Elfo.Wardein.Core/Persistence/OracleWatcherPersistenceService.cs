@@ -28,11 +28,13 @@ namespace Elfo.Wardein.Core.Persistence
                 howToGetResult: (parameters) =>
                 {
                     int.TryParse(parameters.FirstOrDefault(x => x.ParameterName == "po_flr_count")?.Value?.ToString(), out int errorCount);
+                    int.TryParse(parameters.FirstOrDefault(x => x.ParameterName == "po_prv_flr_count")?.Value?.ToString(), out int previousErrorCount);
                     bool wasHealthy = parameters.FirstOrDefault(x => x.ParameterName == "po_prv_status")?.Value?.ToString()?.ToUpperInvariant() == "Y";
                     return new WatcherStatusResult()
                     {
                         FailureCount = errorCount,
-                        PreviousStatus = wasHealthy
+                        PreviousStatus = wasHealthy,
+                        PreviousFailureCount = previousErrorCount
                     };
                 },
                 new OracleParameter("p_wtchr_cnfg_id", OracleDbType.Int32, watcherConfigurationId, System.Data.ParameterDirection.Input),
@@ -41,7 +43,8 @@ namespace Elfo.Wardein.Core.Persistence
                 new OracleParameter("p_is_healthy", OracleDbType.Varchar2, isHealthy ? "Y" : "N" , System.Data.ParameterDirection.Input),
                 new OracleParameter("p_flr_msg", OracleDbType.Varchar2, failureException != null ?  failureException.ToString() : null, System.Data.ParameterDirection.Input),
                 new OracleParameter("po_flr_count", OracleDbType.Int32, System.Data.ParameterDirection.Output),
-                new OracleParameter("po_prv_status", OracleDbType.Varchar2, 3, "N", System.Data.ParameterDirection.Output)
+                new OracleParameter("po_prv_status", OracleDbType.Varchar2, 3, "N", System.Data.ParameterDirection.Output),
+                new OracleParameter("po_prv_flr_count", OracleDbType.Int32, System.Data.ParameterDirection.Output)
             );
         }
     }
