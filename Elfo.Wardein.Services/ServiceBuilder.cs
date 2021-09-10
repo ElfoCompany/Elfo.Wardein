@@ -59,6 +59,8 @@ namespace Elfo.Wardein.Services
                     // Workaround to refresh cache since we are dealing with two different actors (api and win service)
                     var path = Path.Combine(Path.GetTempPath(), "Wardein");
                     var fileName = "cache.invalidate";
+                    if (System.IO.File.Exists(Path.Combine(path, fileName)))
+                        System.IO.File.Delete(Path.Combine(path, fileName));
                     log.Debug($"Monitoring {path}");
                     System.IO.Directory.CreateDirectory(path);
                     var watcher = new System.IO.FileSystemWatcher(path, fileName);

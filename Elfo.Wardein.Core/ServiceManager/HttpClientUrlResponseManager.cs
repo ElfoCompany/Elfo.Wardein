@@ -25,9 +25,11 @@ namespace Elfo.Wardein.Core.ServiceManager
                 else
                     response = await apiClient.PostAsync(configuration.Url, new StringContent(JsonConvert.SerializeObject(configuration.Body ?? new Object()), UnicodeEncoding.UTF8, "application/json"));
             }
-            catch (UnauthorizedAccessException ex)
+            catch (Exception ex)
             {
                 log.Error($"Exception got while waiting response from {configuration.Url.AbsoluteUri} - {ex}");
+                if (configuration.AssertWithStatusCode)
+                    return false;
                 throw;
             }
             var htmlResponse = await response.Content.ReadAsStringAsync();
