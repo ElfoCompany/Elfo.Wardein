@@ -1,5 +1,7 @@
 ﻿using Elfo.Wardein.Abstractions.Configuration.Models.WatcherModels;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -45,8 +47,9 @@ namespace Elfo.Wardein.Core.ServiceManager
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            if (configuration.Headers?.Count > 0)
-                foreach (var header in configuration.Headers)
+            var headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(configuration.Headers?.ToString());
+            if (headers?.Count > 0)
+                foreach (var header in headers)
                     client.DefaultRequestHeaders.Add(header.Key, header.Value);
 
             return client;

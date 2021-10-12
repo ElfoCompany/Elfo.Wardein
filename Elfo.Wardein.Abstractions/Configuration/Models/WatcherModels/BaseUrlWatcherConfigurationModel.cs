@@ -11,7 +11,7 @@ namespace Elfo.Wardein.Abstractions.Configuration.Models.WatcherModels
 		[JsonProperty(PropertyName = "urlAlias")]
 		public string UrlAlias { get; set; }
 		[JsonProperty(PropertyName = "headers")]
-		public IDictionary<string, string> Headers { get; set; }
+		public object Headers { get; set; }
         [JsonProperty(PropertyName = "associatedIISPool")]
         public string AssociatedIISPool { get; set; }
 
