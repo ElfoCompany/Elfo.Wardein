@@ -46,11 +46,13 @@ namespace Elfo.Wardein.Core.ServiceManager
             client.BaseAddress = new Uri(configuration.Url.AbsoluteUri);
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            var headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(configuration.Headers?.ToString());
-            if (headers?.Count > 0)
-                foreach (var header in headers)
-                    client.DefaultRequestHeaders.Add(header.Key, header.Value);
+            if (configuration.Headers != null)
+            {
+                var headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(configuration.Headers?.ToString());
+                if (headers?.Count > 0)
+                    foreach (var header in headers)
+                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
+            }
 
             return client;
         }
